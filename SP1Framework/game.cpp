@@ -12,6 +12,8 @@ double  g_dElapsedTime;
 double  g_dDeltaTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
+int x = 40;
+int y = 10;
 
 map Map;
 
@@ -39,7 +41,7 @@ void init( void )
     g_eGameState = S_SPLASHSCREEN;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+    g_sChar.m_cLocation.Y = 10;
     g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -155,10 +157,10 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     {
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
-    case VK_W: key = K_W; break;
-    case VK_A: key = K_A; break;
-    case VK_S: key = K_S; break;
-    case VK_D: key = K_D; break;
+    case VK_KEY_W: key = K_W; break;
+    case VK_KEY_A: key = K_A; break;
+    case VK_KEY_S: key = K_S; break;
+    case VK_KEY_D: key = K_D; break;
 
     }
     // a key pressed event would be one with bKeyDown == true
@@ -242,14 +244,15 @@ void moveCharacter()
     {
         if (Map.map[g_sChar.m_cLocation.Y - 1][g_sChar.m_cLocation.X] != '+')
         {
-            g_sChar.m_cLocation.Y--;
+            y++;
         }               
     }
     if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
         if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+') // h
         {
-            g_sChar.m_cLocation.X--;
+            x++;
+            
         }
                
     }
@@ -257,16 +260,17 @@ void moveCharacter()
     {
         if (Map.map[g_sChar.m_cLocation.Y + 1][g_sChar.m_cLocation.X] != '+')
         {
-            g_sChar.m_cLocation.Y++;
+
+            y--;
         }
-        //Beep(1440, 30);
+
                 
     }
     if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
     {
         if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X + 1] != '+')
         {
-            g_sChar.m_cLocation.X++;
+            x--;
         }
     }
     if (g_skKeyEvent[K_SPACE].keyDown)
@@ -340,20 +344,11 @@ void renderGame()
 
 void renderMap()
 {
-    // Set up sample colours, and output shadings
-    const WORD colors[] = {
-        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
-        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
-    };
-    Map.maparray(g_Console);
-    COORD c;
-    for (int i = 0; i < 12; ++i)
-    {
-        c.X = 5 * i;
-        c.Y = i + 1;
-        colour(colors[i]);
-        g_Console.writeToBuffer(c, " °±²Û", colors[i]);
-    }
+
+    Map.maparray(g_Console, x, y);
+    // ^insert HUD after the maparray function
+
+    g_Console.writeToBuffer(0, 20, "                                                                                ", 0xFF);
 }
 
 void renderCharacter()

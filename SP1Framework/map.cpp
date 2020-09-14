@@ -1,6 +1,6 @@
 #include "map.h"
 
-void map::maparray(Console& g_Console)
+void map::maparray(Console& g_Console, int x , int y)
 {
 
     //array to detect things
@@ -14,14 +14,28 @@ void map::maparray(Console& g_Console)
     //walls in 4 sides
     for (int i = 0; i < 560; i++)
     {
-        g_Console.writeToBuffer(i,0, map[0][i] = '+', 0x0C);
-        g_Console.writeToBuffer(i,74, map[74][i] = '+', 0x0C);
+        if (y < 10)
+        {
+            g_Console.writeToBuffer(i, y - 10, map[0][i] = '+', 0x0C);
+        }
+        else
+        {
+            g_Console.writeToBuffer(i, y - 10, map[y - 10][i] = '+', 0x0C);
+        }
+        
     }
     for (int j = 0; j < 75; j++)
     {
-        g_Console.writeToBuffer(0, j, map[j][0] = '+', 0x0C);
-        g_Console.writeToBuffer(559, j, map[j][559] = '+', 0x0C);   
+        if (x < 40)
+        {
+            g_Console.writeToBuffer(x - 40, j, map[j][0] = '+', 0x0C);
+        }
+        else
+        {
+            g_Console.writeToBuffer(x - 40, j, map[j][x - 40] = '+', 0x0C);
+        }
     }
-
+    
+    
 
 }
