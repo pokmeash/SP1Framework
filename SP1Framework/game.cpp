@@ -17,7 +17,7 @@ SGameChar   g_sChar;
 EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
-Console g_Console(80, 25, "SP1 Framework");
+Console g_Console(80, 30, "SP1 Framework");
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -231,27 +231,27 @@ void moveCharacter()
 {    
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_UP].keyReleased && g_sChar.m_cLocation.Y > 0)
+    if (g_skKeyEvent[K_UP].keyDown && g_sChar.m_cLocation.Y > 0)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.Y--;       
     }
-    if (g_skKeyEvent[K_LEFT].keyReleased && g_sChar.m_cLocation.X > 0)
+    if (g_skKeyEvent[K_LEFT].keyDown && g_sChar.m_cLocation.X > 0)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.X--;        
     }
-    if (g_skKeyEvent[K_DOWN].keyReleased && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_skKeyEvent[K_DOWN].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.Y++;        
     }
-    if (g_skKeyEvent[K_RIGHT].keyReleased && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_skKeyEvent[K_RIGHT].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
     {
         //Beep(1440, 30);
         g_sChar.m_cLocation.X++;        
     }
-    if (g_skKeyEvent[K_SPACE].keyReleased)
+    if (g_skKeyEvent[K_SPACE].keyDown)
     {
         g_sChar.m_bActive = !g_sChar.m_bActive;        
     }
@@ -305,13 +305,13 @@ void renderSplashScreen()  // renders the splash screen
     COORD c = g_Console.getConsoleSize();
     c.Y /= 3;
     c.X = c.X / 2 - 9;
-    g_Console.writeToBuffer(c, "A game in 3 seconds", 0x03);
+    g_Console.writeToBuffer(c, "A game in 3 seconds", 0x0C);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 20;
-    g_Console.writeToBuffer(c, "Press <Space> to change character colour", 0x09);
+    g_Console.writeToBuffer(c, "Press <Space> to change character colour", 0x0D);
     c.Y += 1;
     c.X = g_Console.getConsoleSize().X / 2 - 9;
-    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x09);
+    g_Console.writeToBuffer(c, "Press 'Esc' to quit", 0x0D);
 }
 
 void renderGame()
