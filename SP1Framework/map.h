@@ -1,5 +1,5 @@
 #pragma once
-#AAAAAAAAAAA
+//AAAAAAAAAAA
 class map
 {
 };
