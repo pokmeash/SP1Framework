@@ -2,6 +2,8 @@
 //
 //
 #include "game.h"
+#include "entity.h"
+#include "button.h"
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
@@ -14,10 +16,20 @@ SMouseEvent g_mouseEvent;
 
 // Game specific variables here
 SGameChar   g_sChar;
-EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
+EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 
 // Console object
 Console g_Console(80, 30, "SP1 Framework");
+
+//UI, HUD etc
+button playButton(10, 3, "Play", 40, 12);
+button quitButton(10, 3, "Quit", 40, 18);
+int buttonCount = 2;
+button* allButtons[2] = { &playButton, &quitButton };
+
+// Game objects
+entity ghost;
+entity plasma;
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -32,7 +44,7 @@ void init( void )
     g_dElapsedTime = 0.0;    
 
     // sets the initial state for the game
-    g_eGameState = S_SPLASHSCREEN;
+    g_eGameState = S_STAGE1;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
@@ -43,6 +55,9 @@ void init( void )
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
+
+    setButtons();
+
 }
 
 //--------------------------------------------------------------
@@ -96,13 +111,7 @@ void getInput( void )
 //--------------------------------------------------------------
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
 {    
-    switch (g_eGameState)
-    {
-    case S_SPLASHSCREEN: // don't handle anything for the splash screen
-        break;
-    case S_GAME: gameplayKBHandler(keyboardEvent); // handle gameplay keyboard event 
-        break;
-    }
+    gameplayKBHandler(keyboardEvent);
 }
 
 //--------------------------------------------------------------
@@ -123,13 +132,7 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
 //--------------------------------------------------------------
 void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
 {    
-    switch (g_eGameState)
-    {
-    case S_SPLASHSCREEN: // don't handle anything for the splash screen
-        break;
-    case S_GAME: gameplayMouseHandler(mouseEvent); // handle gameplay mouse event
-        break;
-    }
+    gameplayMouseHandler(mouseEvent);
 }
 
 //--------------------------------------------------------------
@@ -206,18 +209,11 @@ void update(double dt)
 
     switch (g_eGameState)
     {
-        case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
+        case S_MAINMENU: mainMenuWait();
             break;
-        case S_GAME: updateGame(); // gameplay logic when we are in the game
+        case S_STAGE1: updateGame(); // gameplay logic when we are in the game
             break;
     }
-}
-
-
-void splashScreenWait()    // waits for time to pass in splash screen
-{
-    if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
-        g_eGameState = S_GAME;
 }
 
 void updateGame()       // gameplay logic
@@ -278,9 +274,9 @@ void render()
     clearScreen();      // clears the current screen and draw from scratch 
     switch (g_eGameState)
     {
-    case S_SPLASHSCREEN: renderSplashScreen();
+    case S_MAINMENU: renderMainMenu();
         break;
-    case S_GAME: renderGame();
+    case S_STAGE1: renderGame();
         break;
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
@@ -444,5 +440,55 @@ void renderInputEvents()
     
 }
 
+void renderMainMenu()
+{
+    COORD startpos;
+    
+    for (int y = 0; y < playButton.getWidth(); y++)
+    {
+        for (int x = 0; x < playButton.getLength(); x++)
+        {
+            startpos.X = playButton.getPos().getx() + x;
+            startpos.Y = playButton.getPos().gety() + y;
+            g_Console.writeToBuffer(startpos, " ", 0xF4);
+        }
+    }
+    
+    startpos.X = playButton.getPos().getx() - (playButton.getText().length() / 2) + (playButton.getLength() / 2);
+    startpos.Y = playButton.getPos().gety() + 1;
+    g_Console.writeToBuffer(startpos, playButton.getText(), 0xF4);
+   
+    for (int y = 0; y < quitButton.getWidth(); y++)
+    {
+        for (int x = 0; x < quitButton.getLength(); x++)
+        {
+            startpos.X = quitButton.getPos().getx() + x;
+            startpos.Y = quitButton.getPos().gety() + y;
+            g_Console.writeToBuffer(startpos, " ", 0xF4);
+        }
+    }
+
+    startpos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2) + (playButton.getLength() / 2);
+    startpos.Y = quitButton.getPos().gety() + 1;
+    g_Console.writeToBuffer(startpos, quitButton.getText(), 0xF4);
+}
+
+void renderHUD()
+{
+
+}
+
+void mainMenuWait()
+{
+
+}
+
+void setButtons()
+{
+    for (int i = 0; i < buttonCount; i++)
+    {
+        allButtons[i]->setPos();
+    }
+}
 
 

@@ -38,8 +38,15 @@ enum EKEYS
 // Enumeration for the different screen states
 enum EGAMESTATES
 {
-    S_SPLASHSCREEN,
-    S_GAME,
+    S_MAINMENU,
+    S_INTRO, //cutscene
+    S_STAGE1,
+    S_GHOST, //cutscene of appearance of ghost and power out
+    S_STAGE2, //obj: go to power room and play minigame
+    S_SCUBA, //cutscene for intro of 5minute timer and etc info
+    S_STAGE3, //5 minutes
+    S_SWIM, //cutscene/escape
+    S_CONTROLROOM, //objective is go back to control room
     S_COUNT
 };
 
@@ -56,7 +63,6 @@ void update      ( double dt ); // update the game and the state of the game
 void render      ( void );      // renders the current state of the game to the console
 void shutdown    ( void );      // do clean up, free memory
 
-void splashScreenWait();    // waits for time to pass in splash screen
 void updateGame();          // gameplay logic
 void moveCharacter();       // moves the character, collision detection, physics, etc
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
@@ -68,6 +74,12 @@ void renderCharacter();     // renders the character into the buffer
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderInputEvents();   // renders the status of input events
+void renderMainMenu();
+void renderHUD();
+void mainMenuWait();
+
+//UI, HUD tings
+void setButtons();
 
 // keyboard and mouse input event managers
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent);  // define this function for the console to call when there are keyboard events
