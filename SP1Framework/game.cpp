@@ -155,10 +155,10 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     {
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
-    case VK_W: key = K_W; break;
-    case VK_A: key = K_A; break;
-    case VK_S: key = K_S; break;
-    case VK_D: key = K_D; break;
+    case VK_KEY_W: key = K_W; break;
+    case VK_KEY_A: key = K_A; break;
+    case VK_KEY_S: key = K_S; break;
+    case VK_KEY_D: key = K_D; break;
 
     }
     // a key pressed event would be one with bKeyDown == true
