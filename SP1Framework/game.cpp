@@ -247,7 +247,7 @@ void moveCharacter()
     }
     if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
-        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+') // h
+        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+')
         {
             g_sChar.m_cLocation.X--;
         }
