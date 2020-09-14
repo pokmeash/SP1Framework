@@ -8,7 +8,7 @@ private:
 	int length;
 	int width;
 	std::string text;
-	position pos;
+	position pos; //top left corner
 	
 public:
 	button();

@@ -3,7 +3,6 @@
 //
 #include "game.h"
 #include "entity.h"
-#include "button.h"
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
@@ -32,6 +31,7 @@ button playButton(10, 3, "Play", 40, 12);
 button quitButton(10, 3, "Quit", 40, 18);
 int buttonCount = 2;
 button* allButtons[2] = { &playButton, &quitButton };
+bool isMousePressed;
 
 // Game objects
 entity ghost;
@@ -50,7 +50,7 @@ void init( void )
     g_dElapsedTime = 0.0;    
 
     // sets the initial state for the game
-    g_eGameState = S_STAGE1;
+    g_eGameState = S_MAINMENU;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 10;
@@ -62,6 +62,7 @@ void init( void )
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
 
+    isMousePressed = false;
     setButtons();
 
 }
@@ -158,10 +159,10 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     {
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
-    case VK_KEY_W: key = K_W; break;
-    case VK_KEY_A: key = K_A; break;
-    case VK_KEY_S: key = K_S; break;
-    case VK_KEY_D: key = K_D; break;
+    case 0x57: key = K_W; break;
+    case 0x41: key = K_A; break;
+    case 0x53: key = K_S; break;
+    case 0x44: key = K_D; break;
 
     }
     // a key pressed event would be one with bKeyDown == true
@@ -491,7 +492,17 @@ void renderHUD()
 
 void mainMenuWait()
 {
-
+    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+    {
+        if (checkButtonClick(playButton))
+        {
+            g_eGameState = S_STAGE1;
+        }
+        else if (checkButtonClick(quitButton))
+        {
+            g_bQuitGame = true;
+        }
+    }
 }
 
 void setButtons()
@@ -500,6 +511,22 @@ void setButtons()
     {
         allButtons[i]->setPos();
     }
+}
+
+bool checkButtonClick(button button)
+{
+    if (isMousePressed == false)
+    {   
+        isMousePressed = true;
+
+        if (g_mouseEvent.mousePosition.X >= button.getPos().getx() && g_mouseEvent.mousePosition.Y >= button.getPos().gety()
+            && g_mouseEvent.mousePosition.X <= button.getPos().getx() + button.getLength() && g_mouseEvent.mousePosition.Y <= button.getPos().gety() + button.getWidth())
+        {
+            return true;
+        }
+    }
+    isMousePressed = false;
+    return false;
 }
 
 

@@ -1,6 +1,7 @@
 #ifndef _GAME_H
 #define _GAME_H
 #include "entity.h"
+#include "button.h"
 
 #include "Framework\timer.h"
 
@@ -81,6 +82,7 @@ void mainMenuWait();
 
 //UI, HUD tings
 void setButtons();
+bool checkButtonClick(button button);
 
 // keyboard and mouse input event managers
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent);  // define this function for the console to call when there are keyboard events
