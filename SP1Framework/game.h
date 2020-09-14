@@ -1,5 +1,6 @@
 #ifndef _GAME_H
 #define _GAME_H
+#include "entity.h"
 
 #include "Framework\timer.h"
 
@@ -44,7 +45,7 @@ enum EGAMESTATES
 };
 
 // struct for the game character
-struct SGameChar
+struct SGameChar : public entity
 {
     COORD m_cLocation;
     bool  m_bActive;
