@@ -245,7 +245,7 @@ void moveCharacter()
             g_sChar.m_cLocation.Y--;
         }               
     }
-    if (g_skKeyEvent[K_LEFT].keyDown && g_sChar.m_cLocation.X > 0)
+    if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
         if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+')
         {
@@ -253,7 +253,7 @@ void moveCharacter()
         }
                
     }
-    if (g_skKeyEvent[K_DOWN].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
+    if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
     {
         if (Map.map[g_sChar.m_cLocation.Y + 1][g_sChar.m_cLocation.X] != '+')
         {
@@ -262,7 +262,7 @@ void moveCharacter()
         //Beep(1440, 30);
                 
     }
-    if (g_skKeyEvent[K_RIGHT].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
+    if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
     {
         if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X + 1] != '+')
         {
