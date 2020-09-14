@@ -1,8 +1,10 @@
 #pragma once
-//AAAAAAAAAAA
+#include "Framework\console.h"
 
-//cockroach
 class map
 {
+public:
+	char map[75][560];
+	void maparray(Console& g_Console, int x, int y);    // array for submarine
 };
 

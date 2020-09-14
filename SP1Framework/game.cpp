@@ -8,11 +8,17 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include "map.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
+int x = 40;
+int y = 10;
+
+map Map;
+
 
 // Game specific variables here
 SGameChar   g_sChar;
@@ -47,7 +53,7 @@ void init( void )
     g_eGameState = S_STAGE1;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+    g_sChar.m_cLocation.Y = 10;
     g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -150,12 +156,13 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     EKEYS key = K_COUNT;
     switch (keyboardEvent.wVirtualKeyCode)
     {
-    case VK_UP: key = K_UP; break;
-    case VK_DOWN: key = K_DOWN; break;
-    case VK_LEFT: key = K_LEFT; break; 
-    case VK_RIGHT: key = K_RIGHT; break; 
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
+    case VK_KEY_W: key = K_W; break;
+    case VK_KEY_A: key = K_A; break;
+    case VK_KEY_S: key = K_S; break;
+    case VK_KEY_D: key = K_D; break;
+
     }
     // a key pressed event would be one with bKeyDown == true
     // a key released event would be one with bKeyDown == false
@@ -227,25 +234,38 @@ void moveCharacter()
 {    
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_UP].keyDown && g_sChar.m_cLocation.Y > 0)
+    if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.Y--;       
+        if (Map.map[g_sChar.m_cLocation.Y - 1][g_sChar.m_cLocation.X] != '+')
+        {
+            y++;
+        }               
     }
-    if (g_skKeyEvent[K_LEFT].keyDown && g_sChar.m_cLocation.X > 0)
+    if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.X--;        
+        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+')
+        {
+            x++;
+            
+        }
+               
     }
-    if (g_skKeyEvent[K_DOWN].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.Y++;        
+        if (Map.map[g_sChar.m_cLocation.Y + 1][g_sChar.m_cLocation.X] != '+')
+        {
+
+            y--;
+        }
+
+                
     }
-    if (g_skKeyEvent[K_RIGHT].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.X++;        
+        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X + 1] != '+')
+        {
+            x--;
+        }
     }
     if (g_skKeyEvent[K_SPACE].keyDown)
     {
@@ -318,20 +338,11 @@ void renderGame()
 
 void renderMap()
 {
-    // Set up sample colours, and output shadings
-    const WORD colors[] = {
-        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
-        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
-    };
 
-    COORD c;
-    for (int i = 0; i < 12; ++i)
-    {
-        c.X = 5 * i;
-        c.Y = i + 1;
-        colour(colors[i]);
-        g_Console.writeToBuffer(c, " °±²Û", colors[i]);
-    }
+    Map.maparray(g_Console, x, y);
+    // ^insert HUD after the maparray function
+
+    g_Console.writeToBuffer(0, 20, "                                                                                ", 0xFF);
 }
 
 void renderCharacter()
@@ -376,13 +387,13 @@ void renderInputEvents()
         ss.str("");
         switch (i)
         {
-        case K_UP: key = "UP";
+        case K_W: key = "W";
             break;
-        case K_DOWN: key = "DOWN";
+        case K_S: key = "S";
             break;
-        case K_LEFT: key = "LEFT";
+        case K_A: key = "A";
             break;
-        case K_RIGHT: key = "RIGHT";
+        case K_D: key = "D";
             break;
         case K_SPACE: key = "SPACE";
             break;

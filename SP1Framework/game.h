@@ -1,5 +1,6 @@
 #ifndef _GAME_H
 #define _GAME_H
+#include "entity.h"
 
 #include "Framework\timer.h"
 
@@ -26,10 +27,10 @@ struct SMouseEvent
 // Enumeration to store the control keys that your game will have
 enum EKEYS
 {
-    K_UP,
-    K_DOWN,
-    K_LEFT,
-    K_RIGHT,
+    K_W,
+    K_A,
+    K_S,
+    K_D,
     K_ESCAPE,
     K_SPACE,
     K_COUNT
@@ -51,7 +52,7 @@ enum EGAMESTATES
 };
 
 // struct for the game character
-struct SGameChar
+struct SGameChar : public entity
 {
     COORD m_cLocation;
     bool  m_bActive;
