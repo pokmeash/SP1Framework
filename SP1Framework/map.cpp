@@ -27,13 +27,19 @@ void map::maparray(Console& g_Console)
 
 void map::rendermap(Console& g_Console, int x, int y)
 {
-    for (int a = -10; a < 20; a++)
+    for (int a = -10; a < 10; a++)
     {
         for (int b = -40; b < 40; b++)
         {
-            if (map[y + a][x + b] == '+')
+            if (y + a < 75 && y + a > -1)
             {
-                g_Console.writeToBuffer(40 + b, 10 + a, "+", 0);
+                if (x + b < 560 && x + b > -1)
+                {
+                    if (map[y + a][x + b] == '+')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, "+", 0);
+                    }
+                }
             }
         }
     }  
