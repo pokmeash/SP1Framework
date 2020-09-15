@@ -41,7 +41,8 @@ enum EGAMESTATES
 {
     S_SPLASHSCREEN,
     S_GAME,
-    S_COUNT
+    S_COUNT,
+    S_gameOverGhost
 };
 
 // struct for the game character
@@ -76,6 +77,10 @@ void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent);      // define this fun
 
 void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent);   // handles keyboard events for gameplay 
 void gameplayMouseHandler(const MOUSE_EVENT_RECORD& mouseEvent); // handles mouse events for gameplay 
+
+//Game over ghost animation
+void update_gameOverGhost();
+void gameOverGhost();
 
 
 #endif // _GAME_H

@@ -1,5 +1,9 @@
 #pragma once
-class Cutscene
+#include "Framework\console.h"
+
+class cutscene
 {
+public:
+	
 };
 

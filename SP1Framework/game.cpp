@@ -6,9 +6,12 @@
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include "cutscene.h"
+#include "ghostgameover.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
+double g_dGOghostTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -18,6 +21,11 @@ EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
 
 // Console object
 Console g_Console(80, 30, "SP1 Framework");
+
+//Map object
+cutscene cutscenes;
+ghostgameover ghostGO;
+
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -30,9 +38,10 @@ void init( void )
 {
     // Set precision for floating point output
     g_dElapsedTime = 0.0;    
+    g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_SPLASHSCREEN;
+    g_eGameState = S_gameOverGhost;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
@@ -203,6 +212,7 @@ void update(double dt)
     // get the delta time
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
+    g_dGOghostTime += dt;
 
     switch (g_eGameState)
     {
@@ -210,9 +220,10 @@ void update(double dt)
             break;
         case S_GAME: updateGame(); // gameplay logic when we are in the game
             break;
+        case S_gameOverGhost: update_gameOverGhost();
+            break;
     }
 }
-
 
 void splashScreenWait()    // waits for time to pass in splash screen
 {
@@ -225,6 +236,167 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
+}
+
+void update_gameOverGhost()
+{
+    if (g_dGOghostTime > 10)
+    {
+        g_eGameState = S_GAME;
+    }
+    processUserInput();
+}
+
+void gameOverGhost()
+{ 
+    COORD c;
+    ghostGO.initGridGhost(g_Console);
+    ghostGO.GhostSprite1(g_Console);
+
+    //this works but i vry lazy to fill in the broken animation
+    /*if (g_dGOghostTime > 1.2)
+    {
+        ghostGO.GhostSprite5(g_Console);
+    }
+
+    else if (g_dGOghostTime > 0.9)
+    {
+        ghostGO.GhostSprite4(g_Console);
+    }
+
+    else if (g_dGOghostTime > 0.6)
+    {
+        ghostGO.GhostSprite3(g_Console);
+    }
+
+
+    else if (g_dGOghostTime > 0.3)
+    {
+        ghostGO.GhostSprite2(g_Console);
+    }
+
+    else if (g_dGOghostTime > 0.0)
+    {
+        ghostGO.GhostSprite1(g_Console);
+    }*/
+    
+    //slowed down
+    if (g_dGOghostTime > 0.3)
+    {
+        ghostGO.GhostSprite2(g_Console);
+        if (g_dGOghostTime > 0.6)
+        {
+            ghostGO.GhostSprite3(g_Console);
+            if (g_dGOghostTime > 0.9)
+            {
+                ghostGO.GhostSprite4(g_Console);
+                if (g_dGOghostTime > 1.2)
+                {
+                    ghostGO.GhostSprite5(g_Console);
+                    if (g_dGOghostTime > 1.5)
+                    {
+                        ghostGO.GhostSprite6(g_Console);
+                        if (g_dGOghostTime > 1.8)
+                        {
+                            ghostGO.GhostSprite7(g_Console);
+                            if (g_dGOghostTime > 2.1)
+                            {
+                                ghostGO.GhostSprite8(g_Console);
+                                if (g_dGOghostTime > 2.4)
+                                {
+                                    ghostGO.GhostSprite9(g_Console);
+                                    if (g_dGOghostTime > 2.7)
+                                    {
+                                        ghostGO.GhostSprite10(g_Console);
+                                        if (g_dGOghostTime > 3.0)
+                                        {
+                                            ghostGO.GhostSprite11(g_Console);
+                                            if (g_dGOghostTime > 3.3)
+                                            {
+                                                ghostGO.GhostSprite12(g_Console);
+                                                if (g_dGOghostTime > 3.6)
+                                                {
+                                                    ghostGO.GhostSprite13(g_Console);
+                                                    if (g_dGOghostTime > 3.9)
+                                                    {
+                                                        ghostGO.GhostSprite14(g_Console);
+                                                        if (g_dGOghostTime > 4.2)
+                                                        {
+                                                            ghostGO.GhostSprite15(g_Console);
+                                                            if (g_dGOghostTime > 4.5)
+                                                            {
+                                                                ghostGO.GhostSprite16(g_Console);
+                                                                if (g_dGOghostTime > 4.8)
+                                                                {
+                                                                    ghostGO.GhostSprite17(g_Console);
+                                                                    if (g_dGOghostTime > 5.1)
+                                                                    {
+                                                                        ghostGO.GhostSprite18(g_Console);
+                                                                        if (g_dGOghostTime > 5.4)
+                                                                        {
+                                                                            ghostGO.GhostSprite19(g_Console);
+                                                                            if (g_dGOghostTime > 5.7)
+                                                                            {
+                                                                                ghostGO.GhostSprite20(g_Console);
+                                                                                if (g_dGOghostTime > 6.0)
+                                                                                {
+                                                                                    ghostGO.GhostSprite21(g_Console);
+                                                                                    if (g_dGOghostTime > 6.3)
+                                                                                    {
+                                                                                        ghostGO.GhostSprite22(g_Console);
+                                                                                        if (g_dGOghostTime > 6.6)
+                                                                                        {
+                                                                                            ghostGO.GhostSprite23(g_Console);
+                                                                                            if (g_dGOghostTime > 6.9)
+                                                                                            {
+                                                                                                ghostGO.GhostSprite24(g_Console);
+                                                                                                if (g_dGOghostTime > 7.2)
+                                                                                                {
+                                                                                                    ghostGO.GhostSprite25(g_Console);
+                                                                                                    if (g_dGOghostTime > 7.5)
+                                                                                                    {
+                                                                                                        ghostGO.GhostSprite26(g_Console);
+                                                                                                        if (g_dGOghostTime > 7.8)
+                                                                                                        {
+                                                                                                            ghostGO.GhostSprite27(g_Console);
+                                                                                                            if (g_dGOghostTime > 8.1)
+                                                                                                            {
+                                                                                                                ghostGO.GhostSprite28(g_Console);
+                                                                                                                if (g_dGOghostTime > 9.5)
+                                                                                                                {
+                                                                                                                    ghostGO.GhostSprite29(g_Console);
+                                                                                                                    if (g_dGOghostTime > 9.6)
+                                                                                                                    {
+                                                                                                                        ghostGO.GhostSprite30(g_Console);
+                                                                                                                    }
+                                                                                                                }
+                                                                                                            }
+                                                                                                        }
+                                                                                                    }
+                                                                                                }
+                                                                                            }
+                                                                                        }
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
 
 void moveCharacter()
@@ -281,6 +453,8 @@ void render()
     case S_SPLASHSCREEN: renderSplashScreen();
         break;
     case S_GAME: renderGame();
+        break;
+    case S_gameOverGhost: gameOverGhost();
         break;
     }
     renderFramerate();      // renders debug information, frame rate, elapsed time, etc
@@ -375,7 +549,7 @@ void renderInputEvents()
     COORD startPos = {50, 2};
     std::ostringstream ss;
     std::string key;
-    for (int i = 0; i < K_COUNT; ++i)
+    /*for (int i = 0; i < K_COUNT; ++i)
     {
         ss.str("");
         switch (i)
@@ -401,7 +575,7 @@ void renderInputEvents()
 
         COORD c = { startPos.X, startPos.Y + i };
         g_Console.writeToBuffer(c, ss.str(), 0x17);
-    }
+    }*/
 
     // mouse events    
     ss.str("");
