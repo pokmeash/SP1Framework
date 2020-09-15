@@ -615,8 +615,4 @@ void renderInputEvents()
     default:        
         break;
     }
-    
 }
-
-
-
