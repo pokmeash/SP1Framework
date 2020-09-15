@@ -32,6 +32,7 @@ button quitButton(11, 3, "Quit", 40, 18);
 int buttonCount = 2;
 button* allButtons[2] = { &playButton, &quitButton };
 bool isMousePressed;
+bool paused = false;
 
 // Game objects
 entity ghost;
@@ -215,12 +216,19 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
 
-    switch (g_eGameState)
+    if (!paused)
     {
+        switch (g_eGameState)
+        {
         case S_MAINMENU: mainMenuWait();
             break;
         case S_STAGE1: updateGame(); // gameplay logic when we are in the game
             break;
+        }
+    }
+    else
+    {
+
     }
 }
 
@@ -275,6 +283,7 @@ void moveCharacter()
 
    
 }
+
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -508,6 +517,11 @@ void mainMenuWait()
             g_bQuitGame = true;
         }
     }
+}
+
+void pauseMenuWait()
+{
+
 }
 
 

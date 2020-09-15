@@ -77,8 +77,10 @@ void renderFramerate();     // renders debug information, frame rate, elapsed ti
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderInputEvents();   // renders the status of input events
 void renderMainMenu();
+void renderPauseMenu();
 void renderHUD();
 void mainMenuWait();
+void pauseMenuWait();
 
 //UI, HUD tings
 bool checkButtonClick(button button);
