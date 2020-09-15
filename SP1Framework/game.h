@@ -71,6 +71,12 @@ enum STAGE3states
     S3_GAME
 };
 
+enum menuStates
+{
+    MENU_MAIN,
+    MENU_PAUSE
+};
+
 // struct for the game character
 struct SGameChar : public entity
 {
@@ -108,6 +114,7 @@ void playSTAGE2();
 
 //UI, HUD tings
 bool checkButtonClick(button button);
+void changeButton(bool down);
 
 // keyboard and mouse input event managers
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent);  // define this function for the console to call when there are keyboard events
