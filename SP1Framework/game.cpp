@@ -2,10 +2,12 @@
 //
 //
 #include "game.h"
+#include "entity.h"
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
 #include <sstream>
+#include "map.h"
 #include "cutscene.h"
 #include "ghostgameover.h"
 
@@ -14,18 +16,30 @@ double  g_dDeltaTime;
 double g_dGOghostTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
+int x = 40;
+int y = 10;
+
+map Map;
+
 
 // Game specific variables here
 SGameChar   g_sChar;
-EGAMESTATES g_eGameState = S_SPLASHSCREEN; // initial state
+EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 
 // Console object
 Console g_Console(80, 30, "SP1 Framework");
 
-//Map object
-cutscene cutscenes;
-ghostgameover ghostGO;
+//UI, HUD etc
+button playButton(11, 3, "Play", 40, 12);
+button quitButton(11, 3, "Quit", 40, 18);
+int buttonCount = 2;
+button* allButtons[2] = { &playButton, &quitButton };
+bool isMousePressed;
+bool paused = false;
 
+// Game objects
+entity ghost;
+entity plasma;
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -44,7 +58,7 @@ void init( void )
     g_eGameState = S_gameOverGhost;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = g_Console.getConsoleSize().Y / 2;
+    g_sChar.m_cLocation.Y = 10;
     g_sChar.m_bActive = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -52,6 +66,10 @@ void init( void )
     // remember to set your keyboard handler, so that your functions can be notified of input events
     g_Console.setKeyboardHandler(keyboardHandler);
     g_Console.setMouseHandler(mouseHandler);
+
+    isMousePressed = false;
+    //setButtons();
+
 }
 
 //--------------------------------------------------------------
@@ -105,13 +123,7 @@ void getInput( void )
 //--------------------------------------------------------------
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
 {    
-    switch (g_eGameState)
-    {
-    case S_SPLASHSCREEN: // don't handle anything for the splash screen
-        break;
-    case S_GAME: gameplayKBHandler(keyboardEvent); // handle gameplay keyboard event 
-        break;
-    }
+    gameplayKBHandler(keyboardEvent);
 }
 
 //--------------------------------------------------------------
@@ -132,13 +144,7 @@ void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent)
 //--------------------------------------------------------------
 void mouseHandler(const MOUSE_EVENT_RECORD& mouseEvent)
 {    
-    switch (g_eGameState)
-    {
-    case S_SPLASHSCREEN: // don't handle anything for the splash screen
-        break;
-    case S_GAME: gameplayMouseHandler(mouseEvent); // handle gameplay mouse event
-        break;
-    }
+    gameplayMouseHandler(mouseEvent);
 }
 
 //--------------------------------------------------------------
@@ -156,12 +162,13 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     EKEYS key = K_COUNT;
     switch (keyboardEvent.wVirtualKeyCode)
     {
-    case VK_UP: key = K_UP; break;
-    case VK_DOWN: key = K_DOWN; break;
-    case VK_LEFT: key = K_LEFT; break; 
-    case VK_RIGHT: key = K_RIGHT; break; 
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
+    case 0x57: key = K_W; break;
+    case 0x41: key = K_A; break;
+    case 0x53: key = K_S; break;
+    case 0x44: key = K_D; break;
+
     }
     // a key pressed event would be one with bKeyDown == true
     // a key released event would be one with bKeyDown == false
@@ -214,11 +221,13 @@ void update(double dt)
     g_dDeltaTime = dt;
     g_dGOghostTime += dt;
 
-    switch (g_eGameState)
+    if (!paused)
     {
-        case S_SPLASHSCREEN : splashScreenWait(); // game logic for the splash screen
+        switch (g_eGameState)
+        {
+        case S_MAINMENU: mainMenuWait();
             break;
-        case S_GAME: updateGame(); // gameplay logic when we are in the game
+        case S_STAGE1: updateGame(); // gameplay logic when we are in the game
             break;
         case S_gameOverGhost: update_gameOverGhost();
             break;
@@ -403,25 +412,38 @@ void moveCharacter()
 {    
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_UP].keyDown && g_sChar.m_cLocation.Y > 0)
+    if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.Y--;       
+        if (Map.map[g_sChar.m_cLocation.Y - 1][g_sChar.m_cLocation.X] != '+')
+        {
+            y++;
+        }               
     }
-    if (g_skKeyEvent[K_LEFT].keyDown && g_sChar.m_cLocation.X > 0)
+    if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.X--;        
+        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+')
+        {
+            x++;
+            
+        }
+               
     }
-    if (g_skKeyEvent[K_DOWN].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+    if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.Y++;        
+        if (Map.map[g_sChar.m_cLocation.Y + 1][g_sChar.m_cLocation.X] != '+')
+        {
+
+            y--;
+        }
+
+                
     }
-    if (g_skKeyEvent[K_RIGHT].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+    if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
     {
-        //Beep(1440, 30);
-        g_sChar.m_cLocation.X++;        
+        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X + 1] != '+')
+        {
+            x--;
+        }
     }
     if (g_skKeyEvent[K_SPACE].keyDown)
     {
@@ -430,6 +452,7 @@ void moveCharacter()
 
    
 }
+
 void processUserInput()
 {
     // quits the game if player hits the escape key
@@ -450,9 +473,9 @@ void render()
     clearScreen();      // clears the current screen and draw from scratch 
     switch (g_eGameState)
     {
-    case S_SPLASHSCREEN: renderSplashScreen();
+    case S_MAINMENU: renderMainMenu();
         break;
-    case S_GAME: renderGame();
+    case S_STAGE1: renderGame();
         break;
     case S_gameOverGhost: gameOverGhost();
         break;
@@ -496,20 +519,11 @@ void renderGame()
 
 void renderMap()
 {
-    // Set up sample colours, and output shadings
-    const WORD colors[] = {
-        0x1A, 0x2B, 0x3C, 0x4D, 0x5E, 0x6F,
-        0xA1, 0xB2, 0xC3, 0xD4, 0xE5, 0xF6
-    };
 
-    COORD c;
-    for (int i = 0; i < 12; ++i)
-    {
-        c.X = 5 * i;
-        c.Y = i + 1;
-        colour(colors[i]);
-        g_Console.writeToBuffer(c, " °±²Û", colors[i]);
-    }
+    Map.maparray(g_Console, x, y);
+    // ^insert HUD after the maparray function
+    renderHUD();
+    g_Console.writeToBuffer(0, 20, "                                                                                ", 0xFF);
 }
 
 void renderCharacter()
@@ -554,13 +568,13 @@ void renderInputEvents()
         ss.str("");
         switch (i)
         {
-        case K_UP: key = "UP";
+        case K_W: key = "W";
             break;
-        case K_DOWN: key = "DOWN";
+        case K_S: key = "S";
             break;
-        case K_LEFT: key = "LEFT";
+        case K_A: key = "A";
             break;
-        case K_RIGHT: key = "RIGHT";
+        case K_D: key = "D";
             break;
         case K_SPACE: key = "SPACE";
             break;
@@ -615,4 +629,88 @@ void renderInputEvents()
     default:        
         break;
     }
+    
 }
+
+void renderMainMenu()
+{
+    //black bg
+    for (int i = 0; i < 30; i++)
+    {
+        g_Console.writeToBuffer(0, 0 + i, "                                                                                ", 0x00);
+    }
+
+    COORD startpos;
+    for (int y = playButton.getCorner(0).gety(); y <= playButton.getCorner(2).gety(); y++)
+    {
+        for (int x = playButton.getCorner(0).getx(); x <= playButton.getCorner(1).getx(); x++)
+        {
+            startpos.X = x;
+            startpos.Y = y;
+            g_Console.writeToBuffer(startpos, " ", 0xF4);
+        }
+    }
+    
+    startpos.X = playButton.getPos().getx() - (playButton.getText().length() / 2);
+    startpos.Y = playButton.getPos().gety();
+    g_Console.writeToBuffer(startpos, playButton.getText(), 0xF4);
+   
+    for (int y = quitButton.getCorner(0).gety(); y <= quitButton.getCorner(2).gety(); y++)
+    {
+        for (int x = quitButton.getCorner(0).getx(); x <= quitButton.getCorner(1).getx(); x++)
+        {
+            startpos.X = x;
+            startpos.Y = y;
+            g_Console.writeToBuffer(startpos, " ", 0xF4);
+        }
+    }
+
+    startpos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
+    startpos.Y = quitButton.getPos().gety();
+    g_Console.writeToBuffer(startpos, quitButton.getText(), 0xF4);
+}
+
+void renderHUD()
+{
+  
+}
+
+void mainMenuWait()
+{
+    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+    {
+        if (checkButtonClick(playButton))
+        {
+            g_eGameState = S_STAGE1;
+        }
+        else if (checkButtonClick(quitButton))
+        {
+            g_bQuitGame = true;
+        }
+    }
+}
+
+void pauseMenuWait()
+{
+
+}
+
+
+
+bool checkButtonClick(button button)
+{
+    if (isMousePressed == false)
+    {   
+        isMousePressed = true;
+
+        if (g_mouseEvent.mousePosition.X >= button.getCorner(0).getx() && g_mouseEvent.mousePosition.Y >= button.getCorner(0).gety()
+            && g_mouseEvent.mousePosition.X <= button.getCorner(1).getx() && g_mouseEvent.mousePosition.Y <= button.getCorner(2).gety())
+        {
+            return true;
+        }
+    }
+    isMousePressed = false;
+    return false;
+}
+
+
