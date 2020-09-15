@@ -23,7 +23,10 @@ map Map;
 
 // Game specific variables here
 SGameChar   g_sChar;
-EGAMESTATES g_eGameState = S_STAGE1; // initial state
+EGAMESTATES g_eGameState = S_MAINMENU; // initial state
+STAGE1states S1State = S1_INIT;
+STAGE2states S2State = S2_INIT;
+STAGE3states S3State = S3_INIT; 
 
 // Console object
 Console g_Console(80, 30, "SP1 Framework");
@@ -33,6 +36,7 @@ button playButton(11, 3, "Play", 40, 12);
 button quitButton(11, 3, "Quit", 40, 18);
 button resumeButton(11, 3, "Resume", 40, 12);
 button pauseButton(3, 3, " ", 78, 28);
+button* selectedButton = &playButton;
 int buttonCount = 3;
 button* allButtons[3] = { &playButton, &quitButton, &resumeButton };
 bool isMousePressed;
@@ -234,7 +238,24 @@ void update(double dt)
         {
         case S_MAINMENU: mainMenuWait();
             break;
-        case S_STAGE1: updateGame(); // gameplay logic when we are in the game
+        case S_INTRO: 
+            //play cutscene of horror story + enter submarine and then submarine go off course
+            //if (end of cutscene) set state to STAGE1
+            break;
+        case S_STAGE1: playSTAGE1();
+            break;
+        case S_GHOST: 
+            //play cutscene of ghost on steering wheel
+            //if (end of cutscene) set state to STAGE2
+            break;
+        case S_STAGE2: playSTAGE2();
+            break;
+        case S_SCUBA:
+            //play cutscene
+            break;
+        case S_STAGE3: updateGame();
+            break;
+        case S_SWIM: updateGame();
             break;
         case S_gameOverGhost: update_gameOverGhost();
             break;
@@ -246,10 +267,45 @@ void update(double dt)
     }
 }
 
-void splashScreenWait()    // waits for time to pass in splash screen
+void initSTAGE1()
 {
-    if (g_dElapsedTime > 3.0) // wait for 3 seconds to switch to game mode, else do nothing
-        g_eGameState = S_GAME;
+    //set spawnpoints; etc
+    S1State = S1_GAME;
+}
+
+void playSTAGE1()
+{
+    switch (S1State)
+    {
+    case S1_INIT: 
+        initSTAGE1();
+        break;
+    case S1_GAME:
+        updateGame();
+        if (g_sChar.m_cLocation.X >= 480)
+        {
+            g_eGameState = S_GHOST;
+        }
+        break;
+    }
+}
+
+void initSTAGE2()
+{
+
+}
+
+void playSTAGE2()
+{
+    switch (S2State)
+    {
+    case S2_INIT:
+        initSTAGE2();
+        break;
+    case S2_GAME:
+        updateGame();
+        break;
+    }
 }
 
 void updateGame()       // gameplay logic
@@ -263,7 +319,7 @@ void update_gameOverGhost()
 {
     if (g_dGOghostTime > 10)
     {
-        g_eGameState = S_GAME;
+        g_eGameState = S_MAINMENU;
     }
     processUserInput();
 }
@@ -491,9 +547,18 @@ void render()
     {
     case S_MAINMENU: renderMainMenu();
         break;
-    case S_STAGE1: renderGame();
+    case S_INTRO: 
+        break;
+    case S_GHOST:
+        break;
+    case S_SCUBA:
+        break;
+    case S_SWIM:
         break;
     case S_gameOverGhost: gameOverGhost();
+        break;
+    default:
+        renderGame();
         break;
     }
     //renderFramerate();      // renders debug information, frame rate, elapsed time, etc
