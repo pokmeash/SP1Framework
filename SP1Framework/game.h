@@ -48,10 +48,27 @@ enum EGAMESTATES
     S_SCUBA, //cutscene for intro of 5minute timer and etc info
     S_STAGE3, //5 minutes
     S_SWIM, //cutscene/escape
-    S_CONTROLROOM, //objective is go back to control room
-    S_COUNT,
-    S_GAME,
-    S_gameOverGhost
+    S_gameOverGhost,
+    S_COUNT
+    
+};
+
+enum STAGE1states
+{
+    S1_INIT,
+    S1_GAME
+};
+
+enum STAGE2states
+{
+    S2_INIT,
+    S2_GAME
+};
+
+enum STAGE3states
+{
+    S3_INIT,
+    S3_GAME
 };
 
 // struct for the game character
@@ -71,7 +88,6 @@ void updateGame();          // gameplay logic
 void moveCharacter();       // moves the character, collision detection, physics, etc
 void processUserInput();    // checks if you should change states or do something else with the game, e.g. pause, exit
 void clearScreen();         // clears the current screen and draw from scratch 
-void renderSplashScreen();  // renders the splash screen
 void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void renderCharacter();     // renders the character into the buffer
@@ -83,6 +99,12 @@ void renderPauseMenu();
 void renderHUD();
 void mainMenuWait();
 void pauseMenuWait();
+
+//Game States
+void initSTAGE1();
+void playSTAGE1();
+void initSTAGE2();
+void playSTAGE2();
 
 //UI, HUD tings
 bool checkButtonClick(button button);
