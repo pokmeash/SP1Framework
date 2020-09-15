@@ -8,7 +8,7 @@ void map::maparray(Console& g_Console, int x , int y)
     {
         for (int y = 0; y < 75; ++y)
         {
-            g_Console.writeToBuffer(x,y, map[y][x] = ' ', 0x0C);
+            g_Console.writeToBuffer(x,y, map[y][x] = ' ', 0x8F);
         }
     }
     //walls in 4 sides

@@ -537,11 +537,16 @@ void renderGame()
 
 void renderMap()
 {
-
     Map.maparray(g_Console, x, y);
     // ^insert HUD after the maparray function
+    for (int i = 0; i < 81; i++)
+    {
+        for (int j = 20; j < 30; j++)
+        {
+            g_Console.writeToBuffer(i, j, " ", 0x0F);
+        }
+    }
     renderHUD();
-    g_Console.writeToBuffer(0, 20, "                                                                                ", 0xFF);
 }
 
 void renderCharacter()
@@ -730,14 +735,15 @@ void renderHUD()
         {
             pos.X = x;
             pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0x88);
+            g_Console.writeToBuffer(pos, " ", 0x08);
         }
     }
     pos.Y = pauseButton.getPos().gety();
     pos.X = pauseButton.getPos().getx() - 1;
-    g_Console.writeToBuffer(pos, (char)222, 0x87);
+    g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
-    g_Console.writeToBuffer(pos, (char)221, 0x87);
+    g_Console.writeToBuffer(pos, (char)221, 0x0F);
+    
 }
 
 void mainMenuWait()
