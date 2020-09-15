@@ -615,7 +615,7 @@ void renderGame()
 
 void renderMap()
 {
-    Map.maparray(g_Console, x, y);
+    Map.rendermap(g_Console, x, y);
     // ^insert HUD after the maparray function
     for (int i = 0; i < 81; i++)
     {
