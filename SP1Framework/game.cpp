@@ -41,6 +41,9 @@ bool paused = false;
 entity ghost;
 entity plasma;
 
+//Animation objects
+ghostgameover ghostGO;
+
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
 //            Initialize variables, allocate memory, load data from file, etc. 
@@ -231,6 +234,7 @@ void update(double dt)
             break;
         case S_gameOverGhost: update_gameOverGhost();
             break;
+        }
     }
 }
 
@@ -289,7 +293,6 @@ void gameOverGhost()
         ghostGO.GhostSprite1(g_Console);
     }*/
     
-    //slowed down
     if (g_dGOghostTime > 0.3)
     {
         ghostGO.GhostSprite2(g_Console);

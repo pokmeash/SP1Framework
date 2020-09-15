@@ -49,10 +49,8 @@ enum EGAMESTATES
     S_STAGE3, //5 minutes
     S_SWIM, //cutscene/escape
     S_CONTROLROOM, //objective is go back to control room
-    S_COUNT
-    S_SPLASHSCREEN,
-    S_GAME,
     S_COUNT,
+    S_GAME,
     S_gameOverGhost
 };
 
