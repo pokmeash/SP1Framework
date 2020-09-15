@@ -16,8 +16,10 @@ double  g_dDeltaTime;
 double g_dGOghostTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
-int x = 40;
-int y = 10;
+
+int x;
+int y;
+
 
 map Map;
 
@@ -58,7 +60,7 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_gameOverGhost;
+    g_eGameState = S_MAINMENU;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 10;
@@ -72,6 +74,9 @@ void init( void )
 
     isMousePressed = false;
     //setButtons();
+    Map.maparray(g_Console);
+    x = 40;
+    y = 10;
 
 }
 
@@ -293,6 +298,7 @@ void gameOverGhost()
         ghostGO.GhostSprite1(g_Console);
     }*/
     
+
     if (g_dGOghostTime > 0.3)
     {
         ghostGO.GhostSprite2(g_Console);
@@ -417,35 +423,41 @@ void moveCharacter()
     // providing a beep sound whenver we shift the character
     if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
     {
-        if (Map.map[g_sChar.m_cLocation.Y - 1][g_sChar.m_cLocation.X] != '+')
+        if (Map.map[y - 1][x] != '+')
         {
-            y++;
+            Map.map[y][x] = ' ';
+            Map.map[y - 1][x] = 'P';
+            y--;
         }               
     }
     if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
-        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+')
+        if (Map.map[y][x - 1] != '+')
         {
-            x++;
-            
+            Map.map[y][x] = ' ';
+            Map.map[y][x - 1] = 'P';
+            x--;
         }
                
     }
     if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
     {
-        if (Map.map[g_sChar.m_cLocation.Y + 1][g_sChar.m_cLocation.X] != '+')
+        if (Map.map[y + 1][x] != '+')
         {
-
-            y--;
+            Map.map[y][x] = ' ';
+            Map.map[y + 1][x] = 'P';
+            y++;
         }
 
                 
     }
     if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
     {
-        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X + 1] != '+')
+        if (Map.map[y][x + 1] != '+')
         {
-            x--;
+            Map.map[y][x] = ' ';
+            Map.map[y][x + 1] = 'P';
+            x++;
         }
     }
     if (g_skKeyEvent[K_SPACE].keyDown)
@@ -523,7 +535,7 @@ void renderGame()
 void renderMap()
 {
 
-    Map.maparray(g_Console, x, y);
+    Map.rendermap(g_Console, x, y);
     // ^insert HUD after the maparray function
     renderHUD();
     g_Console.writeToBuffer(0, 20, "                                                                                ", 0xFF);
