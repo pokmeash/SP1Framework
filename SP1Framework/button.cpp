@@ -9,6 +9,14 @@ button::button(int l, int w, std::string what, int x, int y) : length(l), width(
 {
 	pos.setx(x);
 	pos.sety(y);
+	corner[0].setx(x - ((l - 1) / 2));
+	corner[0].sety(y - ((w - 1) / 2));
+	corner[1].setx(x + ((l - 1) / 2));
+	corner[1].sety(y - ((w - 1) / 2));
+	corner[2].setx(x - ((l - 1) / 2));
+	corner[2].sety(y + ((w - 1) / 2));
+	corner[3].setx(x + ((l - 1) / 2));
+	corner[3].sety(y + ((w - 1) / 2));
 }
 
 int button::getLength()
@@ -26,13 +34,12 @@ std::string button::getText()
 	return text;
 }
 
-void button::setPos()
-{
-	pos.setx(pos.getx() - (length / 2));
-	pos.sety(pos.gety() - (width / 2));
-}
-
 position button::getPos()
 {
 	return pos;
+}
+
+position button::getCorner(int index)
+{
+	return corner[index];
 }

@@ -81,7 +81,6 @@ void renderHUD();
 void mainMenuWait();
 
 //UI, HUD tings
-void setButtons();
 bool checkButtonClick(button button);
 
 // keyboard and mouse input event managers

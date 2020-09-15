@@ -27,8 +27,8 @@ EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 Console g_Console(80, 30, "SP1 Framework");
 
 //UI, HUD etc
-button playButton(10, 3, "Play", 40, 12);
-button quitButton(10, 3, "Quit", 40, 18);
+button playButton(11, 3, "Play", 40, 12);
+button quitButton(11, 3, "Quit", 40, 18);
 int buttonCount = 2;
 button* allButtons[2] = { &playButton, &quitButton };
 bool isMousePressed;
@@ -63,7 +63,7 @@ void init( void )
     g_Console.setMouseHandler(mouseHandler);
 
     isMousePressed = false;
-    setButtons();
+    //setButtons();
 
 }
 
@@ -342,7 +342,7 @@ void renderMap()
 
     Map.maparray(g_Console, x, y);
     // ^insert HUD after the maparray function
-
+    renderHUD();
     g_Console.writeToBuffer(0, 20, "                                                                                ", 0xFF);
 }
 
@@ -454,40 +454,45 @@ void renderInputEvents()
 
 void renderMainMenu()
 {
-    COORD startpos;
-    
-    for (int y = 0; y < playButton.getWidth(); y++)
+    //black bg
+    for (int i = 0; i < 30; i++)
     {
-        for (int x = 0; x < playButton.getLength(); x++)
+        g_Console.writeToBuffer(0, 0 + i, "                                                                                ", 0x00);
+    }
+
+    COORD startpos;
+    for (int y = playButton.getCorner(0).gety(); y <= playButton.getCorner(2).gety(); y++)
+    {
+        for (int x = playButton.getCorner(0).getx(); x <= playButton.getCorner(1).getx(); x++)
         {
-            startpos.X = playButton.getPos().getx() + x;
-            startpos.Y = playButton.getPos().gety() + y;
+            startpos.X = x;
+            startpos.Y = y;
             g_Console.writeToBuffer(startpos, " ", 0xF4);
         }
     }
     
-    startpos.X = playButton.getPos().getx() - (playButton.getText().length() / 2) + (playButton.getLength() / 2);
-    startpos.Y = playButton.getPos().gety() + 1;
+    startpos.X = playButton.getPos().getx() - (playButton.getText().length() / 2);
+    startpos.Y = playButton.getPos().gety();
     g_Console.writeToBuffer(startpos, playButton.getText(), 0xF4);
    
-    for (int y = 0; y < quitButton.getWidth(); y++)
+    for (int y = quitButton.getCorner(0).gety(); y <= quitButton.getCorner(2).gety(); y++)
     {
-        for (int x = 0; x < quitButton.getLength(); x++)
+        for (int x = quitButton.getCorner(0).getx(); x <= quitButton.getCorner(1).getx(); x++)
         {
-            startpos.X = quitButton.getPos().getx() + x;
-            startpos.Y = quitButton.getPos().gety() + y;
+            startpos.X = x;
+            startpos.Y = y;
             g_Console.writeToBuffer(startpos, " ", 0xF4);
         }
     }
 
-    startpos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2) + (playButton.getLength() / 2);
-    startpos.Y = quitButton.getPos().gety() + 1;
+    startpos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
+    startpos.Y = quitButton.getPos().gety();
     g_Console.writeToBuffer(startpos, quitButton.getText(), 0xF4);
 }
 
 void renderHUD()
 {
-
+  
 }
 
 void mainMenuWait()
@@ -505,13 +510,7 @@ void mainMenuWait()
     }
 }
 
-void setButtons()
-{
-    for (int i = 0; i < buttonCount; i++)
-    {
-        allButtons[i]->setPos();
-    }
-}
+
 
 bool checkButtonClick(button button)
 {
@@ -519,8 +518,8 @@ bool checkButtonClick(button button)
     {   
         isMousePressed = true;
 
-        if (g_mouseEvent.mousePosition.X >= button.getPos().getx() && g_mouseEvent.mousePosition.Y >= button.getPos().gety()
-            && g_mouseEvent.mousePosition.X <= button.getPos().getx() + button.getLength() && g_mouseEvent.mousePosition.Y <= button.getPos().gety() + button.getWidth())
+        if (g_mouseEvent.mousePosition.X >= button.getCorner(0).getx() && g_mouseEvent.mousePosition.Y >= button.getCorner(0).gety()
+            && g_mouseEvent.mousePosition.X <= button.getCorner(1).getx() && g_mouseEvent.mousePosition.Y <= button.getCorner(2).gety())
         {
             return true;
         }

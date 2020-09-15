@@ -9,6 +9,7 @@ private:
 	int width;
 	std::string text;
 	position pos; //top left corner
+	position corner[4];
 	
 public:
 	button();
@@ -17,7 +18,6 @@ public:
 	int getWidth();
 	std::string getText();
 	position getPos();
-	void setPos();
-
+	position getCorner(int index);
 };
 
