@@ -1,6 +1,4 @@
 // This is the main file for the game logic and function
-//
-//
 #include "game.h"
 #include "entity.h"
 #include "Framework\console.h"
@@ -10,6 +8,7 @@
 #include "map.h"
 #include "cutscene.h"
 #include "ghostgameover.h"
+#include "hudstuff.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -24,7 +23,7 @@ map Map;
 
 // Game specific variables here
 SGameChar   g_sChar;
-EGAMESTATES g_eGameState = S_MAINMENU; // initial state
+EGAMESTATES g_eGameState = S_STAGE1; // initial state
 
 // Console object
 Console g_Console(80, 30, "SP1 Framework");
@@ -46,6 +45,9 @@ entity plasma;
 //Animation objects
 ghostgameover ghostGO;
 
+//HUD drawings
+hudstuff drawings;
+
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
 //            Initialize variables, allocate memory, load data from file, etc. 
@@ -60,7 +62,7 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_MAINMENU;
+    g_eGameState = S_STAGE1;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 10;
@@ -743,7 +745,8 @@ void renderHUD()
     g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
     g_Console.writeToBuffer(pos, (char)221, 0x0F);
-    
+    //lantern
+    drawings.LanternFlicker(g_Console);
 }
 
 void mainMenuWait()
