@@ -1,6 +1,6 @@
 #include "map.h"
 
-void map::maparray(Console& g_Console, int x , int y)
+void map::maparray(Console& g_Console)
 {
 
     //array to detect things
@@ -8,34 +8,39 @@ void map::maparray(Console& g_Console, int x , int y)
     {
         for (int y = 0; y < 75; ++y)
         {
-            g_Console.writeToBuffer(x,y, map[y][x] = ' ', 0x8F);
+            map[y][x] = ' ';
         }
     }
     //walls in 4 sides
     for (int i = 0; i < 560; i++)
     {
-        if (y < 10)
-        {
-            g_Console.writeToBuffer(i, y - 10, map[0][i] = '+', 0x0C);
-        }
-        else
-        {
-            g_Console.writeToBuffer(i, y - 10, map[y - 10][i] = '+', 0x0C);
-        }
-        
+        map[0][i] = '+';
+        map[74][i] = '+';
     }
     for (int j = 0; j < 75; j++)
     {
-        if (x < 40)
-        {
-            g_Console.writeToBuffer(x - 40, j, map[j][0] = '+', 0x0C);
-        }
-        else
-        {
-            g_Console.writeToBuffer(x - 40, j, map[j][x - 40] = '+', 0x0C);
-        }
+        map[j][0] = '+';
+        map[j][559] = '+';
     }
-    
-    
+    map[12][40] = '+';
+}
 
+void map::rendermap(Console& g_Console, int x, int y)
+{
+    for (int a = -10; a < 10; a++)
+    {
+        for (int b = -40; b < 40; b++)
+        {
+            if (y + a < 75 && y + a > -1)
+            {
+                if (x + b < 560 && x + b > -1)
+                {
+                    if (map[y + a][x + b] == '+')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, "+", 0);
+                    }
+                }
+            }
+        }
+    }  
 }

@@ -1,6 +1,4 @@
 // This is the main file for the game logic and function
-//
-//
 #include "game.h"
 #include "entity.h"
 #include "Framework\console.h"
@@ -10,14 +8,17 @@
 #include "map.h"
 #include "cutscene.h"
 #include "ghostgameover.h"
+#include "hudstuff.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
-int x = 40;
-int y = 10;
+
+int x;
+int y;
+
 
 map Map;
 
@@ -56,6 +57,9 @@ entity plasma;
 //Animation objects
 ghostgameover ghostGO;
 
+//HUD drawings
+hudstuff drawings;
+
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
 //            Initialize variables, allocate memory, load data from file, etc. 
@@ -85,6 +89,9 @@ void init( void )
 
     //isMousePressed = false;
     //setButtons();
+    Map.maparray(g_Console);
+    x = 40;
+    y = 10;
 
 }
 
@@ -486,35 +493,41 @@ void moveCharacter()
     // providing a beep sound whenver we shift the character
     if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
     {
-        if (Map.map[g_sChar.m_cLocation.Y - 1][g_sChar.m_cLocation.X] != '+')
+        if (Map.map[y - 1][x] != '+')
         {
-            y++;
+            Map.map[y][x] = ' ';
+            Map.map[y - 1][x] = 'P';
+            y--;
         }               
     }
     if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
     {
-        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X - 1] != '+')
+        if (Map.map[y][x - 1] != '+')
         {
-            x++;
-            
+            Map.map[y][x] = ' ';
+            Map.map[y][x - 1] = 'P';
+            x--;
         }
                
     }
     if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
     {
-        if (Map.map[g_sChar.m_cLocation.Y + 1][g_sChar.m_cLocation.X] != '+')
+        if (Map.map[y + 1][x] != '+')
         {
-
-            y--;
+            Map.map[y][x] = ' ';
+            Map.map[y + 1][x] = 'P';
+            y++;
         }
 
                 
     }
     if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
     {
-        if (Map.map[g_sChar.m_cLocation.Y][g_sChar.m_cLocation.X + 1] != '+')
+        if (Map.map[y][x + 1] != '+')
         {
-            x--;
+            Map.map[y][x] = ' ';
+            Map.map[y][x + 1] = 'P';
+            x++;
         }
     }
     if (g_skKeyEvent[K_SPACE].keyDown)
@@ -610,7 +623,7 @@ void renderGame()
 
 void renderMap()
 {
-    Map.maparray(g_Console, x, y);
+    Map.rendermap(g_Console, x, y);
     // ^insert HUD after the maparray function
     for (int i = 0; i < 81; i++)
     {
@@ -854,7 +867,8 @@ void renderHUD()
     g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
     g_Console.writeToBuffer(pos, (char)221, 0x0F);
-    
+    //lantern
+    drawings.LanternFlicker(g_Console);
 }
 
 void mainMenuWait()

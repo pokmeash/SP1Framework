@@ -85,6 +85,7 @@
     <ClCompile Include="Framework\timer.cpp" />
     <ClCompile Include="game.cpp" />
     <ClCompile Include="ghostgameover.cpp" />
+    <ClCompile Include="hudstuff.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="map.cpp" />
     <ClCompile Include="minigame.cpp" />
@@ -98,6 +99,7 @@
     <ClInclude Include="Framework\timer.h" />
     <ClInclude Include="game.h" />
     <ClInclude Include="ghostgameover.h" />
+    <ClInclude Include="hudstuff.h" />
     <ClInclude Include="map.h" />
     <ClInclude Include="minigame.h" />
     <ClInclude Include="position.h" />
