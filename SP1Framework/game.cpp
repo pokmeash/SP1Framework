@@ -32,8 +32,10 @@ Console g_Console(80, 30, "SP1 Framework");
 //UI, HUD etc
 button playButton(11, 3, "Play", 40, 12);
 button quitButton(11, 3, "Quit", 40, 18);
-int buttonCount = 2;
-button* allButtons[2] = { &playButton, &quitButton };
+button resumeButton(11, 3, "Resume", 40, 12);
+button pauseButton(3, 3, " ", 78, 28);
+int buttonCount = 3;
+button* allButtons[3] = { &playButton, &quitButton, &resumeButton };
 bool isMousePressed;
 bool paused = false;
 
@@ -58,7 +60,7 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_gameOverGhost;
+    g_eGameState = S_MAINMENU;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 10;
@@ -235,6 +237,10 @@ void update(double dt)
         case S_gameOverGhost: update_gameOverGhost();
             break;
         }
+    }
+    else
+    {
+        pauseMenuWait();
     }
 }
 
@@ -460,7 +466,12 @@ void processUserInput()
 {
     // quits the game if player hits the escape key
     if (g_skKeyEvent[K_ESCAPE].keyReleased)
-        g_bQuitGame = true;    
+        g_bQuitGame = true;
+
+    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
+    {
+        paused = true;
+    }
 }
 
 //--------------------------------------------------------------
@@ -483,8 +494,12 @@ void render()
     case S_gameOverGhost: gameOverGhost();
         break;
     }
-    renderFramerate();      // renders debug information, frame rate, elapsed time, etc
+    //renderFramerate();      // renders debug information, frame rate, elapsed time, etc
     renderInputEvents();    // renders status of input events
+    if (paused)
+    {
+        renderPauseMenu();
+    }
     renderToScreen();       // dump the contents of the buffer to the screen, one frame worth of game
 }
 
@@ -643,39 +658,86 @@ void renderMainMenu()
         g_Console.writeToBuffer(0, 0 + i, "                                                                                ", 0x00);
     }
 
-    COORD startpos;
+    COORD pos;
     for (int y = playButton.getCorner(0).gety(); y <= playButton.getCorner(2).gety(); y++)
     {
         for (int x = playButton.getCorner(0).getx(); x <= playButton.getCorner(1).getx(); x++)
         {
-            startpos.X = x;
-            startpos.Y = y;
-            g_Console.writeToBuffer(startpos, " ", 0xF4);
+            pos.X = x;
+            pos.Y = y;
+            g_Console.writeToBuffer(pos, " ", 0xF4);
         }
     }
     
-    startpos.X = playButton.getPos().getx() - (playButton.getText().length() / 2);
-    startpos.Y = playButton.getPos().gety();
-    g_Console.writeToBuffer(startpos, playButton.getText(), 0xF4);
+    pos.X = playButton.getPos().getx() - (playButton.getText().length() / 2);
+    pos.Y = playButton.getPos().gety();
+    g_Console.writeToBuffer(pos, playButton.getText(), 0xF4);
    
     for (int y = quitButton.getCorner(0).gety(); y <= quitButton.getCorner(2).gety(); y++)
     {
         for (int x = quitButton.getCorner(0).getx(); x <= quitButton.getCorner(1).getx(); x++)
         {
-            startpos.X = x;
-            startpos.Y = y;
-            g_Console.writeToBuffer(startpos, " ", 0xF4);
+            pos.X = x;
+            pos.Y = y;
+            g_Console.writeToBuffer(pos, " ", 0xF4);
         }
     }
 
-    startpos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
-    startpos.Y = quitButton.getPos().gety();
-    g_Console.writeToBuffer(startpos, quitButton.getText(), 0xF4);
+    pos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
+    pos.Y = quitButton.getPos().gety();
+    g_Console.writeToBuffer(pos, quitButton.getText(), 0xF4);
+}
+
+void renderPauseMenu()
+{
+    COORD pos;
+    for (int y = resumeButton.getCorner(0).gety(); y <= resumeButton.getCorner(2).gety(); y++)
+    {
+        for (int x = resumeButton.getCorner(0).getx(); x <= resumeButton.getCorner(1).getx(); x++)
+        {
+            pos.X = x;
+            pos.Y = y;
+            g_Console.writeToBuffer(pos, " ", 0xF4);
+        }
+    }
+
+    pos.X = resumeButton.getPos().getx() - (resumeButton.getText().length() / 2);
+    pos.Y = resumeButton.getPos().gety();
+    g_Console.writeToBuffer(pos, resumeButton.getText(), 0xF4);
+
+    for (int y = quitButton.getCorner(0).gety(); y <= quitButton.getCorner(2).gety(); y++)
+    {
+        for (int x = quitButton.getCorner(0).getx(); x <= quitButton.getCorner(1).getx(); x++)
+        {
+            pos.X = x;
+            pos.Y = y;
+            g_Console.writeToBuffer(pos, " ", 0xF4);
+        }
+    }
+
+    pos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
+    pos.Y = quitButton.getPos().gety();
+    g_Console.writeToBuffer(pos, quitButton.getText(), 0xF4);
 }
 
 void renderHUD()
 {
-  
+    //pause button
+    COORD pos;
+    for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
+    {
+        for (int x = pauseButton.getCorner(0).getx(); x <= pauseButton.getCorner(1).getx(); x++)
+        {
+            pos.X = x;
+            pos.Y = y;
+            g_Console.writeToBuffer(pos, " ", 0x88);
+        }
+    }
+    pos.Y = pauseButton.getPos().gety();
+    pos.X = pauseButton.getPos().getx() - 1;
+    g_Console.writeToBuffer(pos, (char)222, 0x87);
+    pos.X = pauseButton.getPos().getx() + 1;
+    g_Console.writeToBuffer(pos, (char)221, 0x87);
 }
 
 void mainMenuWait()
@@ -695,10 +757,18 @@ void mainMenuWait()
 
 void pauseMenuWait()
 {
-
+    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+    {
+        if (checkButtonClick(resumeButton))
+        {
+            paused = false;
+        }
+        else if (checkButtonClick(quitButton))
+        {
+            g_bQuitGame = true;
+        }
+    }
 }
-
-
 
 bool checkButtonClick(button button)
 {
