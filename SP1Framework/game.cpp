@@ -1089,7 +1089,7 @@ bool checkButtonClick(button button)
 
 void changeButton(bool down)
 {
-    if (down)
+    if (down) 
     {
         buttonIndex++;
     }
