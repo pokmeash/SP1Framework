@@ -9,8 +9,8 @@ public:
 	void rendermap(Console& g_Console, int x, int y);    // render map
 	
 	void renderFullLantern(Console& g_Console, int x, int y);    // render lantern light (full)
-	void renderHalfLantern(Console& g_Console, int x, int y);    // render lantern light (full)
-	void renderDimLantern(Console& g_Console, int x, int y);    // render lantern light (full)
+	void renderHalfLantern(Console& g_Console, int x, int y);    // render lantern light (half)
+	void renderDimLantern(Console& g_Console, int x, int y);    // render lantern light (dim)
 	
 
 };

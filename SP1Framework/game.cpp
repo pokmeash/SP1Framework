@@ -13,6 +13,10 @@
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
+double g_dLanternTime;
+bool fullLantern;
+bool halfLantern;
+bool dimLantern;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -69,9 +73,13 @@ hudstuff drawings;
 //--------------------------------------------------------------
 void init( void )
 {
+    fullLantern = false;
+    halfLantern = false;
+    dimLantern = false;
     // Set precision for floating point output
     g_dElapsedTime = 0.0;    
     g_dGOghostTime = 0.0;
+    g_dLanternTime = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_MAINMENU;
@@ -243,6 +251,7 @@ void update(double dt)
     g_dElapsedTime += dt;
     g_dDeltaTime = dt;
     g_dGOghostTime += dt;
+    g_dLanternTime += dt;
 
     if (!paused)
     {
@@ -325,6 +334,24 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
+    if (g_dLanternTime > 3) //full lantern
+    {
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if (g_dLanternTime > 5) //half lantern
+    {
+        halfLantern = true;
+        fullLantern = false;
+        dimLantern = false;
+    }
+    if (g_dLanternTime > 7) //dim lantern
+    {
+        dimLantern = true;
+        fullLantern = false;
+        halfLantern = false;
+    }
 }
 
 void update_gameOverGhost()
@@ -623,10 +650,22 @@ void renderGame()
 
 void renderMap()
 {
-    //Map.rendermap(g_Console, x, y); //full screen
-    //Map.renderFullLantern(g_Console, x, y); //full lantern
-    //Map.renderHalfLantern(g_Console, x, y); //half lantern
-    //Map.renderDimLantern(g_Console, x, y); //dim lantern
+    if (fullLantern == true)
+    {
+        Map.renderFullLantern(g_Console, x, y); //full lantern
+    }
+    else if (halfLantern == true)
+    {
+        Map.renderHalfLantern(g_Console, x, y); //half lantern
+    }
+    else if (dimLantern == true)
+    {
+        Map.renderDimLantern(g_Console, x, y); //dim lantern
+    }
+    else
+    {
+        Map.rendermap(g_Console, x, y); //full screen
+    }
 
     // ^insert HUD after the maparray function
     for (int i = 0; i < 81; i++)

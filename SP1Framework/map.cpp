@@ -58,7 +58,7 @@ void map::rendermap(Console& g_Console, int x, int y)
 
 void map::renderFullLantern(Console& g_Console, int x, int y)
 {
-    for (int a = -5; a < 6; a++)
+    for (int a = -4; a < 5; a++)
     {
         for (int b = -10; b < 11; b++)
         {
