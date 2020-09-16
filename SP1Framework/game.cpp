@@ -99,7 +99,7 @@ void init( void )
     //setButtons();
     Map.maparray(g_Console);
     x = 40;
-    y = 10;
+    y = 5;
 
 }
 
@@ -334,6 +334,7 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
+    /*
     if (g_dLanternTime > 3) //full lantern
     {
         fullLantern = true;
@@ -352,6 +353,7 @@ void updateGame()       // gameplay logic
         fullLantern = false;
         halfLantern = false;
     }
+    */
 }
 
 void update_gameOverGhost()
