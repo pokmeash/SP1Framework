@@ -105,7 +105,7 @@ void init( void )
     //setButtons();
     Map.maparray(g_Console);
     x = 40;
-    y = 10;
+    y = 5;
 
 }
 
