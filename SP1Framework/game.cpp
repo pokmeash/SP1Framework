@@ -592,7 +592,7 @@ void render()
 void clearScreen()
 {
     // Clears the buffer with this colour attribute
-    g_Console.clearBuffer(0x1F);
+    g_Console.clearBuffer(0x00);
 }
 
 void renderToScreen()
@@ -623,7 +623,11 @@ void renderGame()
 
 void renderMap()
 {
-    Map.rendermap(g_Console, x, y);
+    //Map.rendermap(g_Console, x, y); //full screen
+    //Map.renderFullLantern(g_Console, x, y); //full lantern
+    //Map.renderHalfLantern(g_Console, x, y); //half lantern
+    //Map.renderDimLantern(g_Console, x, y); //dim lantern
+
     // ^insert HUD after the maparray function
     for (int i = 0; i < 81; i++)
     {
@@ -641,9 +645,9 @@ void renderCharacter()
     WORD charColor = 0x0C;
     if (g_sChar.m_bActive)
     {
-        charColor = 0x0A;
+        charColor = 0x71;
     }
-    g_Console.writeToBuffer(g_sChar.m_cLocation, (char)1, charColor);
+    g_Console.writeToBuffer(g_sChar.m_cLocation, (char)12, charColor);
 }
 
 void renderFramerate()
