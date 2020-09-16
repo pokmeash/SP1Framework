@@ -6,7 +6,6 @@
 #include <iomanip>
 #include <sstream>
 #include "map.h"
-#include "cutscene.h"
 #include "ghostgameover.h"
 #include "hudstuff.h"
 #include <string>
@@ -71,6 +70,14 @@ ghostgameover ghostGO;
 //HUD drawings
 hudstuff drawings;
 
+//cutscenes
+button dialogueBox(77, 7, "doesnt matter for now ack", 39, 24);
+cutscene horrorIntro(5);
+cutscene helloGhost(0);
+cutscene scubaSuit(0);
+cutscene escape(0);
+int sceneIndex = 0;
+
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
 //            Initialize variables, allocate memory, load data from file, etc. 
@@ -109,6 +116,12 @@ void init( void )
     x = 40;
     y = 5;
 
+    //setting of cutscene dialogues
+    horrorIntro.setStory(0, "Person A: Have you heard of the story of the haunted UC-3 Nautilus?");
+    horrorIntro.setStory(1, "Person B: UC-3 Nautilus? You mean that abandoned submarine at the corner that has not been boarded by anyone for 10 years?");
+    horrorIntro.setStory(2, "Person A: Yes! They say that 10 years ago, a female journalist boarded the UC-3 Nautilus but was never seen alive again.");
+    horrorIntro.setStory(3, "Person A: When they had found the submarine,b QWKHIUWHWUQ idk what to write imma jus test that it works first");
+    horrorIntro.setStory(4, "You: **glances at the UC-3 Nautilus**");
 }
 
 //--------------------------------------------------------------
@@ -268,19 +281,19 @@ void update(double dt)
         {
         case S_MAINMENU: mainMenuWait();
             break;
-        case S_INTRO: 
+        case S_INTRO: playCutScene(horrorIntro);
             //play cutscene of horror story + enter submarine and then submarine go off course
             //if (end of cutscene) set state to STAGE1
             break;
         case S_STAGE1: playSTAGE1();
             break;
-        case S_GHOST: 
+        case S_GHOST: playCutScene(helloGhost);
             //play cutscene of ghost on steering wheel
             //if (end of cutscene) set state to STAGE2
             break;
         case S_STAGE2: playSTAGE2();
             break;
-        case S_SCUBA:
+        case S_SCUBA: playCutScene(scubaSuit);
             //play cutscene
             break;
         case S_STAGE3: updateGame();
@@ -646,15 +659,41 @@ void processUserInput()
 void render()
 {
     clearScreen();      // clears the current screen and draw from scratch 
+
+    if (g_eGameState != S_MAINMENU && g_eGameState != S_gameOverGhost)
+    {
+        //black bg
+        for (int i = 0; i < 81; i++)
+        {
+            for (int j = 20; j < 30; j++)
+            {
+                g_Console.writeToBuffer(i, j, " ", 0x0F);
+            }
+        }
+
+        //Box Corners
+        COORD pos;
+        pos.X = 0;
+        pos.Y = 20;
+        g_Console.writeToBuffer(pos, (char)201, 0x0F);
+        pos.Y = 29;
+        g_Console.writeToBuffer(pos, (char)200, 0x0F);
+        pos.X = 79;
+        pos.Y = 20;
+        g_Console.writeToBuffer(pos, (char)187, 0x0F);
+        pos.Y = 29;
+        g_Console.writeToBuffer(pos, (char)188, 0x0F);
+    }
+
     switch (g_eGameState)
     {
     case S_MAINMENU: renderMainMenu();
         break;
-    case S_INTRO: 
+    case S_INTRO: renderDialogue(horrorIntro);
         break;
-    case S_GHOST:
+    case S_GHOST: renderDialogue(helloGhost);
         break;
-    case S_SCUBA:
+    case S_SCUBA: renderDialogue(scubaSuit);
         break;
     case S_SWIM:
         break;
@@ -774,14 +813,14 @@ void renderMap()
         Map.rendermap(g_Console, x, y); //full screen
     }
 
-    // ^insert HUD after the maparray function
-    for (int i = 0; i < 81; i++)
+    
+    /*for (int i = 0; i < 81; i++)
     {
         for (int j = 20; j < 30; j++)
         {
             g_Console.writeToBuffer(i, j, " ", 0x0F);
         }
-    }
+    }*/
     renderHUD();
     c.X = 20;
     c.Y = 21;
@@ -1010,7 +1049,7 @@ void renderHUD()
 {
     COORD pos;
     //HUD Box Corners
-    pos.X = 0;
+    /*pos.X = 0;
     pos.Y = 20;
     g_Console.writeToBuffer(pos, (char)201, 0x0F);
     pos.Y = 29;
@@ -1019,7 +1058,7 @@ void renderHUD()
     pos.Y = 20;
     g_Console.writeToBuffer(pos, (char)187, 0x0F);
     pos.Y = 29;
-    g_Console.writeToBuffer(pos, (char)188, 0x0F);
+    g_Console.writeToBuffer(pos, (char)188, 0x0F);*/
     
     //pause button
     /*for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
@@ -1053,7 +1092,6 @@ void renderHUD()
 
     //objective
     pos.X = 50;
-    
     
     for (int i = 0; i < (objective.length() / 29) + 1; i++)
     {
@@ -1103,7 +1141,7 @@ void mainMenuWait()
         switch (buttonIndex)
         {
         case 0:
-            g_eGameState = S_STAGE1;
+            g_eGameState = S_INTRO;
             g_dLanternTime = 0.0; // put this to stage 2
             break;
         case 1:
@@ -1156,17 +1194,23 @@ void pauseMenuWait()
 
 bool checkButtonClick(button button)
 {
-    if (isMousePressed == false)
-    {   
-        isMousePressed = true;
-
-        if (g_mouseEvent.mousePosition.X >= button.getCorner(0).getx() && g_mouseEvent.mousePosition.Y >= button.getCorner(0).gety()
-            && g_mouseEvent.mousePosition.X <= button.getCorner(1).getx() && g_mouseEvent.mousePosition.Y <= button.getCorner(2).gety())
+    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED)
+    {
+        if (isMousePressed == false)
         {
-            return true;
+            isMousePressed = true;
+
+            if (g_mouseEvent.mousePosition.X >= button.getCorner(0).getx() && g_mouseEvent.mousePosition.Y >= button.getCorner(0).gety()
+                && g_mouseEvent.mousePosition.X <= button.getCorner(1).getx() && g_mouseEvent.mousePosition.Y <= button.getCorner(2).gety())
+            {
+                return true;
+            }
         }
     }
-    isMousePressed = false;
+    else
+    {
+        isMousePressed = false;
+    }
     return false;
 }
 //h
@@ -1192,4 +1236,48 @@ void changeButton(bool down)
     }
 }
 
+void playCutScene(cutscene& scene)
+{
+
+    if (sceneIndex + 1 == scene.getnoofLines() && checkButtonClick(dialogueBox))
+    {
+        switch (g_eGameState)
+        {
+        case S_INTRO:
+            g_eGameState = S_STAGE1;
+            break;
+        case S_GHOST:
+            g_eGameState = S_STAGE2;
+            break;
+        case S_SCUBA:
+            g_eGameState = S_STAGE3;
+            break;
+        }
+    }
+    else if (checkButtonClick(dialogueBox))
+    {
+        sceneIndex++;
+    }
+}
+
+void renderDialogue(cutscene& scene)
+{
+    COORD pos;
+
+    //dialogue
+    pos.X = 1;
+
+    for (int i = 0; i < (scene.getLine(sceneIndex).length() / 77) + 1; i++)
+    {
+        pos.Y = 21 + i;
+        if (i == scene.getLine(sceneIndex).length() / 77)
+        {
+            g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, scene.getLine(sceneIndex).length() - (77 * i)), 0x0F);
+        }
+        else
+        {
+            g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
+        }
+    }
+}
 

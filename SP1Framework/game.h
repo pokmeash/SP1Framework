@@ -2,7 +2,7 @@
 #define _GAME_H
 #include "entity.h"
 #include "button.h"
-
+#include "cutscene.h"
 #include "Framework\timer.h"
 
 extern CStopWatch g_swTimer;
@@ -115,6 +115,10 @@ void playSTAGE2();
 //UI, HUD tings
 bool checkButtonClick(button button);
 void changeButton(bool down);
+
+//cutscene tings
+void playCutScene(cutscene& scene);
+void renderDialogue(cutscene& scene);
 
 // keyboard and mouse input event managers
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent);  // define this function for the console to call when there are keyboard events
