@@ -185,6 +185,9 @@ void map::maparray(Console& g_Console)
     {
         map[25][i] = ' ';
     }
+
+    map[12][10] = 'O';
+
 }
 
 void map::rendermap(Console& g_Console, int x, int y)
@@ -201,6 +204,10 @@ void map::rendermap(Console& g_Console, int x, int y)
                     if (map[y + a][x + b] == '+')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
+                    }
+                    else if (map[y + a][x + b] == 'O')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
                     }
                     else if (map[y + a][x + b] == ' ')
                     {
@@ -229,6 +236,10 @@ void map::renderFullLantern(Console& g_Console, int x, int y)
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
                     }
+                    else if (map[y + a][x + b] == 'O')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
+                    }
                     else if (map[y + a][x + b] == ' ')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
@@ -254,6 +265,10 @@ void map::renderHalfLantern(Console& g_Console, int x, int y)
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
                     }
+                    else if (map[y + a][x + b] == 'O')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
+                    }
                     else if (map[y + a][x + b] == ' ')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
@@ -278,6 +293,10 @@ void map::renderDimLantern(Console& g_Console, int x, int y)
                     if (map[y + a][x + b] == '+')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
+                    }
+                    else if (map[y + a][x + b] == 'O')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
                     }
                     else if (map[y + a][x + b] == ' ')
                     {

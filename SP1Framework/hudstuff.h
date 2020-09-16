@@ -4,8 +4,8 @@ class hudstuff
 {
 public:
 	void LanternBase(Console& g_Console);
-	void LanternUnlit(Console& g_Console);
-	void LanternLit(Console& g_Console);
-	void LanternFlicker(Console& g_Console);
+	void LanternDim(Console& g_Console);
+	void LanternFull(Console& g_Console);
+	void LanternHalf(Console& g_Console);
 };
 

@@ -36,7 +36,7 @@ void hudstuff::LanternBase(Console& g_Console)
     g_Console.writeToBuffer(lantern, "\\_______/", 0x08);
 }
 
-void hudstuff::LanternUnlit(Console& g_Console)
+void hudstuff::LanternDim(Console& g_Console)
 {
     COORD candle;
     LanternBase(g_Console);
@@ -59,10 +59,10 @@ void hudstuff::LanternUnlit(Console& g_Console)
     }
 }
 
-void hudstuff::LanternLit(Console& g_Console)
+void hudstuff::LanternFull(Console& g_Console)
 {
     COORD flame;
-    LanternUnlit(g_Console);
+    LanternDim(g_Console);
     flame.X = 13;
     flame.Y = 24;
     g_Console.writeToBuffer(flame, "(_)", 0x1B);
@@ -71,10 +71,10 @@ void hudstuff::LanternLit(Console& g_Console)
     g_Console.writeToBuffer(flame, "(", 0x1B);
 }
 
-void hudstuff::LanternFlicker(Console& g_Console)
+void hudstuff::LanternHalf(Console& g_Console)
 {
     COORD flame;
-    LanternUnlit(g_Console);
+    LanternDim(g_Console);
     flame.X = 13;
     flame.Y = 25;
     g_Console.writeToBuffer(flame, "(_)", 0x1B);
