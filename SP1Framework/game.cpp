@@ -1017,6 +1017,7 @@ void renderHUD()
     g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
     g_Console.writeToBuffer(pos, (char)221, 0x0F);
+
     //lantern
     if (fullLantern == true)
     {
@@ -1048,7 +1049,7 @@ void mainMenuWait()
     }
     if (g_skKeyEvent[K_S].keyDown)
     {
-        if (SButtonDown == false && buttonIndex < mainButtonsCount)
+        if (SButtonDown == false && buttonIndex < mainButtonsCount - 1)
         {
             changeButton(true);
         }
