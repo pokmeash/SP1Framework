@@ -46,7 +46,7 @@ Console g_Console(80, 30, "SP1 Framework");
 button playButton(11, 3, "Play", 40, 12);
 button quitButton(11, 3, "Quit", 40, 18);
 button resumeButton(11, 3, "Resume", 40, 12);
-button pauseButton(3, 3, " ", 78, 28);
+//button pauseButton(3, 3, " ", 77, 27);
 button* selectedButton = &playButton;
 int buttonIndex = 0;
 button* mainButtons[2] = { &playButton, &quitButton };
@@ -58,6 +58,8 @@ bool SButtonDown = false;
 bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
+
+std::string objective = " ";
 
 // Game objects
 entity ghost;
@@ -298,6 +300,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
+    objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
     S1State = S1_GAME;
 }
 
@@ -619,13 +622,17 @@ void processUserInput()
 {
     // quits the game if player hits the escape key
     if (g_skKeyEvent[K_ESCAPE].keyReleased)
-        g_bQuitGame = true;
-
-    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
     {
+        //g_bQuitGame = true;
         paused = true;
         MState = MENU_PAUSE;
     }
+
+    /*if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
+    {
+        paused = true;
+        MState = MENU_PAUSE;
+    }*/
 }
 
 //--------------------------------------------------------------
@@ -1001,9 +1008,21 @@ void renderPauseMenu()
 
 void renderHUD()
 {
-    //pause button
     COORD pos;
-    for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
+    //HUD Box Corners
+    pos.X = 0;
+    pos.Y = 20;
+    g_Console.writeToBuffer(pos, (char)201, 0x0F);
+    pos.Y = 29;
+    g_Console.writeToBuffer(pos, (char)200, 0x0F);
+    pos.X = 79;
+    pos.Y = 20;
+    g_Console.writeToBuffer(pos, (char)187, 0x0F);
+    pos.Y = 29;
+    g_Console.writeToBuffer(pos, (char)188, 0x0F);
+    
+    //pause button
+    /*for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
     {
         for (int x = pauseButton.getCorner(0).getx(); x <= pauseButton.getCorner(1).getx(); x++)
         {
@@ -1016,7 +1035,7 @@ void renderHUD()
     pos.X = pauseButton.getPos().getx() - 1;
     g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
-    g_Console.writeToBuffer(pos, (char)221, 0x0F);
+    g_Console.writeToBuffer(pos, (char)221, 0x0F);*/
 
     //lantern
     if (fullLantern == true)
@@ -1031,6 +1050,25 @@ void renderHUD()
     {
         drawings.LanternDim(g_Console);
     }
+
+    //objective
+    pos.X = 50;
+    
+    
+    for (int i = 0; i < (objective.length() / 29) + 1; i++)
+    {
+        pos.Y = 22 + i;
+        if (i == objective.length() / 29)
+        {
+            g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+        }
+        else
+        {
+            g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+        }
+    }
+        
+    
 }
 
 void mainMenuWait()
