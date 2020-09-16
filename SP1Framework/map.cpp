@@ -185,9 +185,12 @@ void map::maparray(Console& g_Console)
     {
         map[25][i] = ' ';
     }
-
-    map[12][10] = 'O';
-
+    // oil stations
+    map[12][33] = 'O';
+    map[2][118] = 'O';
+    map[27][74] = 'O';
+    map[14][16] = 'O';
+    map[14][135] = 'O';
 }
 
 void map::rendermap(Console& g_Console, int x, int y)
