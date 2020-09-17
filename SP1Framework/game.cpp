@@ -230,6 +230,7 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     {
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
+    case VK_RETURN: key = K_ENTER; break;
     case 0x57: key = K_W; break;
     case 0x41: key = K_A; break;
     case 0x53: key = K_S; break;
@@ -1330,6 +1331,22 @@ void playCutScene(cutscene& scene)
     else if (g_skKeyEvent[K_SPACE].keyReleased)
     {
         SpaceButtonDown = false;
+    }
+
+    if (g_skKeyEvent[K_ENTER].keyDown) 
+    {
+        switch (g_eGameState)
+        {
+        case S_INTRO:
+            g_eGameState = S_STAGE1;
+            break;
+        case S_GHOST:
+            g_eGameState = S_STAGE2;
+            break;
+        case S_SCUBA:
+            g_eGameState = S_STAGE3;
+            break;
+        }
     }
 }
 
