@@ -10,6 +10,7 @@
 #include "ghostgameover.h"
 #include "hudstuff.h"
 #include <string>
+#include "minigame.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -22,6 +23,7 @@ bool dimLantern;
 bool offFlicker;
 bool onFlicker;
 bool activateFlicker;
+int rand1, rand2, rand3, rand4;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -34,6 +36,8 @@ map Map;
 
 // Game specific variables here
 SGameChar   g_sChar;
+SGameChar   g_sDoor;
+SGameChar   g_sCameraState;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 STAGE1states S1State = S1_INIT;
 STAGE2states S2State = S2_INIT;
@@ -46,7 +50,7 @@ Console g_Console(80, 30, "SP1 Framework");
 button playButton(11, 3, "Play", 40, 12);
 button quitButton(11, 3, "Quit", 40, 18);
 button resumeButton(11, 3, "Resume", 40, 12);
-button pauseButton(3, 3, " ", 78, 28);
+//button pauseButton(3, 3, " ", 77, 27);
 button* selectedButton = &playButton;
 int buttonIndex = 0;
 button* mainButtons[2] = { &playButton, &quitButton };
@@ -59,6 +63,8 @@ bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
 
+std::string objective = " ";
+
 // Game objects
 entity ghost;
 entity plasma;
@@ -68,6 +74,9 @@ ghostgameover ghostGO;
 
 //HUD drawings
 hudstuff drawings;
+
+//minigames
+minigame mini;
 
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
@@ -89,11 +98,15 @@ void init( void )
 
     // sets the initial state for the game
     g_eGameState = S_MAINMENU;
+    //g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 10;
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
     g_sChar.m_bActive = true;
+    g_sCameraState.counter = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -107,6 +120,8 @@ void init( void )
     x = 40;
     y = 5;
 
+    //minigames (camera state to false)
+    g_sDoor.counter = true;
 }
 
 //--------------------------------------------------------------
@@ -287,6 +302,8 @@ void update(double dt)
             break;
         case S_gameOverGhost: update_gameOverGhost();
             break;
+        case S_PRESSUREGAME: update_pressureMini();
+            break;
         }
     }
     else
@@ -298,6 +315,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
+    objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
     S1State = S1_GAME;
 }
 
@@ -404,33 +422,6 @@ void gameOverGhost()
     COORD c;
     ghostGO.initGridGhost(g_Console);
     ghostGO.GhostSprite1(g_Console);
-
-    //this works but i vry lazy to fill in the broken animation
-    /*if (g_dGOghostTime > 1.2)
-    {
-        ghostGO.GhostSprite5(g_Console);
-    }
-
-    else if (g_dGOghostTime > 0.9)
-    {
-        ghostGO.GhostSprite4(g_Console);
-    }
-
-    else if (g_dGOghostTime > 0.6)
-    {
-        ghostGO.GhostSprite3(g_Console);
-    }
-
-
-    else if (g_dGOghostTime > 0.3)
-    {
-        ghostGO.GhostSprite2(g_Console);
-    }
-
-    else if (g_dGOghostTime > 0.0)
-    {
-        ghostGO.GhostSprite1(g_Console);
-    }*/
     
     if (g_dGOghostTime > 0.3)
     {
@@ -550,68 +541,161 @@ void gameOverGhost()
     }
 }
 
+void update_pressureMini()
+{
+    processUserInput();
+    moveCharacter();
+}
+
+void pressureMini()
+{
+    mini.initialiseMap(g_Console);
+    mini.pressureMap(g_Console);
+    
+    //randomise doors
+    if (g_sDoor.counter == true) //not working yet cri
+    {
+        rand1 = rand() % 35 + 21;
+        rand2 = rand() % 35 + 21;
+        rand3 = rand() % 35 + 21;
+        rand4 = rand() % 35 + 21;
+        g_sDoor.counter = false;
+    }
+    mini.pressureDoors(g_Console, rand1, 2);
+    mini.pressureDoors(g_Console, rand2, 4);
+    mini.pressureDoors(g_Console, rand3, 6);
+    mini.pressureDoors(g_Console, rand4, 8);
+    mini.pressureDoors(g_Console, rand3, 10);
+    mini.pressureDoors(g_Console, rand2, 12);
+    mini.pressureDoors(g_Console, rand1, 14);
+    mini.pressureDoors(g_Console, rand4, 16);
+    mini.pressureWin(g_Console, rand1, 1);
+    renderCharacter();
+
+    //spawn back to other map
+    if (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '@')
+    {
+        g_sDoor.counter = true;
+        g_sCameraState.counter = true; //changes back to original camera state
+        g_eGameState = S_STAGE1; //goes back to stage 1
+        g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
+        g_sChar.m_cLocation.Y = 10;
+
+        //change boolean movement state
+    }
+
+    // ^insert HUD after the maparray function
+    for (int i = 0; i < 81; i++)
+    {
+        for (int j = 20; j < 30; j++)
+        {
+            g_Console.writeToBuffer(i, j, " ", 0x0F);
+        }
+    }
+}
+
 void moveCharacter()
 {    
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
-    {
-        if (Map.map[y - 1][x] != '+')
-        {
-            Map.map[y][x] = ' ';
-            Map.map[y - 1][x] = 'P';
-            y--;
-        }               
-    }
-    if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
-    {
-        if (Map.map[y][x - 1] != '+')
-        {
-            Map.map[y][x] = ' ';
-            Map.map[y][x - 1] = 'P';
-            x--;
-        }
-               
-    }
-    if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
-    {
-        if (Map.map[y + 1][x] != '+')
-        {
-            Map.map[y][x] = ' ';
-            Map.map[y + 1][x] = 'P';
-            y++;
-        }
 
-                
-    }
-    if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
+    //moving camera
+
+    if (g_sCameraState.counter == true)
     {
-        if (Map.map[y][x + 1] != '+')
+        if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
         {
-            Map.map[y][x] = ' ';
-            Map.map[y][x + 1] = 'P';
-            x++;
+            if (Map.map[y - 1][x] != '+')
+            {
+                Map.map[y][x] = ' ';
+                Map.map[y - 1][x] = 'P';
+                y--;
+            }
+        }
+        if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
+        {
+            if (Map.map[y][x - 1] != '+')
+            {
+                Map.map[y][x] = ' ';
+                Map.map[y][x - 1] = 'P';
+                x--;
+            }
+        }
+        if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+        {
+            if (Map.map[y + 1][x] != '+')
+            {
+                Map.map[y][x] = ' ';
+                Map.map[y + 1][x] = 'P';
+                y++;
+            }
+        }
+        if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+        {
+            if (Map.map[y][x + 1] != '+')
+            {
+                Map.map[y][x] = ' ';
+                Map.map[y][x + 1] = 'P';
+                x++;
+            }
+        }
+        if (g_skKeyEvent[K_SPACE].keyDown)
+        {
+            g_sChar.m_bActive = !g_sChar.m_bActive;
         }
     }
-    if (g_skKeyEvent[K_SPACE].keyDown)
-    {
-        g_sChar.m_bActive = !g_sChar.m_bActive;        
-    }
 
-   
+    else if (g_sCameraState.counter == false)
+    {
+        int i, j;
+        i = g_sChar.m_cLocation.X;
+        j = g_sChar.m_cLocation.Y;
+        if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 1)
+        {
+            if (mini.miniGrid[i][j - 1] != '-')
+            {
+                g_sChar.m_cLocation.Y--;
+            }
+        }
+        if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 21)
+        {
+            if (mini.miniGrid[i - 1][j] != '-')
+            {
+                g_sChar.m_cLocation.X--;
+            }
+        }
+        if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < 18)
+        {
+            if (mini.miniGrid[i][j + 1] != '-')
+            {
+                g_sChar.m_cLocation.Y++;
+            }
+        }
+        if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < 58)
+        {
+            if (mini.miniGrid[i + 1][j] != '-')
+            {
+                g_sChar.m_cLocation.X++;
+            }
+        }
+    }
 }
 
 void processUserInput()
 {
     // quits the game if player hits the escape key
     if (g_skKeyEvent[K_ESCAPE].keyReleased)
-        g_bQuitGame = true;
-
-    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
     {
+        //g_bQuitGame = true;
         paused = true;
         MState = MENU_PAUSE;
     }
+
+    /*if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
+    {
+        paused = true;
+        MState = MENU_PAUSE;
+    }*/
 }
 
 //--------------------------------------------------------------
@@ -638,6 +722,8 @@ void render()
     case S_SWIM:
         break;
     case S_gameOverGhost: gameOverGhost();
+        break;
+    case S_PRESSUREGAME: pressureMini();
         break;
     default:
         renderGame();
@@ -680,19 +766,42 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderGame()
 {
-    static bool lll = false;
-    if (lll == false)
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 11 && x == 33) || (y == 13 && x == 33) || (y == 12 && x == 32) || (y == 12 && x == 34)))
     {
-        if (y == 12 && x == 10)
-        {
-            g_dLanternTime = 0.0;
-            fullLantern = true;
-            halfLantern = false;
-            dimLantern = false;
-            lll = true;
-
-        }
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
     }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 1 && x == 118) || (y == 3 && x == 118) || (y == 2 && x == 117) || (y == 2 && x == 119)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 26 && x == 74) || (y == 28 && x == 74) || (y == 27 && x == 73) || (y == 27 && x == 75)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 16) || (y == 15 && x == 16) || (y == 13 && x == 15) || (y == 14 && x == 17)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 135) || (y == 15 && x == 135) || (y == 14 && x == 134) || (y == 14 && x == 136)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+
     
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
@@ -712,7 +821,7 @@ void renderGame()
 
 void renderMap()
 {
-    
+    COORD c;
     if (fullLantern == true)
     {
         Map.renderFullLantern(g_Console, x, y); //full lantern
@@ -739,6 +848,13 @@ void renderMap()
         }
     }
     renderHUD();
+    c.X = 20;
+    c.Y = 21;
+    std::string srr = std::to_string(x);
+    g_Console.writeToBuffer(c, srr, 0x0F);
+    c.Y = 22;
+    std::string srrs = std::to_string(y);
+    g_Console.writeToBuffer(c, srrs, 0x0F);
 }
 
 void renderCharacter()
@@ -957,9 +1073,21 @@ void renderPauseMenu()
 
 void renderHUD()
 {
-    //pause button
     COORD pos;
-    for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
+    //HUD Box Corners
+    pos.X = 0;
+    pos.Y = 20;
+    g_Console.writeToBuffer(pos, (char)201, 0x0F);
+    pos.Y = 29;
+    g_Console.writeToBuffer(pos, (char)200, 0x0F);
+    pos.X = 79;
+    pos.Y = 20;
+    g_Console.writeToBuffer(pos, (char)187, 0x0F);
+    pos.Y = 29;
+    g_Console.writeToBuffer(pos, (char)188, 0x0F);
+    
+    //pause button
+    /*for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
     {
         for (int x = pauseButton.getCorner(0).getx(); x <= pauseButton.getCorner(1).getx(); x++)
         {
@@ -972,7 +1100,8 @@ void renderHUD()
     pos.X = pauseButton.getPos().getx() - 1;
     g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
-    g_Console.writeToBuffer(pos, (char)221, 0x0F);
+    g_Console.writeToBuffer(pos, (char)221, 0x0F);*/
+
     //lantern
     if (fullLantern == true)
     {
@@ -986,6 +1115,25 @@ void renderHUD()
     {
         drawings.LanternDim(g_Console);
     }
+
+    //objective
+    pos.X = 50;
+    
+    
+    for (int i = 0; i < (objective.length() / 29) + 1; i++)
+    {
+        pos.Y = 22 + i;
+        if (i == objective.length() / 29)
+        {
+            g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+        }
+        else
+        {
+            g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+        }
+    }
+        
+    
 }
 
 void mainMenuWait()
@@ -1004,7 +1152,7 @@ void mainMenuWait()
     }
     if (g_skKeyEvent[K_S].keyDown)
     {
-        if (SButtonDown == false && buttonIndex < mainButtonsCount)
+        if (SButtonDown == false && buttonIndex < mainButtonsCount - 1)
         {
             changeButton(true);
         }
