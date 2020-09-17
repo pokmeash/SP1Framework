@@ -1145,6 +1145,7 @@ void renderHUD()
     if (fullLantern == true)
     {
         drawings.LanternFull(g_Console);
+     
     }
     if (halfLantern == true)
     {
