@@ -10,12 +10,15 @@
 #include "hudstuff.h"
 #include <string>
 #include "minigame.h"
+#include <stdlib.h>
+#include <time.h>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
 double g_dLanternTime;
 double g_dFlickerTime;
+double ghostSpeed;
 bool fullLantern;
 bool halfLantern;
 bool dimLantern;
@@ -66,8 +69,8 @@ menuStates MState;
 std::string objective = " ";
 
 // Game objects
-entity ghost;
-entity plasma;
+entity* ghost = nullptr;
+entity* plasma = nullptr;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -95,6 +98,8 @@ minigame mini;
 //--------------------------------------------------------------
 void init( void )
 {
+    srand(time(NULL));
+
     fullLantern = false;
     halfLantern = false;
     dimLantern = false;
@@ -127,6 +132,7 @@ void init( void )
     Map.maparray(g_Console);
     x = 40;
     y = 5;
+    
 
     //setting of cutscene dialogues
     horrorIntro.setStory(0, "Person A: Have you heard of the story of the haunted UC-3 Nautilus?");
@@ -151,6 +157,8 @@ void shutdown( void )
     colour(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
     g_Console.clearBuffer();
+
+    delete ghost;
 }
 
 //--------------------------------------------------------------
@@ -331,6 +339,15 @@ void initSTAGE1()
 {
     //set spawnpoints; etc
     objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
+    int posx;
+    int posy;
+    do
+    {
+        posx = rand() % 150;
+        posy = rand() % 30;
+
+    } while (Map.map[posy][posx] == '+');
+    ghost = new entity(posx, posy);
     S1State = S1_GAME;
 }
 
@@ -694,6 +711,54 @@ void moveCharacter()
             }
         }
     }
+
+    //ghost chase
+    int diffinx = x - ghost->getPos().getx();
+    int diffiny = y - ghost->getPos().gety();
+    if (2 * abs(diffinx) > abs(diffiny)) 
+    {
+        if (diffinx > 0)
+        {
+            ghost->setDirection(4); //right
+        }
+        else
+        {
+            ghost->setDirection(3); //left
+        }
+    }
+    else
+    {
+        if (diffiny > 0)
+        {
+            ghost->setDirection(2); //down
+        }
+        else
+        {
+            ghost->setDirection(1); //up
+        }
+    }
+
+    if (diffinx == 0 && diffiny == 0)
+    {
+        ghost->setDirection(0);
+    }
+
+    if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+    {
+        ghost->setDirection(0);
+    }
+    
+
+    ghostSpeed += g_dDeltaTime;
+    if (ghostSpeed >= 0.25)
+    {
+        ghostSpeed = 0;
+        ghost->updatePos();
+        if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
+        {
+            ghost->updatePos();
+        }
+    }
 }
 
 void processUserInput()
@@ -846,6 +911,7 @@ void renderGame()
     
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+    renderGhost();
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -907,6 +973,17 @@ void renderCharacter()
         charColor = 0x71;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, (char)12, charColor);
+}
+
+void renderGhost()
+{
+    COORD pos;
+    if (ghost != nullptr)
+    {
+        pos.X = ghost->getPos().getx() - x + 40;
+        pos.Y = ghost->getPos().gety() - y + 10;
+        g_Console.writeToBuffer(pos, (char)71, 0x7D);
+    }
 }
 
 void renderFramerate()
