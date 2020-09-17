@@ -7,7 +7,6 @@ class ghostgameover :
 public:
 	char Grid[80][30];
     int i, j;
-    double g_dGOghostTime;
 
     void initGridGhost(Console& g_Console);
     void GhostHair(Console& g_Console);
