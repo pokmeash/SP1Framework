@@ -21,7 +21,6 @@ bool halfLantern;
 bool dimLantern;
 bool offFlicker;
 bool onFlicker;
-bool activateFlicker;
 int rand1, rand2, rand3, rand4;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
@@ -77,7 +76,7 @@ hudstuff drawings;
 
 //cutscenes
 button dialogueBox(77, 7, "doesnt matter for now ack", 39, 24);
-cutscene horrorIntro(5);
+cutscene horrorIntro(8);
 cutscene helloGhost(0);
 cutscene scubaSuit(0);
 cutscene escape(0);
@@ -129,11 +128,15 @@ void init( void )
     y = 5;
 
     //setting of cutscene dialogues
-    horrorIntro.setStory(0, "Person A: Have you heard of the story of the haunted UC-3 Nautilus?");
-    horrorIntro.setStory(1, "Person B: UC-3 Nautilus? You mean that abandoned submarine at the corner that has not been boarded by anyone for 10 years?");
-    horrorIntro.setStory(2, "Person A: Yes! They say that 10 years ago, a female journalist boarded the UC-3 Nautilus but was never seen alive again.");
-    horrorIntro.setStory(3, "Person A: When they had found the submarine,b QWKHIUWHWUQ idk what to write imma jus test that it works first");
-    horrorIntro.setStory(4, "You: boards submarine whee and then finds out offcourse and now hmmm i shud go to the control room look for captain yes");
+    horrorIntro.setStory(0, "Rawbert: Have you heard of the story of the haunted submarine(AW-4 Nawtilus)?");
+    horrorIntro.setStory(1, "Jawhn: AW-4 Nawtilus? Do you mean that abandoned submarine at the corner that has not been boarded by anyone for the past 10 years?");
+    horrorIntro.setStory(2, "Rawbert: Yes! They say that 10 years ago, a female reporter boarded the AW-4 Nawtilus along with a professor to interview him about the submarine.");
+    horrorIntro.setStory(3, " However, the submarine went missing, both of them were never seen again and the mystery behind it still isn't solved till this day.");
+    horrorIntro.setStory(4, "You: One cool summer night, you decided to go out for a walk to take a breather.");
+    horrorIntro.setStory(5, "You: While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine at the shore.");
+    horrorIntro.setStory(6, "You: So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
+    horrorIntro.setStory(7, "You: You then decided to take a look inside the submarine, hoping to solve the mystery.");
+
     //minigames (camera state to false)
     g_sDoor.counter = true;
 }
@@ -371,7 +374,6 @@ void playSTAGE2()
 
 void updateGame()       // gameplay logic
 {
-    
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
@@ -843,7 +845,6 @@ void renderGame()
         dimLantern = false;
     }
 
-    
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
     if (offFlicker == true)
