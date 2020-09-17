@@ -343,13 +343,13 @@ void updateGame()       // gameplay logic
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
     
-    if (g_dLanternTime > 3) //full lantern
+    if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
         halfLantern = false;
         dimLantern = false;
     }
-    if (g_dLanternTime > 5) //half lantern
+    if (g_dLanternTime > 10) //half lantern
     {
         halfLantern = true;
         fullLantern = false;
@@ -379,7 +379,7 @@ void updateGame()       // gameplay logic
         }
     }
     
-    if (g_dLanternTime > 10) //dim lantern
+    if (g_dLanternTime > 25) //dim lantern
     {
         dimLantern = true;
         fullLantern = false;
