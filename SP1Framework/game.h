@@ -85,6 +85,8 @@ struct SGameChar : public entity
     COORD m_cLocation;
     bool  m_bActive;
     bool counter;
+    bool startTimer;
+    bool resetTimer;
 };
 
 void init        ( void );      // initialize your variables, allocate memory, etc
@@ -136,6 +138,7 @@ void update_gameOverGhost();
 void gameOverGhost();
 
 //Minigames
+void fishLeft(Console& g_Console, int j);
 void update_pressureMini();
 void pressureMini();
 
