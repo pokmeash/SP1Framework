@@ -48,7 +48,8 @@ enum EGAMESTATES
     S_SCUBA, //cutscene for intro of 5minute timer and etc info
     S_STAGE3, //5 minutes
     S_SWIM, //cutscene/escape
-    S_gameOverGhost,
+    S_gameOverGhost, //ghost jumpscare
+    S_PRESSUREGAME, //pressure minigame
     S_COUNT
     
 };
@@ -82,6 +83,7 @@ struct SGameChar : public entity
 {
     COORD m_cLocation;
     bool  m_bActive;
+    bool counter;
 };
 
 void init        ( void );      // initialize your variables, allocate memory, etc
@@ -131,5 +133,8 @@ void gameplayMouseHandler(const MOUSE_EVENT_RECORD& mouseEvent); // handles mous
 void update_gameOverGhost();
 void gameOverGhost();
 
+//Minigames
+void update_pressureMini();
+void pressureMini();
 
 #endif // _GAME_H

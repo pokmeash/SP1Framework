@@ -9,6 +9,7 @@
 #include "ghostgameover.h"
 #include "hudstuff.h"
 #include <string>
+#include "minigame.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
@@ -21,6 +22,7 @@ bool dimLantern;
 bool offFlicker;
 bool onFlicker;
 bool activateFlicker;
+int rand1, rand2, rand3, rand4;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -33,6 +35,8 @@ map Map;
 
 // Game specific variables here
 SGameChar   g_sChar;
+SGameChar   g_sDoor;
+SGameChar   g_sCameraState;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 STAGE1states S1State = S1_INIT;
 STAGE2states S2State = S2_INIT;
@@ -78,6 +82,9 @@ cutscene scubaSuit(0);
 cutscene escape(0);
 int sceneIndex = 0;
 
+//minigames
+minigame mini;
+
 //--------------------------------------------------------------
 // Purpose  : Initialisation function
 //            Initialize variables, allocate memory, load data from file, etc. 
@@ -98,11 +105,15 @@ void init( void )
 
     // sets the initial state for the game
     g_eGameState = S_MAINMENU;
+    //g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
     g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
     g_sChar.m_cLocation.Y = 10;
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
     g_sChar.m_bActive = true;
+    g_sCameraState.counter = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -122,6 +133,8 @@ void init( void )
     horrorIntro.setStory(2, "Person A: Yes! They say that 10 years ago, a female journalist boarded the UC-3 Nautilus but was never seen alive again.");
     horrorIntro.setStory(3, "Person A: When they had found the submarine,b QWKHIUWHWUQ idk what to write imma jus test that it works first");
     horrorIntro.setStory(4, "You: boards submarine whee and then finds out offcourse and now hmmm i shud go to the control room look for captain yes");
+    //minigames (camera state to false)
+    g_sDoor.counter = true;
 }
 
 //--------------------------------------------------------------
@@ -302,6 +315,8 @@ void update(double dt)
             break;
         case S_gameOverGhost: update_gameOverGhost();
             break;
+        case S_PRESSUREGAME: update_pressureMini();
+            break;
         }
     }
     else
@@ -359,13 +374,13 @@ void updateGame()       // gameplay logic
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
     
-    if (g_dLanternTime > 3) //full lantern
+    if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
         halfLantern = false;
         dimLantern = false;
     }
-    if (g_dLanternTime > 5) //half lantern
+    if (g_dLanternTime > 10) //half lantern
     {
         halfLantern = true;
         fullLantern = false;
@@ -395,7 +410,7 @@ void updateGame()       // gameplay logic
         }
     }
     
-    if (g_dLanternTime > 10) //dim lantern
+    if (g_dLanternTime > 25) //dim lantern
     {
         dimLantern = true;
         fullLantern = false;
@@ -420,33 +435,6 @@ void gameOverGhost()
     COORD c;
     ghostGO.initGridGhost(g_Console);
     ghostGO.GhostSprite1(g_Console);
-
-    //this works but i vry lazy to fill in the broken animation
-    /*if (g_dGOghostTime > 1.2)
-    {
-        ghostGO.GhostSprite5(g_Console);
-    }
-
-    else if (g_dGOghostTime > 0.9)
-    {
-        ghostGO.GhostSprite4(g_Console);
-    }
-
-    else if (g_dGOghostTime > 0.6)
-    {
-        ghostGO.GhostSprite3(g_Console);
-    }
-
-
-    else if (g_dGOghostTime > 0.3)
-    {
-        ghostGO.GhostSprite2(g_Console);
-    }
-
-    else if (g_dGOghostTime > 0.0)
-    {
-        ghostGO.GhostSprite1(g_Console);
-    }*/
     
     if (g_dGOghostTime > 0.3)
     {
@@ -566,69 +554,144 @@ void gameOverGhost()
     }
 }
 
+void update_pressureMini()
+{
+    processUserInput();
+    moveCharacter();
+}
+
+void pressureMini()
+{
+    mini.initialiseMap(g_Console);
+    mini.pressureMap(g_Console);
+    
+    //randomise doors
+    if (g_sDoor.counter == true) //not working yet cri
+    {
+        rand1 = rand() % 35 + 21;
+        rand2 = rand() % 35 + 21;
+        rand3 = rand() % 35 + 21;
+        rand4 = rand() % 35 + 21;
+        g_sDoor.counter = false;
+    }
+    mini.pressureDoors(g_Console, rand1, 2);
+    mini.pressureDoors(g_Console, rand2, 4);
+    mini.pressureDoors(g_Console, rand3, 6);
+    mini.pressureDoors(g_Console, rand4, 8);
+    mini.pressureDoors(g_Console, rand3, 10);
+    mini.pressureDoors(g_Console, rand2, 12);
+    mini.pressureDoors(g_Console, rand1, 14);
+    mini.pressureDoors(g_Console, rand4, 16);
+    mini.pressureWin(g_Console, rand1, 1);
+    renderCharacter();
+
+    //spawn back to other map
+    if (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '@')
+    {
+        g_sDoor.counter = true;
+        g_sCameraState.counter = true; //changes back to original camera state
+        g_eGameState = S_STAGE1; //goes back to stage 1
+        g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
+        g_sChar.m_cLocation.Y = 10;
+
+        //change boolean movement state
+    }
+
+    // ^insert HUD after the maparray function
+    for (int i = 0; i < 81; i++)
+    {
+        for (int j = 20; j < 30; j++)
+        {
+            g_Console.writeToBuffer(i, j, " ", 0x0F);
+        }
+    }
+}
+
 void moveCharacter()
 {    
     // Updating the location of the character based on the key release
     // providing a beep sound whenver we shift the character
-    if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
+
+    //moving camera
+
+    if (g_sCameraState.counter == true)
     {
-        if (Map.map[y - 1][x] != '+')
+        if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
         {
-            if (Map.map[y - 1][x] != 'O')
+            if (Map.map[y - 1][x] != '+')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y - 1][x] = 'P';
                 y--;
             }
-
-        }               
-    }
-    if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
-    {
-        if (Map.map[y][x - 1] != '+')
+        }
+        if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
         {
-            if (Map.map[y][x - 1] != 'O')
+            if (Map.map[y][x - 1] != '+')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y][x - 1] = 'P';
                 x--;
             }
- 
         }
-               
-    }
-    if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1 )
-    {
-        if (Map.map[y + 1][x] != '+')
+        if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
         {
-            if (Map.map[y + 1][x] != 'O')
+            if (Map.map[y + 1][x] != '+')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y + 1][x] = 'P';
                 y++;
             }
-        }        
-    }
-    if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1 )
-    {
-        if (Map.map[y][x + 1] != '+')
+        }
+        if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
         {
-            if (Map.map[y][x + 1] != 'O')
+            if (Map.map[y][x + 1] != '+')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y][x + 1] = 'P';
                 x++;
             }
-            
+        }
+        if (g_skKeyEvent[K_SPACE].keyDown)
+        {
+            g_sChar.m_bActive = !g_sChar.m_bActive;
         }
     }
-    /*
-    if (g_skKeyEvent[K_SPACE].keyDown) // change char colour
+
+    else if (g_sCameraState.counter == false)
     {
-        g_sChar.m_bActive = !g_sChar.m_bActive;        
+        int i, j;
+        i = g_sChar.m_cLocation.X;
+        j = g_sChar.m_cLocation.Y;
+        if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 1)
+        {
+            if (mini.miniGrid[i][j - 1] != '-')
+            {
+                g_sChar.m_cLocation.Y--;
+            }
+        }
+        if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 21)
+        {
+            if (mini.miniGrid[i - 1][j] != '-')
+            {
+                g_sChar.m_cLocation.X--;
+            }
+        }
+        if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < 18)
+        {
+            if (mini.miniGrid[i][j + 1] != '-')
+            {
+                g_sChar.m_cLocation.Y++;
+            }
+        }
+        if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < 58)
+        {
+            if (mini.miniGrid[i + 1][j] != '-')
+            {
+                g_sChar.m_cLocation.X++;
+            }
+        }
     }
-    */
-   
 }
 
 void processUserInput()
@@ -698,6 +761,8 @@ void render()
     case S_SWIM:
         break;
     case S_gameOverGhost: gameOverGhost();
+        break;
+    case S_PRESSUREGAME: pressureMini();
         break;
     default:
         renderGame();

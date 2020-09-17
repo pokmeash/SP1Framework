@@ -74,11 +74,7 @@ void map::maparray(Console& g_Console)
     {
         map[j][120] = '+';
     }
-    //Door to Room B from Room C
-    for (int j = 3; j < 6; j++)
-    {
-        map[j][120] = ' ';
-    }
+    
     //Door to Room D from Room C
     for (int j = 18; j < 22; j++)
     {
