@@ -85,6 +85,8 @@ struct SGameChar : public entity
     COORD m_cLocation;
     bool  m_bActive;
     bool counter;
+    bool startTimer;
+    bool resetTimer;
 };
 
 void init        ( void );      // initialize your variables, allocate memory, etc
@@ -100,6 +102,7 @@ void clearScreen();         // clears the current screen and draw from scratch
 void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void renderCharacter();     // renders the character into the buffer
+void renderGhost();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderInputEvents();   // renders the status of input events
@@ -135,6 +138,7 @@ void update_gameOverGhost();
 void gameOverGhost();
 
 //Minigames
+void fishLeft(Console& g_Console, int j);
 void update_pressureMini();
 void pressureMini();
 

@@ -10,12 +10,17 @@
 #include "hudstuff.h"
 #include <string>
 #include "minigame.h"
+#include <stdlib.h>
+#include <time.h>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
+double g_dFishTime;
+double FishTime;
 double g_dLanternTime;
 double g_dFlickerTime;
+double ghostSpeed;
 bool fullLantern;
 bool halfLantern;
 bool dimLantern;
@@ -36,6 +41,7 @@ map Map;
 SGameChar   g_sChar;
 SGameChar   g_sDoor;
 SGameChar   g_sCameraState;
+SGameChar   g_sFish;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 STAGE1states S1State = S1_INIT;
 STAGE2states S2State = S2_INIT;
@@ -65,8 +71,8 @@ menuStates MState;
 std::string objective = " ";
 
 // Game objects
-entity ghost;
-entity plasma;
+entity* ghost = nullptr;
+entity* plasma = nullptr;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -94,6 +100,8 @@ minigame mini;
 //--------------------------------------------------------------
 void init( void )
 {
+    srand(time(NULL));
+
     fullLantern = false;
     halfLantern = false;
     dimLantern = false;
@@ -104,16 +112,16 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_MAINMENU;
-    //g_eGameState = S_PRESSUREGAME;
+    //g_eGameState = S_MAINMENU;
+    g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = 10;
-    //g_sChar.m_cLocation.X = 40; 
-    //g_sChar.m_cLocation.Y = 18;
+    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    //g_sChar.m_cLocation.Y = 10;
+    g_sChar.m_cLocation.X = 40; 
+    g_sChar.m_cLocation.Y = 18;
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = true;
+    g_sCameraState.counter = false;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -126,6 +134,7 @@ void init( void )
     Map.maparray(g_Console);
     x = 40;
     y = 5;
+    
 
     //setting of cutscene dialogues
     horrorIntro.setStory(0, "Rawbert: Have you heard of the story of the haunted submarine(AW-4 Nawtilus)?");
@@ -139,6 +148,7 @@ void init( void )
 
     //minigames (camera state to false)
     g_sDoor.counter = true;
+    g_sFish.startTimer = false;
 }
 
 //--------------------------------------------------------------
@@ -154,6 +164,8 @@ void shutdown( void )
     colour(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
     g_Console.clearBuffer();
+
+    delete ghost;
 }
 
 //--------------------------------------------------------------
@@ -292,6 +304,8 @@ void update(double dt)
     g_dGOghostTime += dt;
     g_dLanternTime += dt;
     g_dFlickerTime += dt;
+    FishTime += dt;
+    g_dFishTime += dt;
 
     if (!paused)
     {
@@ -334,6 +348,15 @@ void initSTAGE1()
 {
     //set spawnpoints; etc
     objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
+    int posx;
+    int posy;
+    do
+    {
+        posx = rand() % 150;
+        posy = rand() % 30;
+
+    } while (Map.map[posy][posx] == '+');
+    ghost = new entity(posx, posy);
     S1State = S1_GAME;
 }
 
@@ -558,17 +581,101 @@ void gameOverGhost()
     }
 }
 
+void fishLeft(Console& g_Console, int j)
+{
+    COORD c;
+    if (g_dFishTime > 1)
+    {
+        mini.fishLeft(g_Console, 22, j);
+        if (g_dFishTime > 1.3)
+        {
+            mini.fishLeft(g_Console, 24, j);
+            if (g_dFishTime > 1.6)
+            {
+                mini.fishLeft(g_Console, 26, j);
+                if (g_dFishTime > 1.9)
+                {
+                    mini.fishLeft(g_Console, 28, j);
+                    if (g_dFishTime > 2.2)
+                    {
+                        mini.fishLeft(g_Console, 30, j);
+                        if (g_dFishTime > 2.5)
+                        {
+                            mini.fishLeft(g_Console, 32, j);
+                            if (g_dFishTime > 2.8)
+                            {
+                                mini.fishLeft(g_Console, 34, j);
+                                if (g_dFishTime > 3.1)
+                                {
+                                    mini.fishLeft(g_Console, 36, j);
+                                    if (g_dFishTime > 3.4)
+                                    {
+                                        mini.fishLeft(g_Console, 38, j);
+                                        if (g_dFishTime > 3.7)
+                                        {
+                                            mini.fishLeft(g_Console, 40, j);
+                                            if (g_dFishTime > 4.0)
+                                            {
+                                                mini.fishLeft(g_Console, 42, j);
+                                                if (g_dFishTime > 4.3)
+                                                {
+                                                    mini.fishLeft(g_Console, 44, j);
+                                                    if (g_dFishTime > 4.6)
+                                                    {
+                                                        mini.fishLeft(g_Console, 46, j);
+                                                        if (g_dFishTime > 4.9)
+                                                        {
+                                                            mini.fishLeft(g_Console, 48, j);
+                                                            if (g_dFishTime > 5.2)
+                                                            {
+                                                                mini.fishLeft(g_Console, 50, j);
+                                                                if (g_dFishTime > 5.5)
+                                                                {
+                                                                    mini.fishLeft(g_Console, 52, j);
+                                                                    if (g_dFishTime > 5.8)
+                                                                    {
+                                                                        mini.fishLeft(g_Console, 54, j);
+                                                                        if (g_dFishTime > 6.1)
+                                                                        {
+                                                                            mini.fishLeft(g_Console, 55, j);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 void update_pressureMini()
 {
     processUserInput();
     moveCharacter();
+    if (FishTime > 1)
+    {
+        g_sFish.startTimer = false;
+    }
+    if (g_dFishTime > 6.4);
+    {
+        g_sFish.counter = true;
+        g_sFish.startTimer = true;
+    }
 }
 
 void pressureMini()
 {
     mini.initialiseMap(g_Console);
     mini.pressureMap(g_Console);
-    
     //randomise doors
     if (g_sDoor.counter == true) //not working yet cri
     {
@@ -587,8 +694,38 @@ void pressureMini()
     mini.pressureDoors(g_Console, rand1, 14);
     mini.pressureDoors(g_Console, rand4, 16);
     mini.pressureWin(g_Console, rand1, 1);
+    mini.fishLeft(g_Console, 52, 17);
+    mini.pressureBorder(g_Console);
+
+    //fish randomise 
+    if (g_sFish.startTimer == true)
+    {
+        g_dFishTime = 0.0;
+        g_sFish.resetTimer = true;
+    }
+    if (g_sFish.resetTimer == true)
+    {
+        if (g_sFish.counter == true)
+        {
+            randfish = rand() % 15 + 3;
+        }
+        g_sFish.counter = false;
+        fishLeft(g_Console, randfish); 
+    }
+
+    mini.pressureBorder(g_Console);
     renderCharacter();
 
+    //check if player collides with fish
+    if ((mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '<') || (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '>'))
+    {
+        g_dGOghostTime = 0.0;
+        g_eGameState = S_gameOverGhost;
+        g_sDoor.counter = true;
+        g_sCameraState.counter = true; //changes back to original camera state
+        g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
+        g_sChar.m_cLocation.Y = 10;
+    }
     //spawn back to other map
     if (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '@')
     {
@@ -597,8 +734,6 @@ void pressureMini()
         g_eGameState = S_STAGE1; //goes back to stage 1
         g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
         g_sChar.m_cLocation.Y = 10;
-
-        //change boolean movement state
     }
 
     // ^insert HUD after the maparray function
@@ -694,6 +829,54 @@ void moveCharacter()
             {
                 g_sChar.m_cLocation.X++;
             }
+        }
+    }
+
+    //ghost chase
+    int diffinx = x - ghost->getPos().getx();
+    int diffiny = y - ghost->getPos().gety();
+    if (2 * abs(diffinx) > abs(diffiny)) 
+    {
+        if (diffinx > 0)
+        {
+            ghost->setDirection(4); //right
+        }
+        else
+        {
+            ghost->setDirection(3); //left
+        }
+    }
+    else
+    {
+        if (diffiny > 0)
+        {
+            ghost->setDirection(2); //down
+        }
+        else
+        {
+            ghost->setDirection(1); //up
+        }
+    }
+
+    if (diffinx == 0 && diffiny == 0)
+    {
+        ghost->setDirection(0);
+    }
+
+    if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+    {
+        ghost->setDirection(0);
+    }
+    
+
+    ghostSpeed += g_dDeltaTime;
+    if (ghostSpeed >= 0.25)
+    {
+        ghostSpeed = 0;
+        ghost->updatePos();
+        if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
+        {
+            ghost->updatePos();
         }
     }
 }
@@ -847,6 +1030,7 @@ void renderGame()
 
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+    renderGhost();
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -908,6 +1092,17 @@ void renderCharacter()
         charColor = 0x71;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, (char)12, charColor);
+}
+
+void renderGhost()
+{
+    COORD pos;
+    if (ghost != nullptr)
+    {
+        pos.X = ghost->getPos().getx() - x + 40;
+        pos.Y = ghost->getPos().gety() - y + 10;
+        g_Console.writeToBuffer(pos, (char)71, 0x7D);
+    }
 }
 
 void renderFramerate()
