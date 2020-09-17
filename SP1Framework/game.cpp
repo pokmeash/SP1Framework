@@ -26,7 +26,7 @@ bool halfLantern;
 bool dimLantern;
 bool offFlicker;
 bool onFlicker;
-int rand1, rand2, rand3, rand4;
+int rand1, rand2, rand3, rand4, randfish;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
