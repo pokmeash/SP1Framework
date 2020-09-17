@@ -10,19 +10,23 @@
 #include "hudstuff.h"
 #include <string>
 #include "minigame.h"
+#include <stdlib.h>
+#include <time.h>
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
+double g_dFishTime;
+double FishTime;
 double g_dLanternTime;
 double g_dFlickerTime;
+double ghostSpeed;
 bool fullLantern;
 bool halfLantern;
 bool dimLantern;
 bool offFlicker;
 bool onFlicker;
-bool activateFlicker;
-int rand1, rand2, rand3, rand4;
+int rand1, rand2, rand3, rand4, randfish;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -37,6 +41,7 @@ map Map;
 SGameChar   g_sChar;
 SGameChar   g_sDoor;
 SGameChar   g_sCameraState;
+SGameChar   g_sFish;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 STAGE1states S1State = S1_INIT;
 STAGE2states S2State = S2_INIT;
@@ -58,6 +63,7 @@ button* pauseButtons[2] = { &resumeButton, &quitButton };
 int pauseButtonsCount = 2;
 bool WButtonDown = false;
 bool SButtonDown = false;
+bool SpaceButtonDown = false;
 bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
@@ -65,8 +71,8 @@ menuStates MState;
 std::string objective = " ";
 
 // Game objects
-entity ghost;
-entity plasma;
+entity* ghost = nullptr;
+entity* plasma = nullptr;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -76,10 +82,10 @@ hudstuff drawings;
 
 //cutscenes
 button dialogueBox(77, 7, "doesnt matter for now ack", 39, 24);
-cutscene horrorIntro(5);
-cutscene helloGhost(0);
-cutscene scubaSuit(0);
-cutscene escape(0);
+cutscene horrorIntro(8);
+cutscene helloGhost(1);
+cutscene scubaSuit(1);
+cutscene escape(1);
 int sceneIndex = 0;
 
 //minigames
@@ -94,6 +100,8 @@ minigame mini;
 //--------------------------------------------------------------
 void init( void )
 {
+    srand(time(NULL));
+
     fullLantern = false;
     halfLantern = false;
     dimLantern = false;
@@ -104,16 +112,16 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_MAINMENU;
-    //g_eGameState = S_PRESSUREGAME;
+    //g_eGameState = S_MAINMENU;
+    g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = 10;
-    //g_sChar.m_cLocation.X = 40; 
-    //g_sChar.m_cLocation.Y = 18;
+    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    //g_sChar.m_cLocation.Y = 10;
+    g_sChar.m_cLocation.X = 40; 
+    g_sChar.m_cLocation.Y = 18;
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = true;
+    g_sCameraState.counter = false;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -126,15 +134,25 @@ void init( void )
     Map.maparray(g_Console);
     x = 40;
     y = 5;
+    
 
     //setting of cutscene dialogues
-    horrorIntro.setStory(0, "Person A: Have you heard of the story of the haunted UC-3 Nautilus?");
-    horrorIntro.setStory(1, "Person B: UC-3 Nautilus? You mean that abandoned submarine at the corner that has not been boarded by anyone for 10 years?");
-    horrorIntro.setStory(2, "Person A: Yes! They say that 10 years ago, a female journalist boarded the UC-3 Nautilus but was never seen alive again.");
-    horrorIntro.setStory(3, "Person A: When they had found the submarine,b QWKHIUWHWUQ idk what to write imma jus test that it works first");
-    horrorIntro.setStory(4, "You: boards submarine whee and then finds out offcourse and now hmmm i shud go to the control room look for captain yes");
+    horrorIntro.setStory(0, "Rawbert: Have you heard of the story of the haunted submarine(AW-4 Nawtilus)?");
+    horrorIntro.setStory(1, "Jawhn: AW-4 Nawtilus? Do you mean that abandoned submarine at the corner that has not been boarded by anyone for the past 10 years?");
+    horrorIntro.setStory(2, "Rawbert: Yes! They say that 10 years ago, a female reporter boarded the AW-4 Nawtilus along with a professor to interview him about the submarine.");
+    horrorIntro.setStory(3, " However, the submarine went missing, both of them were never seen again and the mystery behind it still isn't solved till this day.");
+    horrorIntro.setStory(4, "You: One cool summer night, you decided to go out for a walk to take a breather.");
+    horrorIntro.setStory(5, "You: While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine at the shore.");
+    horrorIntro.setStory(6, "You: So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
+    horrorIntro.setStory(7, "You: You then decided to take a look inside the submarine, hoping to solve the mystery.");
+    helloGhost.setStory(0, "ghost appear whoosh");
+    scubaSuit.setStory(0, "AAAA");
+    escape.setStory(0, "AAAA");
+    
+
     //minigames (camera state to false)
     g_sDoor.counter = true;
+    g_sFish.startTimer = false;
 }
 
 //--------------------------------------------------------------
@@ -150,6 +168,8 @@ void shutdown( void )
     colour(FOREGROUND_BLUE | FOREGROUND_GREEN | FOREGROUND_RED);
 
     g_Console.clearBuffer();
+
+    delete ghost;
 }
 
 //--------------------------------------------------------------
@@ -229,6 +249,7 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     {
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
+    case VK_RETURN: key = K_ENTER; break;
     case 0x57: key = K_W; break;
     case 0x41: key = K_A; break;
     case 0x53: key = K_S; break;
@@ -287,6 +308,8 @@ void update(double dt)
     g_dGOghostTime += dt;
     g_dLanternTime += dt;
     g_dFlickerTime += dt;
+    FishTime += dt;
+    g_dFishTime += dt;
 
     if (!paused)
     {
@@ -341,7 +364,7 @@ void playSTAGE1()
         break;
     case S1_GAME:
         updateGame();
-        if (g_sChar.m_cLocation.X >= 480)
+        if (x >= 121)
         {
             g_eGameState = S_GHOST;
         }
@@ -351,7 +374,17 @@ void playSTAGE1()
 
 void initSTAGE2()
 {
+    /*int posx;
+    int posy;
+    do
+    {
+        posx = rand() % 150;
+        posy = rand() % 30;
 
+    } while (Map.map[posy][posx] == '+');*/
+    //ghost = new entity(posx, posy);
+    ghost = new entity(x + 10, y);
+    S2State = S2_GAME;
 }
 
 void playSTAGE2()
@@ -369,7 +402,6 @@ void playSTAGE2()
 
 void updateGame()       // gameplay logic
 {
-    
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
@@ -554,17 +586,101 @@ void gameOverGhost()
     }
 }
 
+void fishLeft(Console& g_Console, int j)
+{
+    COORD c;
+    if (g_dFishTime > 1)
+    {
+        mini.fishLeft(g_Console, 22, j);
+        if (g_dFishTime > 1.3)
+        {
+            mini.fishLeft(g_Console, 24, j);
+            if (g_dFishTime > 1.6)
+            {
+                mini.fishLeft(g_Console, 26, j);
+                if (g_dFishTime > 1.9)
+                {
+                    mini.fishLeft(g_Console, 28, j);
+                    if (g_dFishTime > 2.2)
+                    {
+                        mini.fishLeft(g_Console, 30, j);
+                        if (g_dFishTime > 2.5)
+                        {
+                            mini.fishLeft(g_Console, 32, j);
+                            if (g_dFishTime > 2.8)
+                            {
+                                mini.fishLeft(g_Console, 34, j);
+                                if (g_dFishTime > 3.1)
+                                {
+                                    mini.fishLeft(g_Console, 36, j);
+                                    if (g_dFishTime > 3.4)
+                                    {
+                                        mini.fishLeft(g_Console, 38, j);
+                                        if (g_dFishTime > 3.7)
+                                        {
+                                            mini.fishLeft(g_Console, 40, j);
+                                            if (g_dFishTime > 4.0)
+                                            {
+                                                mini.fishLeft(g_Console, 42, j);
+                                                if (g_dFishTime > 4.3)
+                                                {
+                                                    mini.fishLeft(g_Console, 44, j);
+                                                    if (g_dFishTime > 4.6)
+                                                    {
+                                                        mini.fishLeft(g_Console, 46, j);
+                                                        if (g_dFishTime > 4.9)
+                                                        {
+                                                            mini.fishLeft(g_Console, 48, j);
+                                                            if (g_dFishTime > 5.2)
+                                                            {
+                                                                mini.fishLeft(g_Console, 50, j);
+                                                                if (g_dFishTime > 5.5)
+                                                                {
+                                                                    mini.fishLeft(g_Console, 52, j);
+                                                                    if (g_dFishTime > 5.8)
+                                                                    {
+                                                                        mini.fishLeft(g_Console, 54, j);
+                                                                        if (g_dFishTime > 6.1)
+                                                                        {
+                                                                            mini.fishLeft(g_Console, 55, j);
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 void update_pressureMini()
 {
     processUserInput();
     moveCharacter();
+    if (FishTime > 1)
+    {
+        g_sFish.startTimer = false;
+    }
+    if (g_dFishTime > 6.4)
+    {
+        g_sFish.startTimer = true;
+        g_sFish.counter = true;
+    }
 }
 
 void pressureMini()
 {
     mini.initialiseMap(g_Console);
     mini.pressureMap(g_Console);
-    
     //randomise doors
     if (g_sDoor.counter == true) //not working yet cri
     {
@@ -583,8 +699,38 @@ void pressureMini()
     mini.pressureDoors(g_Console, rand1, 14);
     mini.pressureDoors(g_Console, rand4, 16);
     mini.pressureWin(g_Console, rand1, 1);
+    mini.fishLeft(g_Console, 52, 17);
+    mini.pressureBorder(g_Console);
+
+    //fish randomise 
+    if (g_sFish.startTimer == true)
+    {
+        g_dFishTime = 0.0;
+        g_sFish.resetTimer = true;
+    }
+    if (g_sFish.resetTimer == true)
+    {
+        if (g_sFish.counter == true)
+        {
+            randfish = rand() % 15 + 3;
+        }
+        g_sFish.counter = false;
+        fishLeft(g_Console, randfish); 
+    }
+
+    mini.pressureBorder(g_Console);
     renderCharacter();
 
+    //check if player collides with fish
+    if ((mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '<') || (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '>'))
+    {
+        g_dGOghostTime = 0.0;
+        g_eGameState = S_gameOverGhost;
+        g_sDoor.counter = true;
+        g_sCameraState.counter = true; //changes back to original camera state
+        g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
+        g_sChar.m_cLocation.Y = 10;
+    }
     //spawn back to other map
     if (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '@')
     {
@@ -593,8 +739,6 @@ void pressureMini()
         g_eGameState = S_STAGE1; //goes back to stage 1
         g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
         g_sChar.m_cLocation.Y = 10;
-
-        //change boolean movement state
     }
 
     // ^insert HUD after the maparray function
@@ -689,6 +833,73 @@ void moveCharacter()
             if (mini.miniGrid[i + 1][j] != '-')
             {
                 g_sChar.m_cLocation.X++;
+            }
+        }
+    }
+
+    //ghost chase
+    int dirx;
+    int diry;
+    int thedir;
+    if (ghost != nullptr)
+    {
+        int diffinx = x - ghost->getPos().getx();
+        int diffiny = y - ghost->getPos().gety();
+
+        if (diffinx > 0)
+        {
+            dirx = 4;
+        }
+        else
+        {
+            dirx = 3;
+        }
+
+        if (diffiny > 0)
+        {
+            diry = 2;
+        }
+        else
+        {
+            diry = 1;
+        }
+
+        if (2 * abs(diffinx) > abs(diffiny))
+        {
+            thedir = dirx;
+        }
+        else
+        {
+            thedir = diry;
+        }
+
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+        {
+            if (thedir == dirx)
+            {
+                thedir = diry;
+            }
+            else
+            {
+                thedir = dirx;
+            }
+        }
+
+        if (diffinx == 0 && diffiny == 0)
+        {
+            ghost->setDirection(0);
+        }
+
+        ghost->setDirection(thedir);
+
+        ghostSpeed += g_dDeltaTime;
+        if (ghostSpeed >= 0.25)
+        {
+            ghostSpeed = 0;
+            ghost->updatePos();
+            if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
+            {
+                ghost->updatePos();
             }
         }
     }
@@ -841,9 +1052,9 @@ void renderGame()
         dimLantern = false;
     }
 
-    
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+    renderGhost();
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -905,6 +1116,17 @@ void renderCharacter()
         charColor = 0x71;
     }
     g_Console.writeToBuffer(g_sChar.m_cLocation, (char)12, charColor);
+}
+
+void renderGhost()
+{
+    COORD pos;
+    if (ghost != nullptr)
+    {
+        pos.X = ghost->getPos().getx() - x + 40;
+        pos.Y = ghost->getPos().gety() - y + 10;
+        g_Console.writeToBuffer(pos, (char)71, 0x7D);
+    }
 }
 
 void renderFramerate()
@@ -1113,33 +1335,7 @@ void renderPauseMenu()
 void renderHUD()
 {
     COORD pos;
-    //HUD Box Corners
-    /*pos.X = 0;
-    pos.Y = 20;
-    g_Console.writeToBuffer(pos, (char)201, 0x0F);
-    pos.Y = 29;
-    g_Console.writeToBuffer(pos, (char)200, 0x0F);
-    pos.X = 79;
-    pos.Y = 20;
-    g_Console.writeToBuffer(pos, (char)187, 0x0F);
-    pos.Y = 29;
-    g_Console.writeToBuffer(pos, (char)188, 0x0F);*/
     
-    //pause button
-    /*for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
-    {
-        for (int x = pauseButton.getCorner(0).getx(); x <= pauseButton.getCorner(1).getx(); x++)
-        {
-            pos.X = x;
-            pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0x08);
-        }
-    }
-    pos.Y = pauseButton.getPos().gety();
-    pos.X = pauseButton.getPos().getx() - 1;
-    g_Console.writeToBuffer(pos, (char)222, 0x0F);
-    pos.X = pauseButton.getPos().getx() + 1;
-    g_Console.writeToBuffer(pos, (char)221, 0x0F);*/
 
     //lantern
     if (fullLantern == true)
@@ -1304,8 +1500,36 @@ void changeButton(bool down)
 
 void playCutScene(cutscene& scene)
 {
+    if (g_skKeyEvent[K_SPACE].keyDown && SpaceButtonDown == false)
+    {
+        if (sceneIndex + 1 == scene.getnoofLines())
+        {
+            switch (g_eGameState)
+            {
+            case S_INTRO:
+                g_eGameState = S_STAGE1;
+                break;
+            case S_GHOST:
+                g_eGameState = S_STAGE2;
+                break;
+            case S_SCUBA:
+                g_eGameState = S_STAGE3;
+                break;
+            }
+            sceneIndex = 0;
+        }
+        else 
+        {
+            sceneIndex++;
+        }
+        SpaceButtonDown = true;
+    }
+    else if (g_skKeyEvent[K_SPACE].keyReleased)
+    {
+        SpaceButtonDown = false;
+    }
 
-    if (sceneIndex + 1 == scene.getnoofLines() && checkButtonClick(dialogueBox))
+    if (g_skKeyEvent[K_ENTER].keyDown) 
     {
         switch (g_eGameState)
         {
@@ -1319,10 +1543,8 @@ void playCutScene(cutscene& scene)
             g_eGameState = S_STAGE3;
             break;
         }
-    }
-    else if (checkButtonClick(dialogueBox))
-    {
-        sceneIndex++;
+
+        sceneIndex = 0;
     }
 }
 
