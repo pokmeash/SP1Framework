@@ -1490,12 +1490,15 @@ void stagesMenuWait()
         {
         case 0:
             g_eGameState = S_INTRO;
+            S1State = S1_INIT;
             break;
         case 1:
             g_eGameState = S_GHOST;
+            S2State = S2_INIT;
             break;
         case 2:
             g_eGameState = S_SCUBA;
+            S3State = S3_INIT;
         case 3:
             g_eGameState = S_MAINMENU;
             MState = MENU_MAIN;
