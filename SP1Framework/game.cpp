@@ -665,10 +665,10 @@ void update_pressureMini()
     {
         g_sFish.startTimer = false;
     }
-    if (g_dFishTime > 6.4);
+    if (g_dFishTime > 6.4)
     {
-        g_sFish.counter = true;
         g_sFish.startTimer = true;
+        g_sFish.counter = true;
     }
 }
 
@@ -833,52 +833,56 @@ void moveCharacter()
     }
 
     //ghost chase
-    int diffinx = x - ghost->getPos().getx();
-    int diffiny = y - ghost->getPos().gety();
-    if (2 * abs(diffinx) > abs(diffiny)) 
+    if (ghost != nullptr)
     {
-        if (diffinx > 0)
+        int diffinx = x - ghost->getPos().getx();
+        int diffiny = y - ghost->getPos().gety();
+        if (2 * abs(diffinx) > abs(diffiny))
         {
-            ghost->setDirection(4); //right
+            if (diffinx > 0)
+            {
+                ghost->setDirection(4); //right
+            }
+            else
+            {
+                ghost->setDirection(3); //left
+            }
         }
         else
         {
-            ghost->setDirection(3); //left
+            if (diffiny > 0)
+            {
+                ghost->setDirection(2); //down
+            }
+            else
+            {
+                ghost->setDirection(1); //up
+            }
         }
-    }
-    else
-    {
-        if (diffiny > 0)
-        {
-            ghost->setDirection(2); //down
-        }
-        else
-        {
-            ghost->setDirection(1); //up
-        }
-    }
 
-    if (diffinx == 0 && diffiny == 0)
-    {
-        ghost->setDirection(0);
-    }
+        if (diffinx == 0 && diffiny == 0)
+        {
+            ghost->setDirection(0);
+        }
 
-    if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
-    {
-        ghost->setDirection(0);
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+        {
+            ghost->setDirection(0);
+        }
+
+
+        ghostSpeed += g_dDeltaTime;
+        if (ghostSpeed >= 0.25)
+        {
+            ghostSpeed = 0;
+            ghost->updatePos();
+            if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
+            {
+                ghost->updatePos();
+            }
+        }
     }
     
-
-    ghostSpeed += g_dDeltaTime;
-    if (ghostSpeed >= 0.25)
-    {
-        ghostSpeed = 0;
-        ghost->updatePos();
-        if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
-        {
-            ghost->updatePos();
-        }
-    }
 }
 
 void processUserInput()
