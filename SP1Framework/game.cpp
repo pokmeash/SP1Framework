@@ -83,9 +83,9 @@ hudstuff drawings;
 //cutscenes
 button dialogueBox(77, 7, "doesnt matter for now ack", 39, 24);
 cutscene horrorIntro(8);
-cutscene helloGhost(0);
-cutscene scubaSuit(0);
-cutscene escape(0);
+cutscene helloGhost(1);
+cutscene scubaSuit(1);
+cutscene escape(1);
 int sceneIndex = 0;
 
 //minigames
@@ -145,6 +145,10 @@ void init( void )
     horrorIntro.setStory(5, "You: While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine at the shore.");
     horrorIntro.setStory(6, "You: So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
     horrorIntro.setStory(7, "You: You then decided to take a look inside the submarine, hoping to solve the mystery.");
+    helloGhost.setStory(0, "ghost appear whoosh");
+    scubaSuit.setStory(0, "AAAA");
+    escape.setStory(0, "AAAA");
+    
 
     //minigames (camera state to false)
     g_sDoor.counter = true;
@@ -348,15 +352,6 @@ void initSTAGE1()
 {
     //set spawnpoints; etc
     objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
-    int posx;
-    int posy;
-    do
-    {
-        posx = rand() % 150;
-        posy = rand() % 30;
-
-    } while (Map.map[posy][posx] == '+');
-    ghost = new entity(posx, posy);
     S1State = S1_GAME;
 }
 
@@ -369,7 +364,7 @@ void playSTAGE1()
         break;
     case S1_GAME:
         updateGame();
-        if (g_sChar.m_cLocation.X >= 480)
+        if (x >= 121)
         {
             g_eGameState = S_GHOST;
         }
@@ -379,7 +374,17 @@ void playSTAGE1()
 
 void initSTAGE2()
 {
+    /*int posx;
+    int posy;
+    do
+    {
+        posx = rand() % 150;
+        posy = rand() % 30;
 
+    } while (Map.map[posy][posx] == '+');*/
+    //ghost = new entity(posx, posy);
+    ghost = new entity(x + 10, y);
+    S2State = S2_GAME;
 }
 
 void playSTAGE2()
@@ -833,30 +838,50 @@ void moveCharacter()
     }
 
     //ghost chase
+    int dirx;
+    int diry;
+    int thedir;
     if (ghost != nullptr)
     {
         int diffinx = x - ghost->getPos().getx();
         int diffiny = y - ghost->getPos().gety();
-        if (2 * abs(diffinx) > abs(diffiny))
+
+        if (diffinx > 0)
         {
-            if (diffinx > 0)
-            {
-                ghost->setDirection(4); //right
-            }
-            else
-            {
-                ghost->setDirection(3); //left
-            }
+            dirx = 4;
         }
         else
         {
-            if (diffiny > 0)
+            dirx = 3;
+        }
+
+        if (diffiny > 0)
+        {
+            diry = 2;
+        }
+        else
+        {
+            diry = 1;
+        }
+
+        if (2 * abs(diffinx) > abs(diffiny))
+        {
+            thedir = dirx;
+        }
+        else
+        {
+            thedir = diry;
+        }
+
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+        {
+            if (thedir == dirx)
             {
-                ghost->setDirection(2); //down
+                thedir = diry;
             }
             else
             {
-                ghost->setDirection(1); //up
+                thedir = dirx;
             }
         }
 
@@ -865,11 +890,7 @@ void moveCharacter()
             ghost->setDirection(0);
         }
 
-        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
-        {
-            ghost->setDirection(0);
-        }
-
+        ghost->setDirection(thedir);
 
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
@@ -882,7 +903,6 @@ void moveCharacter()
             }
         }
     }
-    
 }
 
 void processUserInput()
@@ -1315,33 +1335,7 @@ void renderPauseMenu()
 void renderHUD()
 {
     COORD pos;
-    //HUD Box Corners
-    /*pos.X = 0;
-    pos.Y = 20;
-    g_Console.writeToBuffer(pos, (char)201, 0x0F);
-    pos.Y = 29;
-    g_Console.writeToBuffer(pos, (char)200, 0x0F);
-    pos.X = 79;
-    pos.Y = 20;
-    g_Console.writeToBuffer(pos, (char)187, 0x0F);
-    pos.Y = 29;
-    g_Console.writeToBuffer(pos, (char)188, 0x0F);*/
     
-    //pause button
-    /*for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
-    {
-        for (int x = pauseButton.getCorner(0).getx(); x <= pauseButton.getCorner(1).getx(); x++)
-        {
-            pos.X = x;
-            pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0x08);
-        }
-    }
-    pos.Y = pauseButton.getPos().gety();
-    pos.X = pauseButton.getPos().getx() - 1;
-    g_Console.writeToBuffer(pos, (char)222, 0x0F);
-    pos.X = pauseButton.getPos().getx() + 1;
-    g_Console.writeToBuffer(pos, (char)221, 0x0F);*/
 
     //lantern
     if (fullLantern == true)
@@ -1521,6 +1515,7 @@ void playCutScene(cutscene& scene)
                 g_eGameState = S_STAGE3;
                 break;
             }
+            sceneIndex = 0;
         }
         else 
         {
@@ -1547,6 +1542,8 @@ void playCutScene(cutscene& scene)
             g_eGameState = S_STAGE3;
             break;
         }
+
+        sceneIndex = 0;
     }
 }
 
