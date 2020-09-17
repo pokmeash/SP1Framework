@@ -618,7 +618,7 @@ void moveCharacter()
     {
         if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
         {
-            if (Map.map[y - 1][x] != '+')
+            if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O') // collision for + and O
             {
                 Map.map[y][x] = ' ';
                 Map.map[y - 1][x] = 'P';
@@ -627,7 +627,7 @@ void moveCharacter()
         }
         if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
         {
-            if (Map.map[y][x - 1] != '+')
+            if (Map.map[y][x - 1] != '+' && Map.map[y][x - 1] != 'O')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y][x - 1] = 'P';
@@ -636,7 +636,7 @@ void moveCharacter()
         }
         if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
         {
-            if (Map.map[y + 1][x] != '+')
+            if (Map.map[y + 1][x] != '+' && Map.map[y + 1][x] != 'O')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y + 1][x] = 'P';
@@ -645,7 +645,7 @@ void moveCharacter()
         }
         if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
         {
-            if (Map.map[y][x + 1] != '+')
+            if (Map.map[y][x + 1] != '+' && Map.map[y][x + 1] != 'O')
             {
                 Map.map[y][x] = ' ';
                 Map.map[y][x + 1] = 'P';
