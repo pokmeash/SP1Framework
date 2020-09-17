@@ -682,7 +682,7 @@ void pressureMini()
     mini.initialiseMap(g_Console);
     mini.pressureMap(g_Console);
     //randomise doors
-    if (g_sDoor.counter == true) //not working yet cri
+    if (g_sDoor.counter == true)
     {
         rand1 = rand() % 35 + 21;
         rand2 = rand() % 35 + 21;
@@ -1037,7 +1037,7 @@ void renderGame()
         halfLantern = false;
         dimLantern = false;
     }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 16) || (y == 15 && x == 16) || (y == 13 && x == 15) || (y == 14 && x == 17)))
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 16) || (y == 15 && x == 16) || (y == 14 && x == 15) || (y == 14 && x == 17)))
     {
         g_dLanternTime = 0.0;
         fullLantern = true;
