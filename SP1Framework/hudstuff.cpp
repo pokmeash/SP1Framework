@@ -232,4 +232,14 @@ void hudstuff::Minimap(Console& g_Console)
         g_Console.writeToBuffer(j, 16, ' ', 0x7F);
     }
     g_Console.writeToBuffer(65, 13, ' ', 0x7F);
+
+    //Oil
+    g_Console.writeToBuffer(17, 9, ' ', 0);
+    g_Console.writeToBuffer(62, 2, ' ', 0);
+    g_Console.writeToBuffer(7, 10, ' ', 0);
+    g_Console.writeToBuffer(29, 18, ' ', 0);
+    g_Console.writeToBuffer(72, 10, ' ', 0);
+    //Minigame
+    g_Console.writeToBuffer(72, 9, ' ', 0);
+    g_Console.writeToBuffer(7, 3, ' ', 0);
 }

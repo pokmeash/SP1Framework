@@ -113,7 +113,7 @@ void init( void )
 
     // sets the initial state for the game
     //g_eGameState = S_MAINMENU;
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
     MState = MENU_MAIN;
 
     //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
