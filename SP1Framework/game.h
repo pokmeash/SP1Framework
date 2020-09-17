@@ -42,6 +42,7 @@ enum EKEYS
 enum EGAMESTATES
 {
     S_MAINMENU,
+    S_STAGESMENU,
     S_INTRO, //cutscene
     S_STAGE1,
     S_GHOST, //cutscene of appearance of ghost and power out
@@ -76,7 +77,8 @@ enum STAGE3states
 enum menuStates
 {
     MENU_MAIN,
-    MENU_PAUSE
+    MENU_PAUSE,
+    MENU_STAGES
 };
 
 // struct for the game character
@@ -108,9 +110,11 @@ void renderToScreen();      // dump the contents of the buffer to the screen, on
 void renderInputEvents();   // renders the status of input events
 void renderMainMenu();
 void renderPauseMenu();
+void renderStagesMenu();
 void renderHUD();
 void mainMenuWait();
 void pauseMenuWait();
+void stagesMenuWait();
 
 //Game States
 void initSTAGE1();
@@ -121,6 +125,9 @@ void playSTAGE2();
 //UI, HUD tings
 bool checkButtonClick(button button);
 void changeButton(bool down);
+void renderButton(button& button);
+void renderSelectedButton();
+
 
 //cutscene tings
 void playCutScene(cutscene& scene);

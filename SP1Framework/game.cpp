@@ -51,16 +51,26 @@ STAGE3states S3State = S3_INIT;
 Console g_Console(80, 30, "SP1 Framework");
 
 //UI, HUD etc
-button playButton(11, 3, "Play", 40, 12);
-button quitButton(11, 3, "Quit", 40, 18);
-button resumeButton(11, 3, "Resume", 40, 12);
-//button pauseButton(3, 3, " ", 77, 27);
+button playButton(13, 3, "Play", 40, 12);
+button quitButton(13, 3, "Quit", 40, 24);
+button resumeButton(13, 3, "Resume", 40, 12);
+button stagesButton(13, 3, "Stages", 40, 18);
+button backButton(13, 3, "Main Menu", 40, 18);
+button S1Button(13, 3, "Stage 1", 40, 6);
+button S2Button(13, 3, "Stage 2", 40, 10);
+button S3Button(13, 3, "Stage 3", 40, 14);
+button PressureButton(13, 3, "Pressure MG", 40, 22);
+button PowerButton(13, 3, "Power MG", 40, 26);
+
 button* selectedButton = &playButton;
 int buttonIndex = 0;
-button* mainButtons[2] = { &playButton, &quitButton };
-int mainButtonsCount = 2;
-button* pauseButtons[2] = { &resumeButton, &quitButton };
-int pauseButtonsCount = 2;
+button* mainButtons[3] = { &playButton, &stagesButton, &quitButton };
+int mainButtonsCount = 3;
+button* pauseButtons[3] = { &resumeButton, &backButton, &quitButton };
+int pauseButtonsCount = 3;
+button* stageButtons[6] = {&S1Button, &S2Button, &S3Button, &backButton, &PressureButton, &PowerButton};
+int stageButtonsCount = 6;
+
 bool WButtonDown = false;
 bool SButtonDown = false;
 bool SpaceButtonDown = false;
@@ -112,8 +122,8 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    //g_eGameState = S_MAINMENU;
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
+    //g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
     //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
@@ -316,6 +326,8 @@ void update(double dt)
         switch (g_eGameState)
         {
         case S_MAINMENU: mainMenuWait();
+            break;
+        case S_STAGESMENU: stagesMenuWait();
             break;
         case S_INTRO: playCutScene(horrorIntro);
             //play cutscene of horror story + enter submarine and then submarine go off course
@@ -913,6 +925,8 @@ void processUserInput()
         //g_bQuitGame = true;
         paused = true;
         MState = MENU_PAUSE;
+        selectedButton = &resumeButton;
+        buttonIndex = 0;
     }
 
     /*if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
@@ -962,6 +976,8 @@ void render()
     switch (g_eGameState)
     {
     case S_MAINMENU: renderMainMenu();
+        break;
+    case S_STAGESMENU: renderStagesMenu();
         break;
     case S_INTRO: renderDialogue(horrorIntro);
         break;
@@ -1226,110 +1242,40 @@ void renderInputEvents()
 
 void renderMainMenu()
 {
+    
+
+    renderButton(playButton);
+    renderButton(stagesButton);
+    renderButton(quitButton);
+
+
+    renderSelectedButton();
+
+}
+
+void renderPauseMenu()
+{
+    renderButton(resumeButton);
+    renderButton(backButton);
+    renderButton(quitButton);
+
+    renderSelectedButton();
+}
+
+void renderStagesMenu()
+{
     //black bg
     for (int i = 0; i < 30; i++)
     {
         g_Console.writeToBuffer(0, 0 + i, "                                                                                ", 0x00);
     }
 
-    //play button
-    COORD pos;
-    for (int y = playButton.getCorner(0).gety(); y <= playButton.getCorner(2).gety(); y++)
+    for (int i = 0; i < stageButtonsCount; i++)
     {
-        for (int x = playButton.getCorner(0).getx(); x <= playButton.getCorner(1).getx(); x++)
-        {
-            pos.X = x;
-            pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0xF4);
-        }
-    }
-    
-    pos.X = playButton.getPos().getx() - (playButton.getText().length() / 2);
-    pos.Y = playButton.getPos().gety();
-    g_Console.writeToBuffer(pos, playButton.getText(), 0xF4);
-   
-    //quit button
-    for (int y = quitButton.getCorner(0).gety(); y <= quitButton.getCorner(2).gety(); y++)
-    {
-        for (int x = quitButton.getCorner(0).getx(); x <= quitButton.getCorner(1).getx(); x++)
-        {
-            pos.X = x;
-            pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0xF4);
-        }
+        renderButton(*stageButtons[i]);
     }
 
-    pos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
-    pos.Y = quitButton.getPos().gety();
-    g_Console.writeToBuffer(pos, quitButton.getText(), 0xF4);
-
-    //selected button highlight
-    for (int x = (*selectedButton).getCorner(0).getx() - 1; x <= (*selectedButton).getCorner(1).getx() + 1; x++)
-    {
-        pos.X = x;
-        pos.Y = (*selectedButton).getCorner(0).gety() - 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-        pos.Y = (*selectedButton).getCorner(2).gety() + 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-    }
-    for (int y = (*selectedButton).getCorner(0).gety(); y <= (*selectedButton).getCorner(2).gety(); y++)
-    {
-        pos.Y = y;
-        pos.X = (*selectedButton).getCorner(2).getx() - 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-        pos.X = (*selectedButton).getCorner(3).getx() + 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-    }
-}
-
-void renderPauseMenu()
-{
-    COORD pos;
-    for (int y = resumeButton.getCorner(0).gety(); y <= resumeButton.getCorner(2).gety(); y++)
-    {
-        for (int x = resumeButton.getCorner(0).getx(); x <= resumeButton.getCorner(1).getx(); x++)
-        {
-            pos.X = x;
-            pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0xF4);
-        }
-    }
-
-    pos.X = resumeButton.getPos().getx() - (resumeButton.getText().length() / 2);
-    pos.Y = resumeButton.getPos().gety();
-    g_Console.writeToBuffer(pos, resumeButton.getText(), 0xF4);
-
-    for (int y = quitButton.getCorner(0).gety(); y <= quitButton.getCorner(2).gety(); y++)
-    {
-        for (int x = quitButton.getCorner(0).getx(); x <= quitButton.getCorner(1).getx(); x++)
-        {
-            pos.X = x;
-            pos.Y = y;
-            g_Console.writeToBuffer(pos, " ", 0xF4);
-        }
-    }
-
-    pos.X = quitButton.getPos().getx() - (quitButton.getText().length() / 2);
-    pos.Y = quitButton.getPos().gety();
-    g_Console.writeToBuffer(pos, quitButton.getText(), 0xF4);
-
-    //selected button highlight
-    for (int x = (*selectedButton).getCorner(0).getx() - 1; x <= (*selectedButton).getCorner(1).getx() + 1; x++)
-    {
-        pos.X = x;
-        pos.Y = (*selectedButton).getCorner(0).gety() - 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-        pos.Y = (*selectedButton).getCorner(2).gety() + 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-    }
-    for (int y = (*selectedButton).getCorner(0).gety(); y <= (*selectedButton).getCorner(2).gety(); y++)
-    {
-        pos.Y = y;
-        pos.X = (*selectedButton).getCorner(2).getx() - 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-        pos.X = (*selectedButton).getCorner(3).getx() + 1;
-        g_Console.writeToBuffer(pos, " ", 0x44);
-    }
+    renderSelectedButton();
 }
 
 void renderHUD()
@@ -1371,8 +1317,50 @@ void renderHUD()
     
 }
 
+void renderButton(button& button)
+{
+    COORD pos;
+    for (int y = button.getCorner(0).gety(); y <= button.getCorner(2).gety(); y++)
+    {
+        for (int x = button.getCorner(0).getx(); x <= button.getCorner(1).getx(); x++)
+        {
+            pos.X = x;
+            pos.Y = y;
+            g_Console.writeToBuffer(pos, " ", 0xF4);
+        }
+    }
+
+    pos.X = button.getPos().getx() - (button.getText().length() / 2);
+    pos.Y = button.getPos().gety();
+    g_Console.writeToBuffer(pos, button.getText(), 0xF4);
+}
+
+void renderSelectedButton()
+{
+    //selected button highlight
+    COORD pos;
+    for (int x = (*selectedButton).getCorner(0).getx() - 1; x <= (*selectedButton).getCorner(1).getx() + 1; x++)
+    {
+        pos.X = x;
+        pos.Y = (*selectedButton).getCorner(0).gety() - 1;
+        g_Console.writeToBuffer(pos, " ", 0x44);
+        pos.Y = (*selectedButton).getCorner(2).gety() + 1;
+        g_Console.writeToBuffer(pos, " ", 0x44);
+    }
+    for (int y = (*selectedButton).getCorner(0).gety(); y <= (*selectedButton).getCorner(2).gety(); y++)
+    {
+        pos.Y = y;
+        pos.X = (*selectedButton).getCorner(2).getx() - 1;
+        g_Console.writeToBuffer(pos, " ", 0x44);
+        pos.X = (*selectedButton).getCorner(3).getx() + 1;
+        g_Console.writeToBuffer(pos, " ", 0x44);
+    }
+}
+
 void mainMenuWait()
 {
+   
+
     if (g_skKeyEvent[K_W].keyDown)
     {
         if (WButtonDown == false && buttonIndex > 0)
@@ -1400,6 +1388,7 @@ void mainMenuWait()
 
     if (g_skKeyEvent[K_SPACE].keyDown)
     {
+
         switch (buttonIndex)
         {
         case 0:
@@ -1407,9 +1396,16 @@ void mainMenuWait()
             g_dLanternTime = 0.0; // put this to stage 2
             break;
         case 1:
+            MState = MENU_STAGES;
+            g_eGameState = S_STAGESMENU;
+            selectedButton = &S1Button;
+            break;
+        case 2:
             g_bQuitGame = true;
             break;
         }
+        buttonIndex = 0;
+
     }
 }
 
@@ -1448,9 +1444,70 @@ void pauseMenuWait()
             paused = false;
             break;
         case 1:
+            paused = false;
+            g_eGameState = S_MAINMENU;
+            MState = MENU_MAIN;
+            selectedButton = &playButton;
+            break;
+        case 2:
             g_bQuitGame = true;
             break;
         }
+        buttonIndex = 0;
+    }
+}
+
+void stagesMenuWait()
+{
+    if (g_skKeyEvent[K_W].keyDown)
+    {
+        if (WButtonDown == false && buttonIndex > 0)
+        {
+            WButtonDown = true;
+            changeButton(false);
+        }
+    }
+    else
+    {
+        WButtonDown = false;
+    }
+    if (g_skKeyEvent[K_S].keyDown)
+    {
+        if (SButtonDown == false && buttonIndex < stageButtonsCount)
+        {
+            SButtonDown = true;
+            changeButton(true);
+        }
+    }
+    else
+    {
+        SButtonDown = false;
+    }
+
+    if (g_skKeyEvent[K_SPACE].keyDown)
+    {
+        switch (buttonIndex)
+        {
+        case 0:
+            g_eGameState = S_INTRO;
+            break;
+        case 1:
+            g_eGameState = S_GHOST;
+            break;
+        case 2:
+            g_eGameState = S_SCUBA;
+        case 3:
+            g_eGameState = S_MAINMENU;
+            MState = MENU_MAIN;
+            selectedButton = &playButton;
+            break;
+        case 4:
+            g_eGameState = S_PRESSUREGAME;
+            break;
+        case 5:
+            break;
+        }
+        buttonIndex = 0;
     }
 }
 
@@ -1494,6 +1551,9 @@ void changeButton(bool down)
         break;
     case MENU_PAUSE:
         selectedButton = pauseButtons[buttonIndex];
+        break;
+    case MENU_STAGES:
+        selectedButton = stageButtons[buttonIndex];
         break;
     }
 }
