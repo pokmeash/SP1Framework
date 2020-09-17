@@ -121,7 +121,7 @@ void init( void )
     horrorIntro.setStory(1, "Person B: UC-3 Nautilus? You mean that abandoned submarine at the corner that has not been boarded by anyone for 10 years?");
     horrorIntro.setStory(2, "Person A: Yes! They say that 10 years ago, a female journalist boarded the UC-3 Nautilus but was never seen alive again.");
     horrorIntro.setStory(3, "Person A: When they had found the submarine,b QWKHIUWHWUQ idk what to write imma jus test that it works first");
-    horrorIntro.setStory(4, "You: **glances at the UC-3 Nautilus**");
+    horrorIntro.setStory(4, "You: boards submarine whee and then finds out offcourse and now hmmm i shud go to the control room look for captain yes");
 }
 
 //--------------------------------------------------------------
