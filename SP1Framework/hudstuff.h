@@ -7,5 +7,6 @@ public:
 	void LanternDim(Console& g_Console);
 	void LanternFull(Console& g_Console);
 	void LanternHalf(Console& g_Console);
+	void Minimap(Console& g_Console);
 };
 
