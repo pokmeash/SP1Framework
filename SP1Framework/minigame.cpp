@@ -36,16 +36,6 @@ void minigame::horiLine(Console& g_Console, int i, int j, int k)
 void minigame::pressureBorder(Console& g_Console)
 {
 	COORD c;
-	initialiseMap(g_Console);
-	for (int i = 20; i < 60; i++)
-	{
-		for (int j = 0; j < 20; j++)
-		{
-			c.X = i;
-			c.Y = j;
-			g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x1A);
-		}
-	}
 	//Border
 	horiLine(g_Console, 20, 60, 0);
 	horiLine(g_Console, 20, 60, 19);
@@ -55,7 +45,16 @@ void minigame::pressureBorder(Console& g_Console)
 void minigame::pressureMap(Console& g_Console)
 {
 	COORD c;
-	pressureBorder(g_Console);
+	//bg of game
+	for (int i = 20; i < 60; i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x1A);
+		}
+	}
 	//maze lines
 	for (int i = 21; i < 59; i++)
 	{
@@ -89,4 +88,20 @@ void minigame::pressureWin(Console& g_Console, int i, int j)
 		c.Y = j;
 		g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '@', 0x1B);
 	}
+}
+
+void minigame::fishLeft(Console& g_Console, int i, int j)
+{
+	COORD c;
+	c.X = i;
+	c.Y = j;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '>', 0x1E);
+	c.X = i + 1;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '<', 0x1E);
+	c.X = i + 2;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '>', 0x1E);
+	c.X = i - 1;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x1E);
+	c.X = i - 2;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x1E);
 }
