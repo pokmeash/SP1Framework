@@ -112,16 +112,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    //g_eGameState = S_MAINMENU;
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
     MState = MENU_MAIN;
 
-    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    //g_sChar.m_cLocation.Y = 10;
-    g_sChar.m_cLocation.X = 40; 
-    g_sChar.m_cLocation.Y = 18;
+    //if camera true
+    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.Y = 10;
+
+    //if camera false
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
+
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = false;
+    g_sCameraState.counter = true; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -142,9 +145,9 @@ void init( void )
     horrorIntro.setStory(2, "Rawbert: Yes! They say that 10 years ago, a female reporter boarded the AW-4 Nawtilus along with a professor to interview him about the submarine.");
     horrorIntro.setStory(3, " However, the submarine went missing, both of them were never seen again and the mystery behind it still isn't solved till this day.");
     horrorIntro.setStory(4, "You: One cool summer night, you decided to go out for a walk to take a breather.");
-    horrorIntro.setStory(5, "You: While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine at the shore.");
-    horrorIntro.setStory(6, "You: So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
-    horrorIntro.setStory(7, "You: You then decided to take a look inside the submarine, hoping to solve the mystery.");
+    horrorIntro.setStory(5, "While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine by the shore.");
+    horrorIntro.setStory(6, "So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
+    horrorIntro.setStory(7, "You then decided to take a look inside the submarine, hoping to solve the mystery.");
     helloGhost.setStory(0, "ghost appear whoosh");
     scubaSuit.setStory(0, "AAAA");
     escape.setStory(0, "AAAA");
@@ -383,6 +386,8 @@ void initSTAGE2()
 
     } while (Map.map[posy][posx] == '+');*/
     //ghost = new entity(posx, posy);
+
+    g_dLanternTime = 0.0;
     ghost = new entity(x + 10, y);
     S2State = S2_GAME;
 }
@@ -1403,7 +1408,6 @@ void mainMenuWait()
         {
         case 0:
             g_eGameState = S_INTRO;
-            g_dLanternTime = 0.0; // put this to stage 2
             break;
         case 1:
             g_bQuitGame = true;
