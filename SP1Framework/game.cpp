@@ -9,15 +9,20 @@
 #include "cutscene.h"
 #include "ghostgameover.h"
 #include "hudstuff.h"
+#include <string>
 #include "minigame.h"
 
 double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
 double g_dLanternTime;
+double g_dFlickerTime;
 bool fullLantern;
 bool halfLantern;
 bool dimLantern;
+bool offFlicker;
+bool onFlicker;
+bool activateFlicker;
 int rand1, rand2, rand3, rand4;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
@@ -45,7 +50,7 @@ Console g_Console(80, 30, "SP1 Framework");
 button playButton(11, 3, "Play", 40, 12);
 button quitButton(11, 3, "Quit", 40, 18);
 button resumeButton(11, 3, "Resume", 40, 12);
-button pauseButton(3, 3, " ", 78, 28);
+//button pauseButton(3, 3, " ", 77, 27);
 button* selectedButton = &playButton;
 int buttonIndex = 0;
 button* mainButtons[2] = { &playButton, &quitButton };
@@ -57,6 +62,8 @@ bool SButtonDown = false;
 bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
+
+std::string objective = " ";
 
 // Game objects
 entity ghost;
@@ -83,10 +90,11 @@ void init( void )
     fullLantern = false;
     halfLantern = false;
     dimLantern = false;
+    offFlicker = false;
+    onFlicker = false;
     // Set precision for floating point output
     g_dElapsedTime = 0.0;    
     g_dGOghostTime = 0.0;
-    g_dLanternTime = 0.0;
 
     // sets the initial state for the game
     g_eGameState = S_PRESSUREGAME;
@@ -108,7 +116,7 @@ void init( void )
     //setButtons();
     Map.maparray(g_Console);
     x = 40;
-    y = 10;
+    y = 5;
 
     //minigames
     g_sCameraState.counter = false; 
@@ -264,6 +272,7 @@ void update(double dt)
     g_dDeltaTime = dt;
     g_dGOghostTime += dt;
     g_dLanternTime += dt;
+    g_dFlickerTime += dt;
 
     if (!paused)
     {
@@ -305,6 +314,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
+    objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
     S1State = S1_GAME;
 }
 
@@ -345,9 +355,11 @@ void playSTAGE2()
 
 void updateGame()       // gameplay logic
 {
+    
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
+    
     if (g_dLanternTime > 3) //full lantern
     {
         fullLantern = true;
@@ -359,13 +371,40 @@ void updateGame()       // gameplay logic
         halfLantern = true;
         fullLantern = false;
         dimLantern = false;
+        
+        static bool flickerTime = false;
+        if (flickerTime == false)
+        {
+            g_dFlickerTime = 0.0;
+            flickerTime = true;
+        }
+        
+        if (g_dFlickerTime > 0.5 && g_dFlickerTime < 1.1)
+        {
+            offFlicker = true;
+            onFlicker = false;
+        }
+        if (offFlicker == true && g_dFlickerTime > 1.1 && g_dFlickerTime < 1.6)
+        {
+            onFlicker = true;
+            offFlicker = false;
+        }
+        if (onFlicker == true && g_dFlickerTime > 1.6)
+        {
+            g_dFlickerTime = 0.0;
+            onFlicker = false;
+        }
     }
-    if (g_dLanternTime > 7) //dim lantern
+    
+    if (g_dLanternTime > 10) //dim lantern
     {
         dimLantern = true;
         fullLantern = false;
         halfLantern = false;
+        offFlicker = false;
+        onFlicker = false;
     }
+    
 }
 
 void update_gameOverGhost()
@@ -645,13 +684,17 @@ void processUserInput()
 {
     // quits the game if player hits the escape key
     if (g_skKeyEvent[K_ESCAPE].keyReleased)
-        g_bQuitGame = true;
-
-    if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
     {
+        //g_bQuitGame = true;
         paused = true;
         MState = MENU_PAUSE;
     }
+
+    /*if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED && checkButtonClick(pauseButton))
+    {
+        paused = true;
+        MState = MENU_PAUSE;
+    }*/
 }
 
 //--------------------------------------------------------------
@@ -722,12 +765,62 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderGame()
 {
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 11 && x == 33) || (y == 13 && x == 33) || (y == 12 && x == 32) || (y == 12 && x == 34)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 1 && x == 118) || (y == 3 && x == 118) || (y == 2 && x == 117) || (y == 2 && x == 119)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 26 && x == 74) || (y == 28 && x == 74) || (y == 27 && x == 73) || (y == 27 && x == 75)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 16) || (y == 15 && x == 16) || (y == 13 && x == 15) || (y == 14 && x == 17)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 135) || (y == 15 && x == 135) || (y == 14 && x == 134) || (y == 14 && x == 136)))
+    {
+        g_dLanternTime = 0.0;
+        fullLantern = true;
+        halfLantern = false;
+        dimLantern = false;
+    }
+
+    
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+    if (offFlicker == true)
+    {
+        drawings.LanternDim(g_Console);
+        //dimLantern = true;
+        //halfLantern = false;
+    }
+    if (onFlicker == true)
+    {
+        drawings.LanternHalf(g_Console);
+        //dimLantern = false;
+        //halfLantern = true;
+    }
 }
 
 void renderMap()
 {
+    COORD c;
     if (fullLantern == true)
     {
         Map.renderFullLantern(g_Console, x, y); //full lantern
@@ -754,6 +847,13 @@ void renderMap()
         }
     }
     renderHUD();
+    c.X = 20;
+    c.Y = 21;
+    std::string srr = std::to_string(x);
+    g_Console.writeToBuffer(c, srr, 0x0F);
+    c.Y = 22;
+    std::string srrs = std::to_string(y);
+    g_Console.writeToBuffer(c, srrs, 0x0F);
 }
 
 void renderCharacter()
@@ -972,9 +1072,21 @@ void renderPauseMenu()
 
 void renderHUD()
 {
-    //pause button
     COORD pos;
-    for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
+    //HUD Box Corners
+    pos.X = 0;
+    pos.Y = 20;
+    g_Console.writeToBuffer(pos, (char)201, 0x0F);
+    pos.Y = 29;
+    g_Console.writeToBuffer(pos, (char)200, 0x0F);
+    pos.X = 79;
+    pos.Y = 20;
+    g_Console.writeToBuffer(pos, (char)187, 0x0F);
+    pos.Y = 29;
+    g_Console.writeToBuffer(pos, (char)188, 0x0F);
+    
+    //pause button
+    /*for (int y = pauseButton.getCorner(0).gety(); y <= pauseButton.getCorner(2).gety(); y++)
     {
         for (int x = pauseButton.getCorner(0).getx(); x <= pauseButton.getCorner(1).getx(); x++)
         {
@@ -987,9 +1099,40 @@ void renderHUD()
     pos.X = pauseButton.getPos().getx() - 1;
     g_Console.writeToBuffer(pos, (char)222, 0x0F);
     pos.X = pauseButton.getPos().getx() + 1;
-    g_Console.writeToBuffer(pos, (char)221, 0x0F);
+    g_Console.writeToBuffer(pos, (char)221, 0x0F);*/
+
     //lantern
-    drawings.LanternFlicker(g_Console);
+    if (fullLantern == true)
+    {
+        drawings.LanternFull(g_Console);
+    }
+    if (halfLantern == true)
+    {
+        drawings.LanternHalf(g_Console);
+    }
+    if (dimLantern == true)
+    {
+        drawings.LanternDim(g_Console);
+    }
+
+    //objective
+    pos.X = 50;
+    
+    
+    for (int i = 0; i < (objective.length() / 29) + 1; i++)
+    {
+        pos.Y = 22 + i;
+        if (i == objective.length() / 29)
+        {
+            g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+        }
+        else
+        {
+            g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+        }
+    }
+        
+    
 }
 
 void mainMenuWait()
@@ -1008,7 +1151,7 @@ void mainMenuWait()
     }
     if (g_skKeyEvent[K_S].keyDown)
     {
-        if (SButtonDown == false && buttonIndex < mainButtonsCount)
+        if (SButtonDown == false && buttonIndex < mainButtonsCount - 1)
         {
             changeButton(true);
         }
@@ -1025,6 +1168,7 @@ void mainMenuWait()
         {
         case 0:
             g_eGameState = S_STAGE1;
+            g_dLanternTime = 0.0; // put this to stage 2
             break;
         case 1:
             g_bQuitGame = true;
@@ -1089,10 +1233,10 @@ bool checkButtonClick(button button)
     isMousePressed = false;
     return false;
 }
-
+//h
 void changeButton(bool down)
 {
-    if (down)
+    if (down) 
     {
         buttonIndex++;
     }
