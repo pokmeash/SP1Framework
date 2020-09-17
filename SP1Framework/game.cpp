@@ -1365,31 +1365,7 @@ void renderSelectedButton()
 void mainMenuWait()
 {
    
-
-    if (g_skKeyEvent[K_W].keyDown)
-    {
-        if (WButtonDown == false && buttonIndex > 0)
-        {
-            changeButton(false);
-        }
-        WButtonDown = true;
-    }
-    else
-    {
-        WButtonDown = false;
-    }
-    if (g_skKeyEvent[K_S].keyDown)
-    {
-        if (SButtonDown == false && buttonIndex < mainButtonsCount - 1)
-        {
-            changeButton(true);
-        }
-        SButtonDown = true;
-    }
-    else
-    {
-        SButtonDown = false;
-    }
+    checkButtonSelect(mainButtonsCount);
 
     if (g_skKeyEvent[K_SPACE].keyDown)
     {
@@ -1416,30 +1392,7 @@ void mainMenuWait()
 
 void pauseMenuWait()
 {
-    if (g_skKeyEvent[K_W].keyDown)
-    {
-        if (WButtonDown == false && buttonIndex > 0)
-        {
-            WButtonDown = true;
-            changeButton(false);
-        }
-    }
-    else
-    {
-        WButtonDown = false;
-    }
-    if (g_skKeyEvent[K_S].keyDown)
-    {
-        if (SButtonDown == false && buttonIndex < pauseButtonsCount)
-        {
-            SButtonDown = true;
-            changeButton(true);
-        }
-    }
-    else
-    {
-        SButtonDown = false;
-    }
+    checkButtonSelect(pauseButtonsCount);
 
     if (g_skKeyEvent[K_SPACE].keyDown)
     {
@@ -1464,30 +1417,7 @@ void pauseMenuWait()
 
 void stagesMenuWait()
 {
-    if (g_skKeyEvent[K_W].keyDown)
-    {
-        if (WButtonDown == false && buttonIndex > 0)
-        {
-            WButtonDown = true;
-            changeButton(false);
-        }
-    }
-    else
-    {
-        WButtonDown = false;
-    }
-    if (g_skKeyEvent[K_S].keyDown)
-    {
-        if (SButtonDown == false && buttonIndex < stageButtonsCount)
-        {
-            SButtonDown = true;
-            changeButton(true);
-        }
-    }
-    else
-    {
-        SButtonDown = false;
-    }
+    checkButtonSelect(stageButtonsCount);
 
     if (g_skKeyEvent[K_SPACE].keyDown)
     {
@@ -1540,7 +1470,35 @@ bool checkButtonClick(button button)
     }
     return false;
 }
-//h
+
+void checkButtonSelect(int a)
+{
+    if (g_skKeyEvent[K_W].keyDown)
+    {
+        if (WButtonDown == false && buttonIndex > 0)
+        {
+            WButtonDown = true;
+            changeButton(false);
+        }
+    }
+    else
+    {
+        WButtonDown = false;
+    }
+    if (g_skKeyEvent[K_S].keyDown)
+    {
+        if (SButtonDown == false && buttonIndex < a)
+        {
+            SButtonDown = true;
+            changeButton(true);
+        }
+    }
+    else
+    {
+        SButtonDown = false;
+    }
+}
+
 void changeButton(bool down)
 {
     if (down) 

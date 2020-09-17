@@ -124,6 +124,7 @@ void playSTAGE2();
 
 //UI, HUD tings
 bool checkButtonClick(button button);
+void checkButtonSelect(int a);
 void changeButton(bool down);
 void renderButton(button& button);
 void renderSelectedButton();
