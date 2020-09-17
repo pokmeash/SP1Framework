@@ -97,14 +97,16 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
+    //g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
-    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    //g_sChar.m_cLocation.Y = 10;
-    g_sChar.m_cLocation.X = 40;
-    g_sChar.m_cLocation.Y = 18;
+    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.Y = 10;
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
     g_sChar.m_bActive = true;
+    g_sCameraState.counter = true;
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -118,8 +120,7 @@ void init( void )
     x = 40;
     y = 5;
 
-    //minigames
-    g_sCameraState.counter = false; 
+    //minigames (camera state to false)
     g_sDoor.counter = true;
 }
 
