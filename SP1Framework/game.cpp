@@ -58,6 +58,7 @@ button* pauseButtons[2] = { &resumeButton, &quitButton };
 int pauseButtonsCount = 2;
 bool WButtonDown = false;
 bool SButtonDown = false;
+bool SpaceButtonDown = false;
 bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
@@ -1303,25 +1304,32 @@ void changeButton(bool down)
 
 void playCutScene(cutscene& scene)
 {
-
-    if (sceneIndex + 1 == scene.getnoofLines() && checkButtonClick(dialogueBox))
+    if (g_skKeyEvent[K_SPACE].keyDown && SpaceButtonDown == false)
     {
-        switch (g_eGameState)
+        if (sceneIndex + 1 == scene.getnoofLines())
         {
-        case S_INTRO:
-            g_eGameState = S_STAGE1;
-            break;
-        case S_GHOST:
-            g_eGameState = S_STAGE2;
-            break;
-        case S_SCUBA:
-            g_eGameState = S_STAGE3;
-            break;
+            switch (g_eGameState)
+            {
+            case S_INTRO:
+                g_eGameState = S_STAGE1;
+                break;
+            case S_GHOST:
+                g_eGameState = S_STAGE2;
+                break;
+            case S_SCUBA:
+                g_eGameState = S_STAGE3;
+                break;
+            }
         }
+        else 
+        {
+            sceneIndex++;
+        }
+        SpaceButtonDown = true;
     }
-    else if (checkButtonClick(dialogueBox))
+    else if (g_skKeyEvent[K_SPACE].keyReleased)
     {
-        sceneIndex++;
+        SpaceButtonDown = false;
     }
 }
 
