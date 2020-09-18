@@ -275,6 +275,8 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
     case VK_RETURN: key = K_ENTER; break;
+    case VK_LEFT: key = K_LEFT; break;
+    case VK_RIGHT: key = K_RIGHT; break;
     case 0x57: key = K_W; break;
     case 0x41: key = K_A; break;
     case 0x53: key = K_S; break;
@@ -917,8 +919,10 @@ void pressureMini()
     {
         seaUp(g_Console);
     }
-
     mini.pressureBorder(g_Console);
+    //key things
+
+
     renderCharacter();
 
     //check if player collides with fish
@@ -1034,6 +1038,16 @@ void moveCharacter()
             {
                 g_sChar.m_cLocation.X++;
             }
+        }
+
+        //ghost attack keys
+        if (g_skKeyEvent[K_LEFT].keyDown)
+        {
+            mini.attack(g_Console, 0);
+        }
+        if (g_skKeyEvent[K_RIGHT].keyDown)
+        {
+            mini.attack(g_Console, 60);
         }
     }
 

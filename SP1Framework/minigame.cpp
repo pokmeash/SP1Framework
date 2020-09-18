@@ -157,3 +157,17 @@ void minigame::countdown5(Console& g_Console)
 	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '   ', 0x1C);
 }
 
+void minigame::attack(Console& g_Console, int x)
+{
+	COORD c;
+	for (int i = x; i < (x + 20); i++)
+	{
+		for (int j = 0; j < 20; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '/', 0xCC);
+		}
+	}
+}
+
