@@ -30,3 +30,7 @@ int cutscene::getnoofLines()
 	return noofLines;
 }
 
+void frame(Console& g_Console)
+{
+	g_Console.writeToBuffer(1,1, ' ', 0xFF);
+}

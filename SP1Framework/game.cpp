@@ -417,6 +417,7 @@ void playSTAGE2()
         if (lose)
         {
             g_eGameState = S_gameOverGhost;
+            g_dGOghostTime = 0.0;
         }
         updateGame();
         break;
@@ -430,7 +431,9 @@ void updateGame()       // gameplay logic
                         // sound can be played here too.
     if (Map.map[y][x] == 'G')
     {
-        g_eGameState = S_gameOverGhost;
+        lose = true;
+        Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
+
     }
     if (g_dLanternTime > 0) //full lantern
     {
@@ -914,11 +917,6 @@ void moveCharacter()
             }
         }
 
-        if (diffinx == 0 && diffiny == 0)
-        {
-            lose = true;
-        }
-
         ghost->setDirection(thedir);
 
         ghostSpeed += g_dDeltaTime;
@@ -927,7 +925,7 @@ void moveCharacter()
             ghostSpeed = 0;
             Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
             ghost->updatePos();
-            if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
+            if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != ' ' && Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != 'P')
             {
                 ghost->updatePos();
             }
@@ -1091,7 +1089,6 @@ void renderGame()
 
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
-    renderGhost();
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -1155,16 +1152,6 @@ void renderCharacter()
     g_Console.writeToBuffer(g_sChar.m_cLocation, (char)12, charColor);
 }
 
-void renderGhost()
-{
-    COORD pos;
-    if (ghost != nullptr)
-    {
-        pos.X = ghost->getPos().getx() - x + 40;
-        pos.Y = ghost->getPos().gety() - y + 10;
-        g_Console.writeToBuffer(pos, (char)71, 0x7D);
-    }
-}
 
 void renderFramerate()
 {
@@ -1656,6 +1643,7 @@ void renderDialogue(cutscene& scene)
         pos.Y = 21 + i;
         if (i == scene.getLine(sceneIndex).length() / 77)
         {
+
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, scene.getLine(sceneIndex).length() - (77 * i)), 0x0F);
         }
         else
@@ -1663,5 +1651,6 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
+
 }
 
