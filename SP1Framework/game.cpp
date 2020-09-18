@@ -34,8 +34,8 @@ int x;
 int y;
 
 
-map Map;
 
+map Map;
 
 // Game specific variables here
 SGameChar   g_sChar;
@@ -422,7 +422,10 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
-    
+    if (Map.map[y][x] == 'G')
+    {
+        g_eGameState = S_gameOverGhost;
+    }
     if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
@@ -913,11 +916,13 @@ void moveCharacter()
         if (ghostSpeed >= 0.25)
         {
             ghostSpeed = 0;
+            Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
             ghost->updatePos();
             if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
             {
                 ghost->updatePos();
             }
+            Map.ghostposition(ghost->getPos().getx(), ghost->getPos().gety());
         }
     }
 }

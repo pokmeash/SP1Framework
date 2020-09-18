@@ -308,3 +308,12 @@ void map::renderDimLantern(Console& g_Console, int x, int y)
     }
 }
 
+void map::ghostposition(int x, int y)
+{
+    map[y][x] = 'G';
+}
+
+void map::deleteghostposition(int x, int y)
+{
+    map[y][x] = ' ';
+}
