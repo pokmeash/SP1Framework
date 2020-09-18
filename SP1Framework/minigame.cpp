@@ -90,18 +90,70 @@ void minigame::pressureWin(Console& g_Console, int i, int j)
 	}
 }
 
-void minigame::fishLeft(Console& g_Console, int i, int j)
+void minigame::fishLeft(Console& g_Console, int i, int j, CHAR colour)
 {
 	COORD c;
 	c.X = i;
 	c.Y = j;
-	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '>', 0x1E);
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '>', colour);
 	c.X = i + 1;
-	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '<', 0x1E);
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '<', colour);
 	c.X = i + 2;
-	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '>', 0x1E);
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '>', colour);
 	c.X = i - 1;
-	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x1E);
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', colour);
 	c.X = i - 2;
-	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x1E);
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', colour);
 }
+
+void minigame::seaVoid(Console& g_Console, int j)
+{
+	COORD c;
+	for (int i = 21; i < 59; i++)
+	{
+		c.X = i;
+		c.Y = j;
+		g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = 'x', 0x0F);
+	}
+}
+
+void minigame::countdown1(Console& g_Console)
+{
+	COORD c;
+	c.X = 39;
+	c.Y = 9;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '3', 0x1C);
+}
+
+void minigame::countdown2(Console& g_Console)
+{
+	COORD c;
+	c.X = 39;
+	c.Y = 9;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '2', 0x1C);
+}
+
+void minigame::countdown3(Console& g_Console)
+{
+	COORD c;
+	c.X = 39;
+	c.Y = 9;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '1', 0x1C);
+}
+
+void minigame::countdown4(Console& g_Console)
+{
+	COORD c;
+	c.X = 38;
+	c.Y = 9;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = 'Go!', 0x1C);
+}
+
+void minigame::countdown5(Console& g_Console)
+{
+	COORD c;
+	c.X = 38;
+	c.Y = 9;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '   ', 0x1C);
+}
+

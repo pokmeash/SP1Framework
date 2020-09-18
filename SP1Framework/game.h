@@ -146,7 +146,9 @@ void update_gameOverGhost();
 void gameOverGhost();
 
 //Minigames
-void fishLeft(Console& g_Console, int j);
+void fishLeft(Console& g_Console, int j, CHAR colour);
+void seaUp(Console& g_Console);
+void countDown(Console& g_Console);
 void update_pressureMini();
 void pressureMini();
 
