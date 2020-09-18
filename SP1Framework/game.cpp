@@ -1287,36 +1287,44 @@ void renderHUD()
 {
     COORD pos;
     
+    switch (g_eGameState)
+    {
+    case S_PRESSUREGAME:
+        //render pressure level;
+        break;
 
-    //lantern
-    if (fullLantern == true)
-    {
-        drawings.LanternFull(g_Console);
-     
-    }
-    if (halfLantern == true)
-    {
-        drawings.LanternHalf(g_Console);
-    }
-    if (dimLantern == true)
-    {
-        drawings.LanternDim(g_Console);
-    }
+    default:
+        //lantern
+        if (fullLantern == true)
+        {
+            drawings.LanternFull(g_Console);
 
-    //objective
-    pos.X = 50;
-    
-    for (int i = 0; i < (objective.length() / 29) + 1; i++)
-    {
-        pos.Y = 22 + i;
-        if (i == objective.length() / 29)
-        {
-            g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
         }
-        else
+        if (halfLantern == true)
         {
-            g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+            drawings.LanternHalf(g_Console);
         }
+        if (dimLantern == true)
+        {
+            drawings.LanternDim(g_Console);
+        }
+
+        //objective
+        pos.X = 50;
+
+        for (int i = 0; i < (objective.length() / 29) + 1; i++)
+        {
+            pos.Y = 22 + i;
+            if (i == objective.length() / 29)
+            {
+                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+            }
+            else
+            {
+                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+            }
+        }
+        break;
     }
         
     
@@ -1405,6 +1413,9 @@ void pauseMenuWait()
             paused = false;
             g_eGameState = S_MAINMENU;
             MState = MENU_MAIN;
+            S1State = S1_INIT;
+            S2State = S2_INIT;
+            S3State = S3_INIT;
             selectedButton = &playButton;
             break;
         case 2:
@@ -1487,7 +1498,7 @@ void checkButtonSelect(int a)
     }
     if (g_skKeyEvent[K_S].keyDown)
     {
-        if (SButtonDown == false && buttonIndex < a)
+        if (SButtonDown == false && buttonIndex < a - 1)
         {
             SButtonDown = true;
             changeButton(true);
