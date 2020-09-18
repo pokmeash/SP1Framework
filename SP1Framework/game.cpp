@@ -828,10 +828,12 @@ void moveCharacter()
                 x++;
             }
         }
+        /*
         if (g_skKeyEvent[K_SPACE].keyDown)
         {
             g_sChar.m_bActive = !g_sChar.m_bActive;
         }
+        */
     }
 
     else if (g_sCameraState.counter == false)
@@ -1108,19 +1110,19 @@ void renderMap()
     COORD c;
     if (fullLantern == true)
     {
-        Map.renderFullLantern(g_Console, x, y); //full lantern
+        Map.rendermap(g_Console, x, y, 1); //full lantern
     }
     else if (halfLantern == true)
     {
-        Map.renderHalfLantern(g_Console, x, y); //half lantern
+        Map.rendermap(g_Console, x, y, 2); //half lantern
     }
     else if (dimLantern == true)
     {
-        Map.renderDimLantern(g_Console, x, y); //dim lantern
+        Map.rendermap(g_Console, x, y, 3); //dim lantern
     }
     else
     {
-        Map.rendermap(g_Console, x, y); //full screen
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
     

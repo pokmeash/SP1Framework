@@ -190,15 +190,45 @@ void map::maparray(Console& g_Console)
 
 }
 
-void map::rendermap(Console& g_Console, int x, int y)
+void map::rendermap(Console& g_Console, int x, int y, int light)
 {
-    for (int a = -10; a < 10; a++) 
+    int x1, x2, y1, y2, e;
+    x1 = x2 = y1 = y2 = e = 0;
+    e = light;
+    switch (e)
     {
-        for (int b = -40; b < 40; b++)
+    case 0: // full view
+        y1 = -10;
+        y2 = 10;
+        x1 = -40;
+        x2 = 40;
+        break;
+    case 1: // full lantern
+        y1 = -4;
+        y2 = 5;
+        x1 = -10;
+        x2 = 11;
+        break;
+    case 2: // half lantern
+        y1 = -3;
+        y2 = 4;
+        x1 = -8;
+        x2 = 9;
+        break;
+    case 3: // dim lantern
+        y1 = -1;
+        y2 = 2;
+        x1 = -3;
+        x2 = 4;
+        break;
+    }
+    for (int a = y1; a < y2; a++)
+    {
+        for (int b = x1; b < x2; b++)
         {
             if (y + a < 30 && y + a > -1)
             {
-                if (x + b < 150 && x + b > -1)   
+                if (x + b < 150 && x + b > -1)
                 {
                     if (map[y + a][x + b] == '+')
                     {
@@ -216,108 +246,6 @@ void map::rendermap(Console& g_Console, int x, int y)
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
                     }
-                    
-                }
-            }
-        }
-    }
-
-}
-
-
-void map::renderFullLantern(Console& g_Console, int x, int y)
-{
-    for (int a = -4; a < 5; a++)
-    {
-        for (int b = -10; b < 11; b++)
-        {
-            if (y + a < 75 && y + a > -1)
-            {
-                if (x + b < 560 && x + b > -1)
-                {
-                    if (map[y + a][x + b] == '+')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
-                    }
-                    else if (map[y + a][x + b] == 'O')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
-                    }
-                    else if (map[y + a][x + b] == 'G')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
-                    }
-                    else if (map[y + a][x + b] == ' ')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
-                    }
-
-                }
-            }
-        }
-    }
-}
-
-void map::renderHalfLantern(Console& g_Console, int x, int y)
-{
-    for (int a = -3; a < 4; a++)
-    {
-        for (int b = -8; b < 9; b++)
-        {
-            if (y + a < 75 && y + a > -1)
-            {
-                if (x + b < 560 && x + b > -1)
-                {
-                    if (map[y + a][x + b] == '+')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
-                    }
-                    else if (map[y + a][x + b] == 'O')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
-                    }
-                    else if (map[y + a][x + b] == 'G')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
-                    }
-                    else if (map[y + a][x + b] == ' ')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
-                    }
-
-                }
-            }
-        }
-    }
-}
-
-void map::renderDimLantern(Console& g_Console, int x, int y)
-{
-    for (int a = -1; a < 2; a++)
-    {
-        for (int b = -3; b < 4; b++)
-        {
-            if (y + a < 75 && y + a > -1)
-            {
-                if (x + b < 560 && x + b > -1)
-                {
-                    if (map[y + a][x + b] == '+')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
-                    }
-                    else if (map[y + a][x + b] == 'O')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
-                    }
-                    else if (map[y + a][x + b] == 'G')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
-                    }
-                    else if (map[y + a][x + b] == ' ')
-                    {
-                        g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
-                    }
-
                 }
             }
         }
