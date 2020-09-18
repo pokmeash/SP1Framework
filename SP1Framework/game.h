@@ -52,6 +52,7 @@ enum EGAMESTATES
     S_SWIM, //cutscene/escape
     S_gameOverGhost, //ghost jumpscare
     S_PRESSUREGAME, //pressure minigame
+    S_LOSE,
     S_COUNT
     
 };
@@ -78,7 +79,8 @@ enum menuStates
 {
     MENU_MAIN,
     MENU_PAUSE,
-    MENU_STAGES
+    MENU_STAGES,
+    MENU_LOSE
 };
 
 // struct for the game character
@@ -104,17 +106,18 @@ void clearScreen();         // clears the current screen and draw from scratch
 void renderGame();          // renders the game stuff
 void renderMap();           // renders the map to the buffer first
 void renderCharacter();     // renders the character into the buffer
-void renderGhost();
 void renderFramerate();     // renders debug information, frame rate, elapsed time, etc
 void renderToScreen();      // dump the contents of the buffer to the screen, one frame worth of game
 void renderInputEvents();   // renders the status of input events
 void renderMainMenu();
 void renderPauseMenu();
 void renderStagesMenu();
+void renderLoseMenu();
 void renderHUD();
 void mainMenuWait();
 void pauseMenuWait();
 void stagesMenuWait();
+void loseMenuWait();
 
 //Game States
 void initSTAGE1();
@@ -128,7 +131,6 @@ void checkButtonSelect(int a);
 void changeButton(bool down);
 void renderButton(button& button);
 void renderSelectedButton();
-
 
 //cutscene tings
 void playCutScene(cutscene& scene);

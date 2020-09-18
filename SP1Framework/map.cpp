@@ -187,11 +187,11 @@ void map::maparray(Console& g_Console)
     map[27][74] = 'O';
     map[14][16] = 'O';
     map[14][135] = 'O';
+
 }
 
 void map::rendermap(Console& g_Console, int x, int y)
 {
-    
     for (int a = -10; a < 10; a++) 
     {
         for (int b = -40; b < 40; b++)
@@ -207,6 +207,10 @@ void map::rendermap(Console& g_Console, int x, int y)
                     else if (map[y + a][x + b] == 'O')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
+                    }
+                    else if (map[y + a][x + b] == 'G')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
                     }
                     else if (map[y + a][x + b] == ' ')
                     {
@@ -239,6 +243,10 @@ void map::renderFullLantern(Console& g_Console, int x, int y)
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
                     }
+                    else if (map[y + a][x + b] == 'G')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
+                    }
                     else if (map[y + a][x + b] == ' ')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
@@ -267,6 +275,10 @@ void map::renderHalfLantern(Console& g_Console, int x, int y)
                     else if (map[y + a][x + b] == 'O')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
+                    }
+                    else if (map[y + a][x + b] == 'G')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
                     }
                     else if (map[y + a][x + b] == ' ')
                     {
@@ -297,6 +309,10 @@ void map::renderDimLantern(Console& g_Console, int x, int y)
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, 'O', 0x8F);
                     }
+                    else if (map[y + a][x + b] == 'G')
+                    {
+                        g_Console.writeToBuffer(40 + b, 10 + a, 'G', 0x7D);
+                    }
                     else if (map[y + a][x + b] == ' ')
                     {
                         g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x7F);
@@ -308,3 +324,12 @@ void map::renderDimLantern(Console& g_Console, int x, int y)
     }
 }
 
+void map::ghostposition(int x, int y)
+{
+    map[y][x] = 'G';
+}
+
+void map::deleteghostposition(int x, int y)
+{
+    map[y][x] = ' ';
+}
