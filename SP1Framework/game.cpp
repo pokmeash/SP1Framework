@@ -132,19 +132,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
     MState = MENU_MAIN;
 
     //if camera true
-    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    //g_sChar.m_cLocation.Y = 10;
+    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.Y = 10;
 
     //if camera false
-    g_sChar.m_cLocation.X = 40; 
-    g_sChar.m_cLocation.Y = 18;
+    /*g_sChar.m_cLocation.X = 40; 
+    g_sChar.m_cLocation.Y = 18;*/
 
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = false; // camera follow
+    g_sCameraState.counter = true; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -1045,6 +1045,7 @@ void moveCharacter()
     int thedir;
     if (ghost != nullptr)
     {
+        //setting of ghost direction
         int diffinx = x - ghost->getPos().getx();
         int diffiny = y - ghost->getPos().gety();
 
@@ -1075,6 +1076,9 @@ void moveCharacter()
             thedir = diry;
         }
 
+        ghost->setDirection(thedir);
+
+        //if there is a row of walls in chosen direction, move in other axis 
         if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
         {
             if (thedir == dirx)
@@ -1085,16 +1089,41 @@ void moveCharacter()
             {
                 thedir = dirx;
             }
+
+            ghost->setDirection(thedir);
         }
+        //if lantern is on and next position will be within player's field of vision, do not move
+        if (fullLantern || halfLantern)
+        {
+            if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
+            {
+                for (int i = 1; i <= 4; i++)
+                {
+                    ghost->setDirection(i);
+                    if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()) == false)
+                    {
+                        break;
+                    }
+                }
 
-        ghost->setDirection(thedir);
+            }
+            else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
+            {
+                ghost->setDirection(0);
+            }
+            
+        }
+      
 
+        //updates ghosts' position based on chosen direction
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
         {
             ghostSpeed = 0;
             Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
             ghost->updatePos();
+
+            //pass through wall(if its just one wall)
             if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != ' ' && Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != 'P')
             {
                 ghost->updatePos();
@@ -1823,5 +1852,29 @@ void renderDialogue(cutscene& scene)
     }
     introcutscene(g_Console);
 
+}
+
+bool checkifinRadius(int posx, int posy)
+{
+    int radx = 0;
+    int rady = 0;
+
+    if (fullLantern)
+    {
+        radx = 10;
+        rady = 4;
+    }
+    else if (halfLantern)
+    {
+        radx = 8;
+        rady = 3;
+    }
+
+    if (posx <= x + radx && posx >= x - radx && posy <= y + rady && posy >= y - rady)
+    {
+        return true;
+    }
+
+    return false;
 }
 

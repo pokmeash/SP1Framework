@@ -125,6 +125,9 @@ void playSTAGE1();
 void initSTAGE2();
 void playSTAGE2();
 
+//Game Usage Tings
+bool checkifinRadius(int posx, int posy);
+
 //UI, HUD tings
 bool checkButtonClick(button button);
 void checkButtonSelect(int a);
