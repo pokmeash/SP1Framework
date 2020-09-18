@@ -399,7 +399,7 @@ void playSTAGE1()
 
 void initSTAGE2()
 {
-   
+    delete ghost;
     g_dLanternTime = 0.0;
     ghost = new entity(x + 10, y);
     S2State = S2_GAME;
