@@ -43,9 +43,12 @@ SGameChar   g_sDoor;
 SGameChar   g_sCameraState;
 SGameChar   g_sFish;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
+EGAMESTATES currentStage = S_STAGE1;
 STAGE1states S1State = S1_INIT;
 STAGE2states S2State = S2_INIT;
-STAGE3states S3State = S3_INIT; 
+STAGE3states S3State = S3_INIT;
+
+bool lose = false;
 
 // Console object
 Console g_Console(80, 30, "SP1 Framework");
@@ -54,6 +57,7 @@ Console g_Console(80, 30, "SP1 Framework");
 button playButton(13, 3, "Play", 40, 12);
 button quitButton(13, 3, "Quit", 40, 24);
 button resumeButton(13, 3, "Resume", 40, 12);
+button retryButton(13, 3, "Retry", 40, 12);
 button stagesButton(13, 3, "Stages", 40, 18);
 button backButton(13, 3, "Main Menu", 40, 18);
 button S1Button(13, 3, "Stage 1", 40, 6);
@@ -70,6 +74,8 @@ button* pauseButtons[3] = { &resumeButton, &backButton, &quitButton };
 int pauseButtonsCount = 3;
 button* stageButtons[6] = {&S1Button, &S2Button, &S3Button, &backButton, &PressureButton, &PowerButton};
 int stageButtonsCount = 6;
+button* loseButtons[3] = {&retryButton, &backButton, &quitButton};
+int loseButtonsCount = 3;
 
 bool WButtonDown = false;
 bool SButtonDown = false;
@@ -157,7 +163,7 @@ void init( void )
     horrorIntro.setStory(4, "You: One cool summer night, you decided to go out for a walk to take a breather.");
     horrorIntro.setStory(5, "While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine by the shore.");
     horrorIntro.setStory(6, "So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
-    horrorIntro.setStory(7, "You then decided to take a look inside the submarine, hoping to solve the mystery.");
+    horrorIntro.setStory(7, "The hatch was open, and you decided to take a look inside the submarine, hoping to solve the mystery.");
     helloGhost.setStory(0, "ghost appear whoosh");
     scubaSuit.setStory(0, "AAAA");
     escape.setStory(0, "AAAA");
@@ -353,6 +359,8 @@ void update(double dt)
             break;
         case S_gameOverGhost: update_gameOverGhost();
             break;
+        case S_LOSE: loseMenuWait();
+            break;
         case S_PRESSUREGAME: update_pressureMini();
             break;
         }
@@ -368,6 +376,8 @@ void initSTAGE1()
     //set spawnpoints; etc
     objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
     S1State = S1_GAME;
+    currentStage = S_STAGE1;
+    
 }
 
 void playSTAGE1()
@@ -389,19 +399,11 @@ void playSTAGE1()
 
 void initSTAGE2()
 {
-    /*int posx;
-    int posy;
-    do
-    {
-        posx = rand() % 150;
-        posy = rand() % 30;
-
-    } while (Map.map[posy][posx] == '+');*/
-    //ghost = new entity(posx, posy);
-
+   
     g_dLanternTime = 0.0;
     ghost = new entity(x + 10, y);
     S2State = S2_GAME;
+    currentStage = S_STAGE2;
 }
 
 void playSTAGE2()
@@ -412,6 +414,10 @@ void playSTAGE2()
         initSTAGE2();
         break;
     case S2_GAME:
+        if (lose)
+        {
+            g_eGameState = S_gameOverGhost;
+        }
         updateGame();
         break;
     }
@@ -477,7 +483,9 @@ void update_gameOverGhost()
 {
     if (g_dGOghostTime > 10)
     {
-        g_eGameState = S_MAINMENU;
+        selectedButton = &retryButton;
+        g_eGameState = S_LOSE;
+        MState = MENU_LOSE;
     }
     processUserInput();
 }
@@ -682,6 +690,7 @@ void fishLeft(Console& g_Console, int j)
         }
     }
 }
+
 void update_pressureMini()
 {
     processUserInput();
@@ -907,7 +916,7 @@ void moveCharacter()
 
         if (diffinx == 0 && diffiny == 0)
         {
-            ghost->setDirection(0);
+            lose = true;
         }
 
         ghost->setDirection(thedir);
@@ -998,6 +1007,8 @@ void render()
     case S_SWIM:
         break;
     case S_gameOverGhost: gameOverGhost();
+        break;
+    case S_LOSE: renderLoseMenu();
         break;
     case S_PRESSUREGAME: pressureMini();
         break;
@@ -1288,6 +1299,15 @@ void renderStagesMenu()
     renderSelectedButton();
 }
 
+void renderLoseMenu()
+{
+    renderButton(retryButton);
+    renderButton(backButton);
+    renderButton(quitButton);
+
+    renderSelectedButton();
+}
+
 void renderHUD()
 {
     COORD pos;
@@ -1465,6 +1485,37 @@ void stagesMenuWait()
     }
 }
 
+void loseMenuWait()
+{
+    checkButtonSelect(loseButtonsCount);
+
+    if (g_skKeyEvent[K_SPACE].keyDown)
+    {
+        switch (buttonIndex)
+        {
+        case 0:
+            g_eGameState = currentStage;
+            S1State = S1_INIT;
+            S2State = S2_INIT;
+            S3State = S3_INIT;
+            break;
+        case 1:
+            g_eGameState = S_MAINMENU;
+            MState = MENU_MAIN;
+            S1State = S1_INIT;
+            S2State = S2_INIT;
+            S3State = S3_INIT;
+            selectedButton = &playButton;
+            break;
+        case 2:
+            g_bQuitGame = true;
+            break;
+        }
+        buttonIndex = 0;
+        lose = false;
+    }
+}
+
 bool checkButtonClick(button button)
 {
     if (g_mouseEvent.buttonState == FROM_LEFT_1ST_BUTTON_PRESSED)
@@ -1536,6 +1587,9 @@ void changeButton(bool down)
         break;
     case MENU_STAGES:
         selectedButton = stageButtons[buttonIndex];
+        break;
+    case MENU_LOSE:
+        selectedButton = loseButtons[buttonIndex];
         break;
     }
 }
