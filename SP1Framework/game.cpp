@@ -17,6 +17,8 @@ double  g_dElapsedTime;
 double  g_dDeltaTime;
 double g_dGOghostTime;
 double g_dFishTime;
+double g_dSeaTime;
+double g_dCountdownTime;
 double FishTime;
 double g_dLanternTime;
 double g_dFlickerTime;
@@ -26,7 +28,7 @@ bool halfLantern;
 bool dimLantern;
 bool offFlicker;
 bool onFlicker;
-int rand1, rand2, rand3, rand4, randfish;
+int rand1, rand2, rand3, rand4, randfish, randfish1, randfish2;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -34,14 +36,16 @@ int x;
 int y;
 
 
-map Map;
 
+map Map;
 
 // Game specific variables here
 SGameChar   g_sChar;
 SGameChar   g_sDoor;
 SGameChar   g_sCameraState;
 SGameChar   g_sFish;
+SGameChar   g_sSea;
+SGameChar   g_sCountdown;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 EGAMESTATES currentStage = S_STAGE1;
 STAGE1states S1State = S1_INIT;
@@ -128,19 +132,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_MAINMENU;
+    g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
     //if camera true
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = 10;
+    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    //g_sChar.m_cLocation.Y = 10;
 
     //if camera false
-    //g_sChar.m_cLocation.X = 40; 
-    //g_sChar.m_cLocation.Y = 18;
+    g_sChar.m_cLocation.X = 40; 
+    g_sChar.m_cLocation.Y = 18;
 
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = true; // camera follow
+    g_sCameraState.counter = false; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -172,6 +176,8 @@ void init( void )
     //minigames (camera state to false)
     g_sDoor.counter = true;
     g_sFish.startTimer = false;
+    g_sSea.startTimer = false;
+    g_sCountdown.startTimer = false;
 }
 
 //--------------------------------------------------------------
@@ -329,6 +335,8 @@ void update(double dt)
     g_dFlickerTime += dt;
     FishTime += dt;
     g_dFishTime += dt;
+    g_dSeaTime += dt;
+    g_dCountdownTime += dt;
 
     if (!paused)
     {
@@ -417,6 +425,7 @@ void playSTAGE2()
         if (lose)
         {
             g_eGameState = S_gameOverGhost;
+            g_dGOghostTime = 0.0;
         }
         updateGame();
         break;
@@ -428,7 +437,12 @@ void updateGame()       // gameplay logic
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
                         // sound can be played here too.
-    
+    if (Map.map[y][x] == 'G')
+    {
+        lose = true;
+        Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
+
+    }
     if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
@@ -611,63 +625,63 @@ void gameOverGhost()
     }
 }
 
-void fishLeft(Console& g_Console, int j)
+void fishLeft(Console& g_Console, int j, CHAR colour)
 {
     COORD c;
     if (g_dFishTime > 1)
     {
-        mini.fishLeft(g_Console, 22, j);
+        mini.fishLeft(g_Console, 22, j, colour);
         if (g_dFishTime > 1.3)
         {
-            mini.fishLeft(g_Console, 24, j);
+            mini.fishLeft(g_Console, 24, j, colour);
             if (g_dFishTime > 1.6)
             {
-                mini.fishLeft(g_Console, 26, j);
+                mini.fishLeft(g_Console, 26, j, colour);
                 if (g_dFishTime > 1.9)
                 {
-                    mini.fishLeft(g_Console, 28, j);
+                    mini.fishLeft(g_Console, 28, j, colour);
                     if (g_dFishTime > 2.2)
                     {
-                        mini.fishLeft(g_Console, 30, j);
+                        mini.fishLeft(g_Console, 30, j, colour);
                         if (g_dFishTime > 2.5)
                         {
-                            mini.fishLeft(g_Console, 32, j);
+                            mini.fishLeft(g_Console, 32, j, colour);
                             if (g_dFishTime > 2.8)
                             {
-                                mini.fishLeft(g_Console, 34, j);
+                                mini.fishLeft(g_Console, 34, j, colour);
                                 if (g_dFishTime > 3.1)
                                 {
-                                    mini.fishLeft(g_Console, 36, j);
+                                    mini.fishLeft(g_Console, 36, j, colour);
                                     if (g_dFishTime > 3.4)
                                     {
-                                        mini.fishLeft(g_Console, 38, j);
+                                        mini.fishLeft(g_Console, 38, j, colour);
                                         if (g_dFishTime > 3.7)
                                         {
-                                            mini.fishLeft(g_Console, 40, j);
+                                            mini.fishLeft(g_Console, 40, j, colour);
                                             if (g_dFishTime > 4.0)
                                             {
-                                                mini.fishLeft(g_Console, 42, j);
+                                                mini.fishLeft(g_Console, 42, j, colour);
                                                 if (g_dFishTime > 4.3)
                                                 {
-                                                    mini.fishLeft(g_Console, 44, j);
+                                                    mini.fishLeft(g_Console, 44, j, colour);
                                                     if (g_dFishTime > 4.6)
                                                     {
-                                                        mini.fishLeft(g_Console, 46, j);
+                                                        mini.fishLeft(g_Console, 46, j, colour);
                                                         if (g_dFishTime > 4.9)
                                                         {
-                                                            mini.fishLeft(g_Console, 48, j);
+                                                            mini.fishLeft(g_Console, 48, j, colour);
                                                             if (g_dFishTime > 5.2)
                                                             {
-                                                                mini.fishLeft(g_Console, 50, j);
+                                                                mini.fishLeft(g_Console, 50, j, colour);
                                                                 if (g_dFishTime > 5.5)
                                                                 {
-                                                                    mini.fishLeft(g_Console, 52, j);
+                                                                    mini.fishLeft(g_Console, 52, j, colour);
                                                                     if (g_dFishTime > 5.8)
                                                                     {
-                                                                        mini.fishLeft(g_Console, 54, j);
+                                                                        mini.fishLeft(g_Console, 54, j, colour);
                                                                         if (g_dFishTime > 6.1)
                                                                         {
-                                                                            mini.fishLeft(g_Console, 55, j);
+                                                                            mini.fishLeft(g_Console, 55, j, colour);
                                                                         }
                                                                     }
                                                                 }
@@ -687,33 +701,153 @@ void fishLeft(Console& g_Console, int j)
         }
     }
 }
+void seaUp(Console& g_Console)
+{
+    if (g_dSeaTime > 1)
+    {
+        mini.seaVoid(g_Console, 18);
+        if (g_dSeaTime > 1.6)
+        {
+            mini.seaVoid(g_Console, 17);
+            if (g_dSeaTime > 1.6)
+            {
+                mini.seaVoid(g_Console, 16);
+                if (g_dSeaTime > 2.1)
+                {
+                    mini.seaVoid(g_Console, 15);
+                    if (g_dSeaTime > 2.6)
+                    {
+                        mini.seaVoid(g_Console, 14);
+                        if (g_dSeaTime > 3.1)
+                        {
+                            mini.seaVoid(g_Console, 13);
+                            if (g_dSeaTime > 3.6)
+                            {
+                                mini.seaVoid(g_Console, 12);
+                                if (g_dSeaTime > 4.1)
+                                {
+                                    mini.seaVoid(g_Console, 11);
+                                    if (g_dSeaTime > 4.6)
+                                    {
+                                        mini.seaVoid(g_Console, 10);
+                                        if (g_dSeaTime > 5.1)
+                                        {
+                                            mini.seaVoid(g_Console, 9);
+                                            if (g_dSeaTime > 5.6)
+                                            {
+                                                mini.seaVoid(g_Console, 8);
+                                                if (g_dSeaTime > 6.1)
+                                                {
+                                                    mini.seaVoid(g_Console, 7);
+                                                    if (g_dSeaTime > 6.6)
+                                                    {
+                                                        mini.seaVoid(g_Console, 6);
+                                                        if (g_dSeaTime > 7.1)
+                                                        {
+                                                            mini.seaVoid(g_Console, 5);
+                                                            if (g_dSeaTime > 7.6)
+                                                            {
+                                                                mini.seaVoid(g_Console, 4);
+                                                                if (g_dSeaTime > 8.1)
+                                                                {
+                                                                    mini.seaVoid(g_Console, 3);
+                                                                    if (g_dSeaTime > 8.6)
+                                                                    {
+                                                                        mini.seaVoid(g_Console, 2);
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+void countDown(Console& g_Console)
+{
+    COORD c;
+    c.X = 39;
+    c.Y = 9;
+    if (g_dCountdownTime > 1)
+    {
+        g_Console.writeToBuffer(c, '3', 0x1C);
+        if (g_dCountdownTime > 2)
+        {
+            g_Console.writeToBuffer(c, '2', 0x1C);
+            if (g_dCountdownTime > 3)
+            {
+                g_Console.writeToBuffer(c, '1', 0x1C);
+                if (g_dCountdownTime > 4)
+                {
+                    c.X = 38;
+                    g_Console.writeToBuffer(c, 'G', 0x1C);
+                    c.X = 39;
+                    g_Console.writeToBuffer(c, 'o', 0x1C);
+                    c.X = 40;
+                    g_Console.writeToBuffer(c, '!', 0x1C);
+                    if (g_dCountdownTime > 4.5)
+                    {
+                        c.X = 38;
+                        g_Console.writeToBuffer(c, ' ', 0x1C);
+                        c.X = 39;
+                        g_Console.writeToBuffer(c, ' ', 0x1C);
+                        c.X = 40;
+                        g_Console.writeToBuffer(c, ' ', 0x1C);
+                        moveCharacter();
+                    }
+                }
+            }
+        }
+    }
+}
 
 void update_pressureMini()
 {
     processUserInput();
-    moveCharacter();
     if (FishTime > 1)
     {
         g_sFish.startTimer = false;
+        g_sSea.startTimer = false;
+        g_sCountdown.startTimer = true;
     }
     if (g_dFishTime > 6.4)
     {
         g_sFish.startTimer = true;
         g_sFish.counter = true;
     }
+    if (g_dSeaTime > 9.1)
+    {
+        g_sSea.startTimer = true;
+    }
+
+    if (g_dCountdownTime > 4.6)
+    {
+        g_sCountdown.startTimer = true;
+    }
 }
 
 void pressureMini()
 {
+    //initialise map
     mini.initialiseMap(g_Console);
     mini.pressureMap(g_Console);
+
     //randomise doors
     if (g_sDoor.counter == true)
     {
-        rand1 = rand() % 35 + 21;
-        rand2 = rand() % 35 + 21;
-        rand3 = rand() % 35 + 21;
-        rand4 = rand() % 35 + 21;
+        rand1 = rand() % 34 + 22;
+        rand2 = rand() % 34 + 22;
+        rand3 = rand() % 34 + 22;
+        rand4 = rand() % 34 + 22;
         g_sDoor.counter = false;
     }
     mini.pressureDoors(g_Console, rand1, 2);
@@ -725,8 +859,13 @@ void pressureMini()
     mini.pressureDoors(g_Console, rand1, 14);
     mini.pressureDoors(g_Console, rand4, 16);
     mini.pressureWin(g_Console, rand1, 1);
-    mini.fishLeft(g_Console, 52, 17);
     mini.pressureBorder(g_Console);
+
+    //countdown
+    if (g_sCountdown.startTimer == true)
+    {
+        countDown(g_Console);
+    }
 
     //fish randomise 
     if (g_sFish.startTimer == true)
@@ -738,17 +877,52 @@ void pressureMini()
     {
         if (g_sFish.counter == true)
         {
-            randfish = rand() % 15 + 3;
+            randfish = rand() % 14 + 3;
+            randfish1 = rand() % 14 + 3;
+            randfish2 = rand() % 14 + 3;
         }
         g_sFish.counter = false;
-        fishLeft(g_Console, randfish); 
+        if (mini.miniGrid[21][randfish] != '-')
+        {
+            fishLeft(g_Console, randfish, 0x1D);
+        }
+        else
+        {
+            fishLeft(g_Console, (randfish + 1), 0x1D);
+        }
+        if (mini.miniGrid[21][randfish1] != '-')
+        {
+            fishLeft(g_Console, randfish1, 0x1E);
+        }
+        else
+        {
+            fishLeft(g_Console, (randfish1 + 1), 0x1E);
+        }
+        if (mini.miniGrid[21][randfish2] != '-')
+        {
+            fishLeft(g_Console, randfish2, 0x1C);
+        }
+        else
+        {
+            fishLeft(g_Console, (randfish2 + 1), 0x1C);
+        }
+    }
+
+    if (g_sSea.startTimer == true)
+    {
+        g_dSeaTime = 0.0;
+        g_sSea.resetTimer = true;
+    }
+    if (g_sSea.resetTimer == true)
+    {
+        seaUp(g_Console);
     }
 
     mini.pressureBorder(g_Console);
     renderCharacter();
 
     //check if player collides with fish
-    if ((mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '<') || (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '>'))
+    if ((mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '<') || (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '>') || (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == 'x'))
     {
         g_dGOghostTime = 0.0;
         g_eGameState = S_gameOverGhost;
@@ -822,10 +996,12 @@ void moveCharacter()
                 x++;
             }
         }
+        /*
         if (g_skKeyEvent[K_SPACE].keyDown)
         {
             g_sChar.m_bActive = !g_sChar.m_bActive;
         }
+        */
     }
 
     else if (g_sCameraState.counter == false)
@@ -911,22 +1087,19 @@ void moveCharacter()
             }
         }
 
-        if (diffinx == 0 && diffiny == 0)
-        {
-            lose = true;
-        }
-
         ghost->setDirection(thedir);
 
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
         {
             ghostSpeed = 0;
+            Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
             ghost->updatePos();
-            if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] == '+')
+            if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != ' ' && Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != 'P')
             {
                 ghost->updatePos();
             }
+            Map.ghostposition(ghost->getPos().getx(), ghost->getPos().gety());
         }
     }
 }
@@ -1086,7 +1259,6 @@ void renderGame()
 
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
-    renderGhost();
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -1106,19 +1278,19 @@ void renderMap()
     COORD c;
     if (fullLantern == true)
     {
-        Map.renderFullLantern(g_Console, x, y); //full lantern
+        Map.rendermap(g_Console, x, y, 1); //full lantern
     }
     else if (halfLantern == true)
     {
-        Map.renderHalfLantern(g_Console, x, y); //half lantern
+        Map.rendermap(g_Console, x, y, 2); //half lantern
     }
     else if (dimLantern == true)
     {
-        Map.renderDimLantern(g_Console, x, y); //dim lantern
+        Map.rendermap(g_Console, x, y, 3); //dim lantern
     }
     else
     {
-        Map.rendermap(g_Console, x, y); //full screen
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
     
@@ -1150,16 +1322,6 @@ void renderCharacter()
     g_Console.writeToBuffer(g_sChar.m_cLocation, (char)12, charColor);
 }
 
-void renderGhost()
-{
-    COORD pos;
-    if (ghost != nullptr)
-    {
-        pos.X = ghost->getPos().getx() - x + 40;
-        pos.Y = ghost->getPos().gety() - y + 10;
-        g_Console.writeToBuffer(pos, (char)71, 0x7D);
-    }
-}
 
 void renderFramerate()
 {
@@ -1651,6 +1813,7 @@ void renderDialogue(cutscene& scene)
         pos.Y = 21 + i;
         if (i == scene.getLine(sceneIndex).length() / 77)
         {
+
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, scene.getLine(sceneIndex).length() - (77 * i)), 0x0F);
         }
         else
@@ -1658,5 +1821,6 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
+
 }
 
