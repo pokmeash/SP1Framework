@@ -18,3 +18,4 @@ public:
 	
 };
 
+void introcutscene(Console& g_Console);
