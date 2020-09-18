@@ -163,7 +163,7 @@ void init( void )
     horrorIntro.setStory(4, "You: One cool summer night, you decided to go out for a walk to take a breather.");
     horrorIntro.setStory(5, "While walking, you started to see flashes of light at the corner of your eye. You turned to see what it was, and you saw a rusty-looking submarine by the shore.");
     horrorIntro.setStory(6, "So you went to take a closer look and realised that the model number of the submarine was AW-4 Nawtilus.");
-    horrorIntro.setStory(7, "You then decided to take a look inside the submarine, hoping to solve the mystery.");
+    horrorIntro.setStory(7, "The hatch was open, and you decided to take a look inside the submarine, hoping to solve the mystery.");
     helloGhost.setStory(0, "ghost appear whoosh");
     scubaSuit.setStory(0, "AAAA");
     escape.setStory(0, "AAAA");
