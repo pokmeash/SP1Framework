@@ -132,19 +132,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
     MState = MENU_MAIN;
 
     //if camera true
-    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    //g_sChar.m_cLocation.Y = 10;
+    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.Y = 10;
 
     //if camera false
-    g_sChar.m_cLocation.X = 40; 
-    g_sChar.m_cLocation.Y = 18;
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
 
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = false; // camera follow
+    g_sCameraState.counter = true; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -409,7 +409,7 @@ void playSTAGE1()
 
 void initSTAGE2()
 {
-   
+    delete ghost;
     g_dLanternTime = 0.0;
     ghost = new entity(x + 10, y);
     S2State = S2_GAME;
@@ -445,6 +445,7 @@ void updateGame()       // gameplay logic
         Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
 
     }
+    /*
     if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
@@ -489,7 +490,7 @@ void updateGame()       // gameplay logic
         offFlicker = false;
         onFlicker = false;
     }
-    
+    */
 }
 
 void update_gameOverGhost()
@@ -1000,10 +1001,12 @@ void moveCharacter()
                 x++;
             }
         }
+        /*
         if (g_skKeyEvent[K_SPACE].keyDown)
         {
             g_sChar.m_bActive = !g_sChar.m_bActive;
         }
+        */
     }
 
     else if (g_sCameraState.counter == false)
@@ -1057,6 +1060,7 @@ void moveCharacter()
     int thedir;
     if (ghost != nullptr)
     {
+        //setting of ghost direction
         int diffinx = x - ghost->getPos().getx();
         int diffiny = y - ghost->getPos().gety();
 
@@ -1087,6 +1091,9 @@ void moveCharacter()
             thedir = diry;
         }
 
+        ghost->setDirection(thedir);
+
+        //if there is a row of walls in chosen direction, move in other axis 
         if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
         {
             if (thedir == dirx)
@@ -1097,16 +1104,41 @@ void moveCharacter()
             {
                 thedir = dirx;
             }
+
+            ghost->setDirection(thedir);
         }
+        //if lantern is on and next position will be within player's field of vision, do not move
+        if (fullLantern || halfLantern)
+        {
+            if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
+            {
+                for (int i = 1; i <= 4; i++)
+                {
+                    ghost->setDirection(i);
+                    if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()) == false)
+                    {
+                        break;
+                    }
+                }
 
-        ghost->setDirection(thedir);
+            }
+            else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
+            {
+                ghost->setDirection(0);
+            }
+            
+        }
+      
 
+        //updates ghosts' position based on chosen direction
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
         {
             ghostSpeed = 0;
             Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
             ghost->updatePos();
+
+            //pass through wall(if its just one wall)
             if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != ' ' && Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != 'P')
             {
                 ghost->updatePos();
@@ -1233,35 +1265,7 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderGame()
 {
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 11 && x == 33) || (y == 13 && x == 33) || (y == 12 && x == 32) || (y == 12 && x == 34)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 1 && x == 118) || (y == 3 && x == 118) || (y == 2 && x == 117) || (y == 2 && x == 119)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 26 && x == 74) || (y == 28 && x == 74) || (y == 27 && x == 73) || (y == 27 && x == 75)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 16) || (y == 15 && x == 16) || (y == 14 && x == 15) || (y == 14 && x == 17)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 135) || (y == 15 && x == 135) || (y == 14 && x == 134) || (y == 14 && x == 136)))
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((Map.map[y + 1][x] == 'O') || (Map.map[y - 1][x] == 'O') || (Map.map[y][x + 1] == 'O') || (Map.map[y][x - 1] == 'O')))//((y == 11 && x == 33) || (y == 13 && x == 33) || (y == 12 && x == 32) || (y == 12 && x == 34)))
     {
         g_dLanternTime = 0.0;
         fullLantern = true;
@@ -1290,22 +1294,23 @@ void renderMap()
     COORD c;
     if (fullLantern == true)
     {
-        Map.renderFullLantern(g_Console, x, y); //full lantern
+        Map.rendermap(g_Console, x, y, 1); //full lantern
     }
     else if (halfLantern == true)
     {
-        Map.renderHalfLantern(g_Console, x, y); //half lantern
+        Map.rendermap(g_Console, x, y, 2); //half lantern
     }
     else if (dimLantern == true)
     {
-        Map.renderDimLantern(g_Console, x, y); //dim lantern
+        Map.rendermap(g_Console, x, y, 3); //dim lantern
     }
     else
     {
-        Map.rendermap(g_Console, x, y); //full screen
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
-    
+    renderRoomA(1); //render diff layout of room A
+
     /*for (int i = 0; i < 81; i++)
     {
         for (int j = 20; j < 30; j++)
@@ -1313,6 +1318,7 @@ void renderMap()
             g_Console.writeToBuffer(i, j, " ", 0x0F);
         }
     }*/
+
     renderHUD();
     c.X = 20;
     c.Y = 21;
@@ -1323,6 +1329,21 @@ void renderMap()
     g_Console.writeToBuffer(c, srrs, 0x0F);
 }
 
+void renderRoomA(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomA1();
+        break;
+    case 1:
+        Map.roomA2();
+        break;
+    case 2:
+        Map.roomA3();
+        break;
+    }
+}
 void renderCharacter()
 {
     // Draw the location of the character
@@ -1502,7 +1523,7 @@ void renderHUD()
         {
             drawings.LanternDim(g_Console);
         }
-
+        
         //objective
         pos.X = 50;
 
@@ -1833,6 +1854,31 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
+    introcutscene(g_Console);
 
+}
+
+bool checkifinRadius(int posx, int posy)
+{
+    int radx = 0;
+    int rady = 0;
+
+    if (fullLantern)
+    {
+        radx = 10;
+        rady = 4;
+    }
+    else if (halfLantern)
+    {
+        radx = 8;
+        rady = 3;
+    }
+
+    if (posx <= x + radx && posx >= x - radx && posy <= y + rady && posy >= y - rady)
+    {
+        return true;
+    }
+
+    return false;
 }
 

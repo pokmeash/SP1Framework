@@ -30,7 +30,13 @@ int cutscene::getnoofLines()
 	return noofLines;
 }
 
-void frame(Console& g_Console)
+void introcutscene(Console& g_Console)
 {
-	g_Console.writeToBuffer(1,1, ' ', 0xFF);
+	//80 by 19
+
+	g_Console.writeToBuffer(0, 7, "  _________  ________", 0x0F);
+	g_Console.writeToBuffer(0, 8, " |_______  \/ _______| ", 0x0F);
+	g_Console.writeToBuffer(0, 7, "         /    \ ", 0x0F);
+	g_Console.writeToBuffer(0, 7, "  ______/  /\  \______", 0x0F);
+	g_Console.writeToBuffer(0, 7, " |________/  \________|", 0x0F);
 }
