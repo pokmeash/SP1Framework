@@ -9,4 +9,8 @@ public:
 	void rendermap(Console& g_Console, int x, int y, int light);    // render map
 	void ghostposition(int x, int y);      //ghost array map thing
 	void deleteghostposition(int x, int y);          //delete ghost array map thing
+	void roomA1();
+	void roomA2();
+	void roomA3();
 };
+

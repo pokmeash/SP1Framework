@@ -261,3 +261,59 @@ void map::deleteghostposition(int x, int y)
 {
     map[y][x] = ' ';
 }
+
+void map::roomA1() 
+{
+    //left vert wall
+    for (int i = 9; i > 5; i--)
+    {
+        map[i][51] = '+';
+    }
+    //vert wall
+    for (int i = 7; i < 9; i++)
+    {
+        map[i][64] = '+';
+    }
+    //hori wall
+    for (int i = 77; i > 68; i--)
+    {
+        map[8][i] = '+';
+    }
+}
+void map::roomA2()
+{
+    //hori top wall
+    for (int i = 31; i < 45; i++)
+    {
+        map[3][i] = '+';
+    }
+    //hori middle wall
+    for (int i = 63; i > 50; i--)
+    {
+        map[8][i] = '+';
+    }
+    //vert wall
+    for (int i = 7; i < 9; i++)
+    {
+        map[i][64] = '+';
+    }
+}
+
+void map::roomA3()
+{
+    //hori top wall
+    for (int i = 9; i > 4; i--)
+    {
+        map[i][42] = '+';
+    }
+    //hori middle wall
+    for (int i = 65; i > 60; i--)
+    {
+        map[8][i] = '+';
+    }
+    //vert wall
+    for (int i = 7; i < 9; i++)
+    {
+        map[i][65] = '+';
+    }
+}
