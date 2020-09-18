@@ -18,4 +18,4 @@ public:
 	
 };
 
-void frame(Console& g_Console);
+void introcutscene(Console& g_Console);

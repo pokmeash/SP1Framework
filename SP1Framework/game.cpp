@@ -1651,6 +1651,7 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
+    introcutscene(g_Console);
 
 }
 
