@@ -275,6 +275,8 @@ void gameplayKBHandler(const KEY_EVENT_RECORD& keyboardEvent)
     case VK_SPACE: key = K_SPACE; break;
     case VK_ESCAPE: key = K_ESCAPE; break; 
     case VK_RETURN: key = K_ENTER; break;
+    case VK_LEFT: key = K_LEFT; break;
+    case VK_RIGHT: key = K_RIGHT; break;
     case 0x57: key = K_W; break;
     case 0x41: key = K_A; break;
     case 0x53: key = K_S; break;
@@ -443,6 +445,7 @@ void updateGame()       // gameplay logic
         Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
 
     }
+    /*
     if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
@@ -487,7 +490,7 @@ void updateGame()       // gameplay logic
         offFlicker = false;
         onFlicker = false;
     }
-    
+    */
 }
 
 void update_gameOverGhost()
@@ -917,8 +920,10 @@ void pressureMini()
     {
         seaUp(g_Console);
     }
-
     mini.pressureBorder(g_Console);
+    //key things
+
+
     renderCharacter();
 
     //check if player collides with fish
@@ -1037,6 +1042,16 @@ void moveCharacter()
                 g_sChar.m_cLocation.X++;
             }
         }
+
+        //ghost attack keys
+        if (g_skKeyEvent[K_LEFT].keyDown)
+        {
+            mini.attack(g_Console, 0);
+        }
+        if (g_skKeyEvent[K_RIGHT].keyDown)
+        {
+            mini.attack(g_Console, 60);
+        }
     }
 
     //ghost chase
@@ -1045,6 +1060,7 @@ void moveCharacter()
     int thedir;
     if (ghost != nullptr)
     {
+        //setting of ghost direction
         int diffinx = x - ghost->getPos().getx();
         int diffiny = y - ghost->getPos().gety();
 
@@ -1075,6 +1091,9 @@ void moveCharacter()
             thedir = diry;
         }
 
+        ghost->setDirection(thedir);
+
+        //if there is a row of walls in chosen direction, move in other axis 
         if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
         {
             if (thedir == dirx)
@@ -1085,16 +1104,41 @@ void moveCharacter()
             {
                 thedir = dirx;
             }
+
+            ghost->setDirection(thedir);
         }
+        //if lantern is on and next position will be within player's field of vision, do not move
+        if (fullLantern || halfLantern)
+        {
+            if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
+            {
+                for (int i = 1; i <= 4; i++)
+                {
+                    ghost->setDirection(i);
+                    if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()) == false)
+                    {
+                        break;
+                    }
+                }
 
-        ghost->setDirection(thedir);
+            }
+            else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
+            {
+                ghost->setDirection(0);
+            }
+            
+        }
+      
 
+        //updates ghosts' position based on chosen direction
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
         {
             ghostSpeed = 0;
             Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
             ghost->updatePos();
+
+            //pass through wall(if its just one wall)
             if (Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != ' ' && Map.map[ghost->getPos().gety()][ghost->getPos().getx()] != 'P')
             {
                 ghost->updatePos();
@@ -1221,35 +1265,7 @@ void renderSplashScreen()  // renders the splash screen
 
 void renderGame()
 {
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 11 && x == 33) || (y == 13 && x == 33) || (y == 12 && x == 32) || (y == 12 && x == 34)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 1 && x == 118) || (y == 3 && x == 118) || (y == 2 && x == 117) || (y == 2 && x == 119)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 26 && x == 74) || (y == 28 && x == 74) || (y == 27 && x == 73) || (y == 27 && x == 75)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 16) || (y == 15 && x == 16) || (y == 14 && x == 15) || (y == 14 && x == 17)))
-    {
-        g_dLanternTime = 0.0;
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if ((g_skKeyEvent[K_SPACE].keyDown) && ((y == 13 && x == 135) || (y == 15 && x == 135) || (y == 14 && x == 134) || (y == 14 && x == 136)))
+    if ((g_skKeyEvent[K_SPACE].keyDown) && ((Map.map[y + 1][x] == 'O') || (Map.map[y - 1][x] == 'O') || (Map.map[y][x + 1] == 'O') || (Map.map[y][x - 1] == 'O')))//((y == 11 && x == 33) || (y == 13 && x == 33) || (y == 12 && x == 32) || (y == 12 && x == 34)))
     {
         g_dLanternTime = 0.0;
         fullLantern = true;
@@ -1293,7 +1309,8 @@ void renderMap()
         Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
-    
+    renderRoomA(1); //render diff layout of room A
+
     /*for (int i = 0; i < 81; i++)
     {
         for (int j = 20; j < 30; j++)
@@ -1301,6 +1318,7 @@ void renderMap()
             g_Console.writeToBuffer(i, j, " ", 0x0F);
         }
     }*/
+
     renderHUD();
     c.X = 20;
     c.Y = 21;
@@ -1311,6 +1329,21 @@ void renderMap()
     g_Console.writeToBuffer(c, srrs, 0x0F);
 }
 
+void renderRoomA(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomA1();
+        break;
+    case 1:
+        Map.roomA2();
+        break;
+    case 2:
+        Map.roomA3();
+        break;
+    }
+}
 void renderCharacter()
 {
     // Draw the location of the character
@@ -1490,7 +1523,7 @@ void renderHUD()
         {
             drawings.LanternDim(g_Console);
         }
-
+        
         //objective
         pos.X = 50;
 
@@ -1830,5 +1863,29 @@ void renderDialogue(cutscene& scene)
         introcutscene2(g_Console);
     }
 
+}
+
+bool checkifinRadius(int posx, int posy)
+{
+    int radx = 0;
+    int rady = 0;
+
+    if (fullLantern)
+    {
+        radx = 10;
+        rady = 4;
+    }
+    else if (halfLantern)
+    {
+        radx = 8;
+        rady = 3;
+    }
+
+    if (posx <= x + radx && posx >= x - radx && posy <= y + rady && posy >= y - rady)
+    {
+        return true;
+    }
+
+    return false;
 }
 

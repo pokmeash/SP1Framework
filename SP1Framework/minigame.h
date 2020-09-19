@@ -22,5 +22,10 @@ public:
 	void countdown3(Console& g_Console);
 	void countdown4(Console& g_Console);
 	void countdown5(Console& g_Console);
+
+	//left side
+	void attack(Console& g_Console, int x);
+
+	//right side
 };
 
