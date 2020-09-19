@@ -18,4 +18,5 @@ public:
 	
 };
 
-void introcutscene(Console& g_Console);
+void introcutscene1(Console& g_Console);
+void introcutscene2(Console& g_Console);
