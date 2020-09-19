@@ -132,19 +132,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
     MState = MENU_MAIN;
 
     //if camera true
-    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    //g_sChar.m_cLocation.Y = 10;
+    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.Y = 10;
 
     //if camera false
-    g_sChar.m_cLocation.X = 40; 
-    g_sChar.m_cLocation.Y = 18;
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
 
-    g_sChar.m_bActive = true;
-    g_sCameraState.counter = false; // camera follow
+    // g_sChar.m_bActive = true;
+    // g_sCameraState.counter = false; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -1821,7 +1821,14 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
-    introcutscene(g_Console);
+    if (sceneIndex < 4)
+    {
+        introcutscene1(g_Console);
+    }
+    else if (sceneIndex < 8)
+    {
+        introcutscene2(g_Console);
+    }
 
 }
 
