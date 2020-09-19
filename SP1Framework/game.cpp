@@ -149,8 +149,8 @@ void init( void )
     g_sChar.m_cLocation.X = 40; 
     g_sChar.m_cLocation.Y = 18;
 
-    g_sChar.m_bActive = true;
-    g_sCameraState.counter = false; // camera follow
+    // g_sChar.m_bActive = true;
+    // g_sCameraState.counter = false; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -2191,7 +2191,14 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
-    introcutscene(g_Console);
+    if (sceneIndex < 4)
+    {
+        introcutscene1(g_Console);
+    }
+    else if (sceneIndex < 8)
+    {
+        introcutscene2(g_Console);
+    }
 
 }
 
