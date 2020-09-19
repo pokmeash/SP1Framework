@@ -93,6 +93,8 @@ struct SGameChar : public entity
     bool counter;
     bool startTimer;
     bool resetTimer;
+    bool attacked;
+    int count, count2, count3;
 };
 
 void init        ( void );      // initialize your variables, allocate memory, etc
@@ -157,6 +159,10 @@ void gameOverGhost();
 void fishLeft(Console& g_Console, int j, CHAR colour);
 void seaUp(Console& g_Console);
 void countDown(Console& g_Console);
+void ghostWarning(Console& g_Console);
+void ghostWarning2(Console& g_Console);
+
+
 void update_pressureMini();
 void pressureMini();
 

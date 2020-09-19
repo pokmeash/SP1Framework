@@ -7,7 +7,7 @@ class ghostgameover :
 public:
 	char Grid[80][30];
     int i, j;
-
+    //Ghost 1
     void initGridGhost(Console& g_Console);
     void GhostHair(Console& g_Console);
     void GhostSprite1(Console& g_Console);
@@ -40,5 +40,9 @@ public:
     void GhostSprite28(Console& g_Console);
     void GhostSprite29(Console& g_Console);
     void GhostSprite30(Console& g_Console);
+
+    //Ghost 2
+    void miniGhost1(Console& g_Console, int x);
+    void miniGhost2(Console& g_Console);
 };
 

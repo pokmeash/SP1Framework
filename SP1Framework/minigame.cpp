@@ -171,3 +171,48 @@ void minigame::attack(Console& g_Console, int x)
 	}
 }
 
+void minigame::smile(Console& g_Console, int x, int y, int k)
+{
+	COORD c;
+	c.X = x + k;
+	c.Y = y;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0x88);
+}
+
+void minigame::eyes(Console& g_Console, int x, int y, int k)
+{
+	COORD c;
+	c.X = x + k;
+	c.Y = y;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0x88);
+	c.Y = y + 4;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0x88);
+}
+
+void minigame::tears(Console& g_Console, int x, int y, int k)
+{
+	COORD c;
+	c.X = x + k;
+	c.Y = y;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0xFF);
+	c.X = x + 1 + k;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0xFF);
+	c.X = x + 7 + k;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0xFF);
+	c.X = x + 8 + k;
+	g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = '_', 0xFF);
+}
+
+void minigame::clearWarning(Console& g_Console, int x, int y, int k)
+{
+	COORD c;
+	for (int i = x; i < (x + 15); i++)
+	{
+		for (int j = y; j < (y + 5); j++)
+		{
+			c.X = i + k;
+			c.Y = j;
+			g_Console.writeToBuffer(c, miniGrid[c.X][c.Y] = ' ', 0x77);
+		}
+	}
+}

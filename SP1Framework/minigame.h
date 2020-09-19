@@ -23,9 +23,13 @@ public:
 	void countdown4(Console& g_Console);
 	void countdown5(Console& g_Console);
 
-	//left side
+	//attack ghost
 	void attack(Console& g_Console, int x);
 
-	//right side
+	//warnings
+	void smile(Console& g_Console, int x, int y, int k);
+	void eyes(Console& g_Console, int x, int y, int k);
+	void tears(Console& g_Console, int x, int y, int k);
+	void clearWarning(Console& g_Console, int x, int y, int k);
 };
 

@@ -1112,3 +1112,198 @@ void ghostgameover::GhostSprite30(Console& g_Console)
 		}
 	}
 }
+
+void ghostgameover::miniGhost1(Console& g_Console, int x)
+{
+	COORD c;
+	//body
+	for (int i = (x - 3); i < (x + 13); i++)
+	{
+		for (int j = 12; j < 20; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0xFF);
+		}
+	}
+
+	for (int j = 13; j < 20; j++)
+	{
+		c.X = x - 4;
+		c.Y = j;
+		g_Console.writeToBuffer(c, ' ', 0xFF);
+	}
+	for (int j = 13; j < 20; j++)
+	{
+		c.X = x + 13;
+		c.Y = j;
+		g_Console.writeToBuffer(c, ' ', 0xFF);
+	}
+	for (int j = 14; j < 20; j++)
+	{
+		c.X = x - 5;
+		c.Y = j;
+		g_Console.writeToBuffer(c, ' ', 0xFF);
+	}
+	for (int j = 14; j < 20; j++)
+	{
+		c.X = x + 14;
+		c.Y = j;
+		g_Console.writeToBuffer(c, ' ', 0xFF);
+	}
+	//hair
+	for (int i = x; i < (x + 10); i++)
+	{
+		c.X = i;
+		c.Y = 4;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+	for (int i = (x - 1); i < (x + 11); i++)
+	{
+		c.X = i;
+		c.Y = 5;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+	for (int i = (x - 2); i < (x + 12); i++)
+	{
+		for (int j = 6; j < 15; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x00);
+		}
+	}
+	for (int i = (x - 1); i < (x + 11); i++)
+	{
+		c.X = i;
+		c.Y = 15;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+	for (int i = x; i < (x + 10); i++)
+	{
+		c.X = i;
+		c.Y = 16;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+	for (int i = (x + 1); i < (x + 9); i++)
+	{
+		c.X = i;
+		c.Y = 17;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+}
+
+void ghostgameover::miniGhost2(Console& g_Console)
+{
+	COORD c;
+
+	for (int i = 0; i < 80; i++)
+	{
+		for (int j = 0; j < 30; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x44);
+		}
+	}
+
+	//left eye
+	for (int i = 23; i < 32; i++)
+	{
+		for (int j = 5; j < 11; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x00);
+		}
+	}
+
+	for (int i = 14; i < 23; i++)
+	{
+		for (int j = 7; j < 13; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x00);
+		}
+	}
+
+	//right eye
+	for (int i = 48; i < 57; i++)
+	{
+		for (int j = 8; j < 14; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x00);
+		}
+	}
+
+	for (int i = 57; i < 66; i++)
+	{
+		for (int j = 10; j < 16; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x00);
+		}
+	}
+	
+	//mouth
+	for (int i = 18; i < 48; i++)
+	{
+		c.X = i;
+		c.Y = 16;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+
+	for (int i = 14; i < 57; i++)
+	{
+		c.X = i;
+		c.Y = 17;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+
+	for (int i = 10; i < 66; i++)
+	{
+		for (int j = 18; j < 25; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0x00);
+		}
+	}
+	for (int i = 16; i < 61; i++)
+	{
+		c.X = i;
+		c.Y = 25;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+	for (int i = 19; i < 54; i++)
+	{
+		c.X = i;
+		c.Y = 26;
+		g_Console.writeToBuffer(c, ' ', 0x00);
+	}
+
+	//pupils
+	for (int i = 22; i < 26; i++)
+	{
+		for (int j = 8; j < 10; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0xCC);
+		}
+	}
+
+	for (int i = 54; i < 58; i++)
+	{
+		for (int j = 11; j < 13; j++)
+		{
+			c.X = i;
+			c.Y = j;
+			g_Console.writeToBuffer(c, ' ', 0xCC);
+		}
+	}
+}

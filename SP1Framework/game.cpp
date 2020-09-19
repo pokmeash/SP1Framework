@@ -29,6 +29,9 @@ bool dimLantern;
 bool offFlicker;
 bool onFlicker;
 int rand1, rand2, rand3, rand4, randfish, randfish1, randfish2;
+bool left, right;
+double g_dGhostWarnTime;
+double g_dGhostWarn2Time;
 SKeyEvent g_skKeyEvent[K_COUNT];
 SMouseEvent g_mouseEvent;
 
@@ -45,6 +48,9 @@ SGameChar   g_sDoor;
 SGameChar   g_sCameraState;
 SGameChar   g_sFish;
 SGameChar   g_sSea;
+SGameChar   g_sGhost;
+SGameChar   g_sGhost2;
+SGameChar   g_sAttack;
 SGameChar   g_sCountdown;
 EGAMESTATES g_eGameState = S_MAINMENU; // initial state
 EGAMESTATES currentStage = S_STAGE1;
@@ -132,19 +138,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_MAINMENU;
+    g_eGameState = S_PRESSUREGAME;
     MState = MENU_MAIN;
 
     //if camera true
-    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    g_sChar.m_cLocation.Y = 10;
+    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    //g_sChar.m_cLocation.Y = 10;
 
     //if camera false
-    //g_sChar.m_cLocation.X = 40; 
-    //g_sChar.m_cLocation.Y = 18;
+    g_sChar.m_cLocation.X = 40; 
+    g_sChar.m_cLocation.Y = 18;
 
     g_sChar.m_bActive = true;
-    g_sCameraState.counter = true; // camera follow
+    g_sCameraState.counter = false; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -178,6 +184,11 @@ void init( void )
     g_sFish.startTimer = false;
     g_sSea.startTimer = false;
     g_sCountdown.startTimer = false;
+    g_sGhost.counter = false;
+    g_sGhost2.counter = false;
+    g_sGhost.count = 0;
+    g_sGhost.count2 = 0;
+    g_sGhost.count3 = 0;
 }
 
 //--------------------------------------------------------------
@@ -339,6 +350,8 @@ void update(double dt)
     g_dFishTime += dt;
     g_dSeaTime += dt;
     g_dCountdownTime += dt;
+    g_dGhostWarnTime += dt;
+    g_dGhostWarn2Time += dt;
 
     if (!paused)
     {
@@ -503,7 +516,6 @@ void update_gameOverGhost()
     }
     processUserInput();
 }
-
 void gameOverGhost()
 { 
     COORD c;
@@ -812,7 +824,206 @@ void countDown(Console& g_Console)
         }
     }
 }
-
+void ghostWarning(Console& g_Console)
+{
+    if (g_dGhostWarnTime > 1)
+    {
+        g_sGhost.m_cLocation.X = 5;
+        g_sGhost.m_cLocation.Y = 7;
+        mini.smile(g_Console, 2, 8, 0);
+        if (g_dGhostWarnTime > 1.1)
+        {
+            mini.smile(g_Console, 3, 9, 0);
+            if (g_dGhostWarnTime > 1.2)
+            {
+                mini.smile(g_Console, 4, 10, 0);
+                if (g_dGhostWarnTime > 1.3)
+                {
+                    mini.eyes(g_Console, 5, 7, 0);
+                    if (g_dGhostWarnTime > 1.4)
+                    {
+                        mini.eyes(g_Console, 6, 7, 0);
+                        if (g_dGhostWarnTime > 1.5)
+                        {
+                            mini.smile(g_Console, 7, 11, 0);
+                            if (g_dGhostWarnTime > 1.6)
+                            {
+                                mini.smile(g_Console, 8, 11, 0);
+                                if (g_dGhostWarnTime > 1.7)
+                                {
+                                    mini.smile(g_Console, 9, 11, 0);
+                                    if (g_dGhostWarnTime > 1.8)
+                                    {
+                                        mini.smile(g_Console, 10, 11, 0);
+                                        if (g_dGhostWarnTime > 1.9)
+                                        {
+                                            mini.smile(g_Console, 11, 11, 0);
+                                            if (g_dGhostWarnTime > 2.0)
+                                            {
+                                                mini.eyes(g_Console, 12, 7, 0);
+                                                if (g_dGhostWarnTime > 2.1)
+                                                {
+                                                    mini.eyes(g_Console, 13, 7, 0);
+                                                    if (g_dGhostWarnTime > 2.2)
+                                                    {
+                                                        mini.smile(g_Console, 14, 10, 0);
+                                                        if (g_dGhostWarnTime > 2.3)
+                                                        {
+                                                            mini.smile(g_Console, 15, 9, 0);
+                                                            if (g_dGhostWarnTime > 2.4)
+                                                            {
+                                                                mini.smile(g_Console, 16, 8, 0);
+                                                                if (g_dGhostWarnTime > 2.5)
+                                                                {
+                                                                    mini.tears(g_Console, 5, 8, 0);
+                                                                    if (g_dGhostWarnTime > 2.6)
+                                                                    {
+                                                                        mini.tears(g_Console, 5, 9, 0);
+                                                                        if (g_dGhostWarnTime > 2.7)
+                                                                        {
+                                                                            mini.tears(g_Console, 5, 10, 0);
+                                                                            if (g_dGhostWarnTime > 3.0)
+                                                                            {
+                                                                                mini.clearWarning(g_Console, 2, 7, 0);
+                                                                                g_sGhost.m_cLocation.X = 10;
+                                                                                g_sGhost.m_cLocation.Y = 10;
+                                                                                if (g_dGhostWarnTime > 3.3)
+                                                                                {
+                                                                                    if (g_sGhost.count2 == 0)
+                                                                                    {
+                                                                                        ghostGO.miniGhost1(g_Console, 10);
+                                                                                        ghostGO.miniGhost1(g_Console, 35);
+                                                                                        ghostGO.miniGhost1(g_Console, 60);
+                                                                                        if (g_dGhostWarnTime > 4.0)
+                                                                                        {
+                                                                                            ghostGO.miniGhost2(g_Console);
+                                                                                        }
+                                                                                    }
+                                                                                    else if (g_sGhost.count2 >= 1)
+                                                                                    {
+                                                                                       //wheeeeeeeeeeeeeeeeeee
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+void ghostWarning2(Console& g_Console)
+{
+    if (g_dGhostWarn2Time > 1)
+    {
+        g_sGhost.m_cLocation.X = 62;
+        g_sGhost.m_cLocation.Y = 7;
+        mini.smile(g_Console, 62, 8, 0);
+        if (g_dGhostWarn2Time > 1.1)
+        {
+            mini.smile(g_Console, 63, 9, 0);
+            if (g_dGhostWarn2Time > 1.2)
+            {
+                mini.smile(g_Console, 64, 10, 0);
+                if (g_dGhostWarn2Time > 1.3)
+                {
+                    mini.eyes(g_Console, 65, 7, 0);
+                    if (g_dGhostWarn2Time > 1.4)
+                    {
+                        mini.eyes(g_Console, 66, 7, 0);
+                        if (g_dGhostWarn2Time > 1.5)
+                        {
+                            mini.smile(g_Console, 67, 11, 0);
+                            if (g_dGhostWarn2Time > 1.6)
+                            {
+                                mini.smile(g_Console, 68, 11, 0);
+                                if (g_dGhostWarn2Time > 1.7)
+                                {
+                                    mini.smile(g_Console, 69, 11, 0);
+                                    if (g_dGhostWarn2Time > 1.8)
+                                    {
+                                        mini.smile(g_Console, 70, 11, 0);
+                                        if (g_dGhostWarn2Time > 1.9)
+                                        {
+                                            mini.smile(g_Console, 71, 11, 0);
+                                            if (g_dGhostWarn2Time > 2.0)
+                                            {
+                                                mini.eyes(g_Console, 72, 7, 0);
+                                                if (g_dGhostWarn2Time > 2.1)
+                                                {
+                                                    mini.eyes(g_Console, 73, 7, 0);
+                                                    if (g_dGhostWarn2Time > 2.2)
+                                                    {
+                                                        mini.smile(g_Console, 74, 10, 0);
+                                                        if (g_dGhostWarn2Time > 2.3)
+                                                        {
+                                                            mini.smile(g_Console, 75, 9, 0);
+                                                            if (g_dGhostWarn2Time > 2.4)
+                                                            {
+                                                                mini.smile(g_Console, 76, 8, 0);
+                                                                if (g_dGhostWarn2Time > 2.5)
+                                                                {
+                                                                    mini.tears(g_Console, 65, 8, 0);
+                                                                    if (g_dGhostWarn2Time > 2.6)
+                                                                    {
+                                                                        mini.tears(g_Console, 65, 9, 0);
+                                                                        if (g_dGhostWarn2Time > 2.7)
+                                                                        {
+                                                                            mini.tears(g_Console, 65, 10, 0);
+                                                                            if (g_dGhostWarn2Time > 3.0)
+                                                                            {
+                                                                                mini.clearWarning(g_Console, 62, 7, 0);
+                                                                                g_sGhost.m_cLocation.X = 10;
+                                                                                g_sGhost.m_cLocation.Y = 10;
+                                                                                if (g_dGhostWarn2Time > 3.3)
+                                                                                {
+                                                                                    if (g_sGhost.count3 == 0)
+                                                                                    {
+                                                                                        ghostGO.miniGhost1(g_Console, 10);
+                                                                                        ghostGO.miniGhost1(g_Console, 35);
+                                                                                        ghostGO.miniGhost1(g_Console, 60);
+                                                                                        if (g_dGhostWarn2Time > 4.0)
+                                                                                        {
+                                                                                            ghostGO.miniGhost2(g_Console);
+                                                                                        }
+                                                                                    }
+                                                                                    else if (g_sGhost.count3 >= 1)
+                                                                                    {
+                                                                                        //wheeeeeeeeeeeeeeeeeee
+                                                                                    }
+                                                                                }
+                                                                            }
+                                                                        }
+                                                                    }
+                                                                }
+                                                            }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
 void update_pressureMini()
 {
     processUserInput();
@@ -820,6 +1031,8 @@ void update_pressureMini()
     {
         g_sFish.startTimer = false;
         g_sSea.startTimer = false;
+        g_sGhost.startTimer = false;
+        g_sGhost2.startTimer = false;
         g_sCountdown.startTimer = true;
     }
     if (g_dFishTime > 6.4)
@@ -832,6 +1045,18 @@ void update_pressureMini()
         g_sSea.startTimer = true;
     }
 
+    if (g_dGhostWarnTime > 7.0)
+    {
+        g_sGhost.count2 = 0;
+        g_sGhost.startTimer = true;
+    }
+
+    if (g_dGhostWarn2Time > 10.5)
+    {
+        g_sGhost2.count3 = 0;
+        g_sGhost2.startTimer = true;
+    }
+
     if (g_dCountdownTime > 4.6)
     {
         g_sCountdown.startTimer = true;
@@ -840,9 +1065,27 @@ void update_pressureMini()
 
 void pressureMini()
 {
+    COORD c;
+
     //initialise map
     mini.initialiseMap(g_Console);
     mini.pressureMap(g_Console);
+    // ^insert HUD after the maparray function
+    for (int i = 0; i < 81; i++)
+    {
+        for (int j = 20; j < 30; j++)
+        {
+            g_Console.writeToBuffer(i, j, " ", 0x0F);
+        }
+    }
+
+    c.X = 3;
+    c.Y = 1;
+    g_Console.writeToBuffer(c, mini.miniGrid[c.X][c.Y] = 'X', 0x78);
+    c.X = 5;
+    g_Console.writeToBuffer(c, mini.miniGrid[c.X][c.Y] = 'X', 0x78);
+    c.X = 7;
+    g_Console.writeToBuffer(c, mini.miniGrid[c.X][c.Y] = 'X', 0x78);
 
     //randomise doors
     if (g_sDoor.counter == true)
@@ -911,6 +1154,7 @@ void pressureMini()
         }
     }
 
+    //sea rising countdown
     if (g_sSea.startTimer == true)
     {
         g_dSeaTime = 0.0;
@@ -920,10 +1164,91 @@ void pressureMini()
     {
         seaUp(g_Console);
     }
+
+    //ghost attacking
+    if (g_sGhost.startTimer == true)
+    {
+        g_dGhostWarnTime = 0.0;
+        g_sGhost.resetTimer = true;
+    }
+    if (g_sGhost.resetTimer == true)
+    {
+        ghostWarning(g_Console);
+    }
+
+    if (g_sGhost2.startTimer == true)
+    {
+        g_dGhostWarn2Time = 0.0;
+        g_sGhost2.resetTimer = true;
+    }
+    if (g_sGhost2.resetTimer == true)
+    {
+        ghostWarning2(g_Console);
+    }
+
+    //check if ghost is attacked
+    if ((mini.miniGrid[g_sAttack.m_cLocation.X][g_sAttack.m_cLocation.Y] == mini.miniGrid[g_sGhost.m_cLocation.X][g_sGhost.m_cLocation.Y]) && (right == true)) //right side right
+    {
+        g_sGhost.attacked = true;
+        if (g_sGhost.attacked == true)
+        {
+            g_sGhost.count3++;
+            g_sGhost.attacked = false;
+        }
+        right = false;
+    }
+
+    if ((mini.miniGrid[g_sAttack.m_cLocation.X][g_sAttack.m_cLocation.Y] == mini.miniGrid[g_sGhost.m_cLocation.X][g_sGhost.m_cLocation.Y]) && (left == true))  //left side right
+    {
+        g_sGhost.attacked = true;
+        if (g_sGhost.attacked == true)
+        {
+            g_sGhost.count2++;
+            g_sGhost.attacked = false;
+        }
+        left = false;
+    }
+
+    if ((mini.miniGrid[g_sAttack.m_cLocation.X][g_sAttack.m_cLocation.Y] != mini.miniGrid[g_sGhost.m_cLocation.X][g_sGhost.m_cLocation.Y]) && (right == true)) //right side wrong
+    {
+        g_sGhost.counter = true;
+        if (g_sGhost.counter == true)
+        {
+            g_sGhost.count++;
+            g_sGhost.counter = false;
+        }
+        right = false;
+    }
+
+    if ((mini.miniGrid[g_sAttack.m_cLocation.X][g_sAttack.m_cLocation.Y] != mini.miniGrid[g_sGhost.m_cLocation.X][g_sGhost.m_cLocation.Y]) && (left == true)) //left side wrong
+    {
+        g_sGhost.counter = true;
+        if (g_sGhost.counter == true)
+        {
+            g_sGhost.count++;
+            g_sGhost.counter = false;
+        }
+        left = false;
+    }
+
+    //counter for crosses
+    if (g_sGhost.count == 1)
+    {
+        c.X = 3;
+        c.Y = 1;
+        g_Console.writeToBuffer(c, mini.miniGrid[c.X][c.Y] = 'X', 0x7C);
+    }
+
+    if (g_sGhost.count == 2)
+    {
+        c.X = 3;
+        c.Y = 1;
+        g_Console.writeToBuffer(c, mini.miniGrid[c.X][c.Y] = 'X', 0x7C);
+        c.X = 5;
+        g_Console.writeToBuffer(c, mini.miniGrid[c.X][c.Y] = 'X', 0x7C);
+    }
+
     mini.pressureBorder(g_Console);
-    //key things
-
-
     renderCharacter();
 
     //check if player collides with fish
@@ -936,6 +1261,19 @@ void pressureMini()
         g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
         g_sChar.m_cLocation.Y = 10;
     }
+
+    //ghost game over
+    if (g_sGhost.count >= 3)
+    {
+        g_dGOghostTime = 0.0;
+        g_eGameState = S_gameOverGhost;
+        g_sDoor.counter = true;
+        g_sCameraState.counter = true; //changes back to original camera state
+        g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
+        g_sChar.m_cLocation.Y = 10;
+    }
+
+
     //spawn back to other map
     if (mini.miniGrid[g_sChar.m_cLocation.X][g_sChar.m_cLocation.Y] == '@')
     {
@@ -944,15 +1282,6 @@ void pressureMini()
         g_eGameState = S_STAGE1; //goes back to stage 1
         g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2; //resets position of character
         g_sChar.m_cLocation.Y = 10;
-    }
-
-    // ^insert HUD after the maparray function
-    for (int i = 0; i < 81; i++)
-    {
-        for (int j = 20; j < 30; j++)
-        {
-            g_Console.writeToBuffer(i, j, " ", 0x0F);
-        }
     }
 }
 
@@ -1047,10 +1376,18 @@ void moveCharacter()
         if (g_skKeyEvent[K_LEFT].keyDown)
         {
             mini.attack(g_Console, 0);
+            g_sAttack.m_cLocation.X = 5;
+            g_sAttack.m_cLocation.Y = 7;
+            left = true;
+            right = false;
         }
         if (g_skKeyEvent[K_RIGHT].keyDown)
         {
             mini.attack(g_Console, 60);
+            g_sAttack.m_cLocation.X = 62;
+            g_sAttack.m_cLocation.Y = 7;
+            left = false;
+            right = true;
         }
     }
 
