@@ -24,6 +24,7 @@ public:
 	position getnextPos(int howmany);
 	void updatePos();
 	void setDirection(int where);
+	void oppDirection();
 
 };
 

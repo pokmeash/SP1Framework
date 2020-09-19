@@ -138,19 +138,19 @@ void init( void )
     g_dGOghostTime = 0.0;
 
     // sets the initial state for the game
-    g_eGameState = S_PRESSUREGAME;
+    g_eGameState = S_MAINMENU;
     MState = MENU_MAIN;
 
     //if camera true
-    //g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
-    //g_sChar.m_cLocation.Y = 10;
+    g_sChar.m_cLocation.X = g_Console.getConsoleSize().X / 2;
+    g_sChar.m_cLocation.Y = 10;
 
     //if camera false
-    g_sChar.m_cLocation.X = 40; 
-    g_sChar.m_cLocation.Y = 18;
+    //g_sChar.m_cLocation.X = 40; 
+    //g_sChar.m_cLocation.Y = 18;
 
     // g_sChar.m_bActive = true;
-    // g_sCameraState.counter = false; // camera follow
+    g_sCameraState.counter = true; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
 
@@ -1444,21 +1444,15 @@ void moveCharacter()
 
             ghost->setDirection(thedir);
         }
-        //if lantern is on and next position will be within player's field of vision, do not move
+
+        //if lantern is on 
         if (fullLantern || halfLantern)
         {
             if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
             {
-                for (int i = 1; i <= 4; i++)
-                {
-                    ghost->setDirection(i);
-                    if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()) == false)
-                    {
-                        break;
-                    }
-                }
+                ghost->oppDirection();
 
-            }
+            }//if next position will be within player's field of vision, do not move
             else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
             {
                 ghost->setDirection(0);

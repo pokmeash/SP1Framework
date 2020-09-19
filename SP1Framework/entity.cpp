@@ -88,3 +88,23 @@ position entity::getnextPos(int howmany)
 	return nextpos;
 }
 
+void entity::oppDirection()
+{
+	switch (dir)
+	{
+	case UP:
+		dir = DOWN;
+		break;
+	case DOWN:
+		dir = UP;
+		break;
+	case LEFT:
+		dir = RIGHT;
+		break;
+	case RIGHT:
+		dir = LEFT;
+		break;
+	}
+}
+
+
