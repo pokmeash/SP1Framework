@@ -143,6 +143,7 @@ void renderSelectedButton();
 //cutscene tings
 void playCutScene(cutscene& scene);
 void renderDialogue(cutscene& scene);
+void renderIntroCS();
 
 // keyboard and mouse input event managers
 void keyboardHandler(const KEY_EVENT_RECORD& keyboardEvent);  // define this function for the console to call when there are keyboard events

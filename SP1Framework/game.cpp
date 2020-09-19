@@ -397,7 +397,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
-    objective = "Go to Control Room testingtingswhEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE";
+    objective = "Go to the Control Room to check why the submarine is going offcourse.";
     S1State = S1_GAME;
     currentStage = S_STAGE1;
     
@@ -422,9 +422,13 @@ void playSTAGE1()
 
 void initSTAGE2()
 {
-    delete ghost;
+    if (ghost != nullptr)
+    {
+        delete ghost;
+    }
     g_dLanternTime = 0.0;
     ghost = new entity(x + 10, y);
+    objective = "Go to the Power Room to turn the power back on.";
     S2State = S2_GAME;
     currentStage = S_STAGE2;
 }
@@ -458,7 +462,7 @@ void updateGame()       // gameplay logic
         Map.deleteghostposition(ghost->getPos().getx(), ghost->getPos().gety());
 
     }
-    /*
+    
     if (g_dLanternTime > 0) //full lantern
     {
         fullLantern = true;
@@ -503,7 +507,7 @@ void updateGame()       // gameplay logic
         offFlicker = false;
         onFlicker = false;
     }
-    */
+    
 }
 
 void update_gameOverGhost()
@@ -1541,11 +1545,15 @@ void render()
         break;
     case S_STAGESMENU: renderStagesMenu();
         break;
-    case S_INTRO: renderDialogue(horrorIntro);
+    case S_INTRO: 
+        renderIntroCS();
+        renderDialogue(horrorIntro);
         break;
-    case S_GHOST: renderDialogue(helloGhost);
+    case S_GHOST: 
+        renderDialogue(helloGhost);
         break;
-    case S_SCUBA: renderDialogue(scubaSuit);
+    case S_SCUBA: 
+        renderDialogue(scubaSuit);
         break;
     case S_SWIM:
         break;
@@ -2185,6 +2193,12 @@ void renderDialogue(cutscene& scene)
             g_Console.writeToBuffer(pos, scene.getLine(sceneIndex).substr(77 * i, 77), 0x0F);
         }
     }
+    
+
+}
+
+void renderIntroCS()
+{
     if (sceneIndex < 4)
     {
         introcutscene1(g_Console);
@@ -2193,7 +2207,6 @@ void renderDialogue(cutscene& scene)
     {
         introcutscene2(g_Console);
     }
-
 }
 
 bool checkifinRadius(int posx, int posy)
