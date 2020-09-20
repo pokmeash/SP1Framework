@@ -1433,11 +1433,13 @@ void moveCharacter()
         //if lantern is on 
         if (fullLantern || halfLantern)
         {
+            //if within player's radius right now, move away from player
             if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
             {
                 ghost->oppDirection();
 
-            }//if next position will be within player's field of vision, do not move
+            }
+            //if next position will be within player's field of vision, do not move
             else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
             {
                 ghost->setDirection(0);
@@ -1446,7 +1448,12 @@ void moveCharacter()
         }
 
         //if there is a row of walls in chosen direction, move in other axis 
-        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] != ' ' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] != ' ')
+        {
+            ghost->changeAxis();
+        }
+        //if youre one sqr away diagonally and chosen dir got wall/oil, go in other direction
+        if (abs(diffinx) == 1 && abs(diffiny) == 1 && Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] != ' ')
         {
             ghost->changeAxis();
         }
