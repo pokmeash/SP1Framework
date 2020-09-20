@@ -97,6 +97,8 @@ menuStates MState;
 std::string objective = " ";
 std::string currentRoom = "Kitchen";
 
+position newRoom[50];
+
 // Game objects
 entity* ghost = nullptr;
 entity* plasma = nullptr;
@@ -456,7 +458,8 @@ void updateGame()       // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
-                        // sound can be played here too.
+                        
+    //lose game condition
     if (Map.map[y][x] == 'G')
     {
         lose = true;
@@ -464,50 +467,54 @@ void updateGame()       // gameplay logic
 
     }
     
-    if (g_dLanternTime > 0) //full lantern
-    {
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if (g_dLanternTime > 10) //half lantern
-    {
-        halfLantern = true;
-        fullLantern = false;
-        dimLantern = false;
-        
-        static bool flickerTime = false;
-        if (flickerTime == false)
-        {
-            g_dFlickerTime = 0.0;
-            flickerTime = true;
-        }
-        
-        if (g_dFlickerTime > 0.5 && g_dFlickerTime < 1.1)
-        {
-            offFlicker = true;
-            onFlicker = false;
-        }
-        if (offFlicker == true && g_dFlickerTime > 1.1 && g_dFlickerTime < 1.6)
-        {
-            onFlicker = true;
-            offFlicker = false;
-        }
-        if (onFlicker == true && g_dFlickerTime > 1.6)
-        {
-            g_dFlickerTime = 0.0;
-            onFlicker = false;
-        }
-    }
-    
-    if (g_dLanternTime > 25) //dim lantern
-    {
-        dimLantern = true;
-        fullLantern = false;
-        halfLantern = false;
-        offFlicker = false;
-        onFlicker = false;
-    }
+    //updating of lantern state
+    //if (g_dLanternTime > 0) //full lantern
+    //{
+    //    fullLantern = true;
+    //    halfLantern = false;
+    //    dimLantern = false;
+    //}
+    //if (g_dLanternTime > 10) //half lantern
+    //{
+    //    halfLantern = true;
+    //    fullLantern = false;
+    //    dimLantern = false;
+    //    
+    //    static bool flickerTime = false;
+    //    if (flickerTime == false)
+    //    {
+    //        g_dFlickerTime = 0.0;
+    //        flickerTime = true;
+    //    }
+    //    
+    //    if (g_dFlickerTime > 0.5 && g_dFlickerTime < 1.1)
+    //    {
+    //        offFlicker = true;
+    //        onFlicker = false;
+    //    }
+    //    if (offFlicker == true && g_dFlickerTime > 1.1 && g_dFlickerTime < 1.6)
+    //    {
+    //        onFlicker = true;
+    //        offFlicker = false;
+    //    }
+    //    if (onFlicker == true && g_dFlickerTime > 1.6)
+    //    {
+    //        g_dFlickerTime = 0.0;
+    //        onFlicker = false;
+    //    }
+    //}
+    //if (g_dLanternTime > 25) //dim lantern
+    //{
+    //    dimLantern = true;
+    //    fullLantern = false;
+    //    halfLantern = false;
+    //    offFlicker = false;
+    //    onFlicker = false;
+    //}
+
+    //updating of room that player is in
+    updateCurrRoom();
+
     
 }
 
@@ -1717,7 +1724,8 @@ void renderInputEvents()
     COORD startPos = {50, 2};
     std::ostringstream ss;
     std::string key;
-    /*for (int i = 0; i < K_COUNT; ++i)
+    /*
+    for (int i = 0; i < K_COUNT; ++i)
     {
         ss.str("");
         switch (i)
@@ -1860,27 +1868,27 @@ void renderHUD()
         }
         
         //objective
-        pos.X = 50;
+        pos.X = 47;
         pos.Y = 21;
         g_Console.writeToBuffer(pos, "Objective: ", 0xD0);
-        for (int i = 0; i < (objective.length() / 29) + 1; i++)
+        for (int i = 0; i < (objective.length() / 30) + 1; i++)
         {
             pos.Y = 22 + i;
-            if (i == objective.length() / 29)
+            if (i == objective.length() / 30)
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x0D);
+                g_Console.writeToBuffer(pos, objective.substr(30 * i, objective.length() - (30 * i)), 0x0D);
             }
             else
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x0D);
+                g_Console.writeToBuffer(pos, objective.substr(30 * i, 30), 0x0D);
             }
         }
 
         //current Room
-        pos.X = 50;
+        pos.X = 47;
         pos.Y = 27;
         g_Console.writeToBuffer(pos, "Current Room: ", 0x07);
-        pos.X = 64;
+        pos.X = 61;
         g_Console.writeToBuffer(pos, currentRoom, 0x07);
 
 
@@ -2238,5 +2246,45 @@ bool checkifinRadius(int posx, int posy)
     }
 
     return false;
+}
+
+void updateCurrRoom()
+{
+    if (x < 30)
+    {
+        currentRoom = "Power Room";
+    }
+    else if ((x == 31 && y >=4 && y <= 6) || (y == 7 && x >= 69 && x <= 73))
+    {
+        currentRoom = "Kitchen";
+    }
+    else if ((y == 5 && x >= 69 && x <= 73)|| (y == 7 && x >= 98 && x <= 102))
+    {
+        currentRoom = "???";
+    }
+    else if ((x == 31 && y >= 24 && y <= 26) || (y == 21 && x >= 40 && x <= 44))
+    {
+        currentRoom = "Swimming Pool";
+    }
+    else if ((y == 19 && x >= 40 && x <= 44) || (y == 15 && x == 74) || (y == 14 && x == 75) || (x == 76 && y == 13) || (x == 77 && y == 12))
+    {
+        currentRoom = "Toilet";
+    }
+    else if ((y == 23 && x >= 82 && x <= 85) || (x == 86 && y == 22) || (x == 106 && y == 25) || (y == 26 && x >= 107 && x <= 108))
+    {
+        currentRoom = "Storage Room";
+    }
+    else if ((x == 119 && y >= 18 && y <= 21) || (x == 109 && y == 25) ||(y == 24 && x >= 107 && x <= 108))
+    {
+        currentRoom = "VIP Room";
+    }
+    else if ((y == 9 && x >= 98 && x <= 102) || (y == 21 && x >= 82 && x <= 85) || (x == 81 && y == 22) || (y == 16 && x == 75) || (y == 15 && x == 76) || (x == 77 && y == 14) || (x == 78 && y == 13))
+    {
+        currentRoom = "Sleeping Quarters";
+    }
+    else if (x > 120)
+    {
+        currentRoom = "Control Room";
+    }
 }
 

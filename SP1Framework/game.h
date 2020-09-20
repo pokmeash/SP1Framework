@@ -132,6 +132,7 @@ void playSTAGE2();
 
 //Game Usage Tings
 bool checkifinRadius(int posx, int posy);
+void updateCurrRoom();
 
 //UI, HUD tings
 bool checkButtonClick(button button);
