@@ -29,6 +29,7 @@ bool dimLantern;
 bool offFlicker;
 bool onFlicker;
 int rand1, rand2, rand3, rand4, randfish, randfish1, randfish2;
+int roomA, roomB, roomD, roomE, roomG, roomH, roomI;
 bool left, right;
 double g_dGhostWarnTime;
 double g_dGhostWarn2Time;
@@ -130,6 +131,8 @@ minigame mini;
 void init( void )
 {
     srand(time(NULL));
+    
+    roomA = roomB = roomD = roomE = roomG = roomH = roomI = 0;
 
     fullLantern = false;
     halfLantern = false;
@@ -152,7 +155,7 @@ void init( void )
     //g_sChar.m_cLocation.X = 40; 
     //g_sChar.m_cLocation.Y = 18;
 
-    // g_sChar.m_bActive = true;
+    g_sChar.m_bActive = true;
     g_sCameraState.counter = true; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -164,8 +167,8 @@ void init( void )
     //isMousePressed = false;
     //setButtons();
     Map.maparray(g_Console);
-    x = 40;
-    y = 5;
+    x = 42;
+    y = 20;
     
 
     //setting of cutscene dialogues
@@ -1308,7 +1311,7 @@ void moveCharacter()
     {
         if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
         {
-            if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O') // collision for + and O
+            if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O')// collision for + and O and #
             {
                 Map.map[y][x] = ' ';
                 Map.map[y - 1][x] = 'P';
@@ -1616,6 +1619,11 @@ void renderGame()
 
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+
+    if (Map.map[y][x] == '#') // print char as table
+    {
+        g_Console.writeToBuffer(g_sChar.m_cLocation, ' ', 0x55);
+    }
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -1632,6 +1640,38 @@ void renderGame()
 
 void renderMap()
 {
+    //keep rendering the rooms
+    renderRoomA(roomA);
+    renderRoomB(roomB);
+    renderRoomD(roomD);
+    renderRoomE(roomE);
+    renderRoomG(roomG);
+    renderRoomH(roomH);
+
+    if (x == 28 && y == 20) 
+    {
+        Map.maparray(g_Console); // reset map
+        roomA = 1; //change room layout number
+        roomB = 0;
+        roomD = 2;
+        roomE = 0;
+        roomG = 0;
+        roomH = 0;
+        roomI = 0;
+    }
+
+    if (x == 25 && y == 20)
+    {
+        Map.maparray(g_Console);
+        roomA = 2;
+        roomB = 0;
+        roomD = 2;
+        roomE = 0;
+        roomG = 0;
+        roomH = 0;
+        roomI = 0;
+    }
+
     COORD c;
     if (fullLantern == true)
     {
@@ -1650,8 +1690,6 @@ void renderMap()
         Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
-    renderRoomA(1); //render diff layout of room A
-
     /*for (int i = 0; i < 81; i++)
     {
         for (int j = 20; j < 30; j++)
@@ -1669,7 +1707,6 @@ void renderMap()
     std::string srrs = std::to_string(y);
     g_Console.writeToBuffer(c, srrs, 0x0F);
 }
-
 void renderRoomA(int rand)
 {
     switch (rand)
@@ -1682,6 +1719,86 @@ void renderRoomA(int rand)
         break;
     case 2:
         Map.roomA3();
+        break;
+    }
+}
+
+void renderRoomB(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomB1();
+        break;
+    case 1:
+        Map.roomB2();
+        break;
+    case 2:
+        Map.roomB3();
+        break;
+    }
+}
+
+void renderRoomD(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomD1();
+        break;
+    case 1:
+        Map.roomD2();
+        break;
+    case 2:
+        Map.roomD3();
+        break;
+    }
+}
+
+void renderRoomE(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomE1();
+        break;
+    case 1:
+        Map.roomE2();
+        break;
+    case 2:
+        Map.roomE3();
+        break;
+    }
+}
+
+void renderRoomG(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomG1();
+        break;
+    case 1:
+        Map.roomG2();
+        break;
+    case 2:
+        Map.roomG3();
+        break;
+    }
+}
+
+void renderRoomH(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomH1();
+        break;
+    case 1:
+        Map.roomH2();
+        break;
+    case 2:
+        Map.roomH3();
         break;
     }
 }
@@ -1951,7 +2068,6 @@ void mainMenuWait()
         {
         case 0:
             g_eGameState = S_INTRO;
-            g_dLanternTime = 0.0; // put this to stage 2
             break;
         case 1:
             MState = MENU_STAGES;
