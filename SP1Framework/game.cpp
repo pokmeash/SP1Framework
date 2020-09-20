@@ -1396,8 +1396,6 @@ void moveCharacter()
     }
 
     //ghost chase
-    int dirx;
-    int diry;
     int thedir;
     if (ghost != nullptr)
     {
@@ -1407,46 +1405,29 @@ void moveCharacter()
 
         if (diffinx > 0)
         {
-            dirx = 4;
+            ghost->setDirX(4);
         }
         else
         {
-            dirx = 3;
+            ghost->setDirX(3);
         }
 
         if (diffiny > 0)
         {
-            diry = 2;
+            ghost->setDirY(2);
         }
         else
         {
-            diry = 1;
+            ghost->setDirY(1);
         }
 
         if (2 * abs(diffinx) > abs(diffiny))
         {
-            thedir = dirx;
+            ghost->setDirection(ghost->getDirX());
         }
         else
         {
-            thedir = diry;
-        }
-
-        ghost->setDirection(thedir);
-
-        //if there is a row of walls in chosen direction, move in other axis 
-        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
-        {
-            if (thedir == dirx)
-            {
-                thedir = diry;
-            }
-            else
-            {
-                thedir = dirx;
-            }
-
-            ghost->setDirection(thedir);
+            ghost->setDirection(ghost->getDirY());
         }
 
         //if lantern is on 
@@ -1463,8 +1444,14 @@ void moveCharacter()
             }
             
         }
-      
 
+        //if there is a row of walls in chosen direction, move in other axis 
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
+        {
+            ghost->changeAxis();
+        }
+
+        
         //updates ghosts' position based on chosen direction
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
