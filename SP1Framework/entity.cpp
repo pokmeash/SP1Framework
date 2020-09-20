@@ -105,6 +105,91 @@ void entity::oppDirection()
 		dir = LEFT;
 		break;
 	}
+
+	switch (dirx)
+	{
+	case LEFT:
+		dirx = RIGHT;
+		break;
+	case RIGHT:
+		dirx = LEFT;
+		break;
+	}
+
+	switch (diry)
+	{
+	case UP:
+		diry = DOWN;
+		break;
+	case DOWN:
+		diry = UP;
+		break;
+	}
 }
 
+int entity::getDirX()
+{
+	switch (dirx)
+	{
+	case LEFT:
+		return 3;
+		break;
+	case RIGHT:
+		return 4;
+		break;
+	}
+}
 
+int entity::getDirY()
+{
+	switch (diry)
+	{
+	case UP:
+		return 1;
+		break;
+	case DOWN:
+		return 2;
+		break;
+	}
+}
+
+void entity::setDirX(int where)
+{
+	switch (where)
+	{
+	case 3:
+		dirx = LEFT;
+		break;
+	case 4:
+		dirx = RIGHT;
+		break;
+	}
+}
+
+void entity::setDirY(int where)
+{
+	switch (where)
+	{
+	case 1:
+		diry = UP;
+		break;
+	case 2:
+		diry = DOWN;
+		break;
+	}
+}
+
+void entity::changeAxis()
+{
+	switch (dir)
+	{
+	case UP:
+	case DOWN:
+		dir = dirx;
+		break;
+	case LEFT:
+	case RIGHT:
+		dir = diry;
+		break;
+	}
+}

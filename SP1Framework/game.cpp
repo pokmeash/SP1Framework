@@ -96,6 +96,7 @@ bool isMousePressed = false;
 menuStates MState;
 
 std::string objective = " ";
+std::string currentRoom = "Kitchen";
 
 // Game objects
 entity* ghost = nullptr;
@@ -400,7 +401,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
-    objective = "Go to the Control Room to check why the submarine is going offcourse.";
+    objective = "Go to the Control Room to check who is steering the submarine.";
     S1State = S1_GAME;
     currentStage = S_STAGE1;
     
@@ -1400,8 +1401,6 @@ void moveCharacter()
     }
 
     //ghost chase
-    int dirx;
-    int diry;
     int thedir;
     if (ghost != nullptr)
     {
@@ -1411,64 +1410,60 @@ void moveCharacter()
 
         if (diffinx > 0)
         {
-            dirx = 4;
+            ghost->setDirX(4);
         }
         else
         {
-            dirx = 3;
+            ghost->setDirX(3);
         }
 
         if (diffiny > 0)
         {
-            diry = 2;
+            ghost->setDirY(2);
         }
         else
         {
-            diry = 1;
+            ghost->setDirY(1);
         }
 
         if (2 * abs(diffinx) > abs(diffiny))
         {
-            thedir = dirx;
+            ghost->setDirection(ghost->getDirX());
         }
         else
         {
-            thedir = diry;
-        }
-
-        ghost->setDirection(thedir);
-
-        //if there is a row of walls in chosen direction, move in other axis 
-        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
-        {
-            if (thedir == dirx)
-            {
-                thedir = diry;
-            }
-            else
-            {
-                thedir = dirx;
-            }
-
-            ghost->setDirection(thedir);
+            ghost->setDirection(ghost->getDirY());
         }
 
         //if lantern is on 
         if (fullLantern || halfLantern)
         {
+            //if within player's radius right now, move away from player
             if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
             {
                 ghost->oppDirection();
 
-            }//if next position will be within player's field of vision, do not move
+            }
+            //if next position will be within player's field of vision, do not move
             else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
             {
                 ghost->setDirection(0);
             }
             
         }
-      
 
+        //if there is a row of walls in chosen direction, move in other axis 
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] != ' ' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] != ' ')
+        {
+            ghost->changeAxis();
+        }
+        //if youre one sqr away diagonally and chosen dir got wall/oil, go in other direction
+        if (abs(diffinx) == 1 && abs(diffiny) == 1 && Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] != ' ')
+        {
+            ghost->changeAxis();
+        }
+
+        
         //updates ghosts' position based on chosen direction
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
@@ -1984,19 +1979,30 @@ void renderHUD()
         
         //objective
         pos.X = 50;
-
+        pos.Y = 21;
+        g_Console.writeToBuffer(pos, "Objective: ", 0xD0);
         for (int i = 0; i < (objective.length() / 29) + 1; i++)
         {
             pos.Y = 22 + i;
             if (i == objective.length() / 29)
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x0D);
             }
             else
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x0D);
             }
         }
+
+        //current Room
+        pos.X = 50;
+        pos.Y = 27;
+        g_Console.writeToBuffer(pos, "Current Room: ", 0x07);
+        pos.X = 64;
+        g_Console.writeToBuffer(pos, currentRoom, 0x07);
+
+
+
         break;
     }
         

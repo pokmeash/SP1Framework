@@ -16,15 +16,22 @@ private:
 	position pos;
 	position nextpos;
 	direction dir;
+	direction dirx;
+	direction diry;
 
 public:
 	entity();
 	entity(int x, int y);
 	position getPos();
 	position getnextPos(int howmany);
+	int getDirX();
+	int getDirY();
 	void updatePos();
 	void setDirection(int where);
+	void setDirX(int where);
+	void setDirY(int where);
 	void oppDirection();
+	void changeAxis();
 
 };
 
