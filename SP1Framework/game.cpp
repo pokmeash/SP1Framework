@@ -95,6 +95,7 @@ bool isMousePressed = false;
 menuStates MState;
 
 std::string objective = " ";
+std::string currentRoom = "Kitchen";
 
 // Game objects
 entity* ghost = nullptr;
@@ -397,7 +398,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
-    objective = "Go to the Control Room to check why the submarine is going offcourse.";
+    objective = "Go to the Control Room to check who is steering the submarine.";
     S1State = S1_GAME;
     currentStage = S_STAGE1;
     
@@ -1677,6 +1678,7 @@ void renderRoomA(int rand)
         break;
     }
 }
+
 void renderCharacter()
 {
     // Draw the location of the character
@@ -1859,19 +1861,30 @@ void renderHUD()
         
         //objective
         pos.X = 50;
-
+        pos.Y = 21;
+        g_Console.writeToBuffer(pos, "Objective: ", 0xD0);
         for (int i = 0; i < (objective.length() / 29) + 1; i++)
         {
             pos.Y = 22 + i;
             if (i == objective.length() / 29)
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x0D);
             }
             else
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x0D);
             }
         }
+
+        //current Room
+        pos.X = 50;
+        pos.Y = 27;
+        g_Console.writeToBuffer(pos, "Current Room: ", 0x07);
+        pos.X = 64;
+        g_Console.writeToBuffer(pos, currentRoom, 0x07);
+
+
+
         break;
     }
         
