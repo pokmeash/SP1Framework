@@ -105,6 +105,26 @@ void entity::oppDirection()
 		dir = LEFT;
 		break;
 	}
+
+	switch (dirx)
+	{
+	case LEFT:
+		dirx = RIGHT;
+		break;
+	case RIGHT:
+		dirx = LEFT;
+		break;
+	}
+
+	switch (diry)
+	{
+	case UP:
+		diry = DOWN;
+		break;
+	case DOWN:
+		diry = UP;
+		break;
+	}
 }
 
 int entity::getDirX()
