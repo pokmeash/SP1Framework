@@ -188,6 +188,7 @@ void map::maparray(Console& g_Console)
     map[14][16] = 'O';
     map[14][135] = 'O';
 
+
 }
 
 void map::rendermap(Console& g_Console, int x, int y, int light)
@@ -232,7 +233,7 @@ void map::rendermap(Console& g_Console, int x, int y, int light)
                 {
                     if (map[y + a][x + b] == '+')
                     {
-                        g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
+                        g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x8F);
                     }
                     else if (map[y + a][x + b] == 'O')
                     {
