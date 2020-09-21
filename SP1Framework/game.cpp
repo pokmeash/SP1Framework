@@ -23,6 +23,7 @@ double FishTime;
 double g_dLanternTime;
 double g_dFlickerTime;
 double ghostSpeed;
+double playerSpeed;
 bool fullLantern;
 bool halfLantern;
 bool dimLantern;
@@ -95,6 +96,9 @@ bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
 
+bool keyPressed[K_COUNT] = {false, false, false, false, false, false, false, false, false};
+bool keyHeld[K_COUNT] = { false, false, false, false, false, false, false, false, false };
+
 std::string objective = " ";
 std::string currentRoom = "Kitchen";
 
@@ -103,6 +107,7 @@ position newRoom[50];
 // Game objects
 entity* ghost = nullptr;
 entity* plasma = nullptr;
+entity player;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -169,6 +174,7 @@ void init( void )
     Map.maparray(g_Console);
     x = 42;
     y = 20;
+    player.setPos(x, y);
     
 
     //setting of cutscene dialogues
@@ -1300,6 +1306,8 @@ void pressureMini()
     }
 }
 
+
+
 void moveCharacter()
 {    
     // Updating the location of the character based on the key release
@@ -1309,48 +1317,114 @@ void moveCharacter()
 
     if (g_sCameraState.counter == true)
     {
-        if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
-        {
-            if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O')// collision for + and O and #
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y - 1][x] = 'P';
-                y--;
-            }
-        }
-        if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
-        {
-            if (Map.map[y][x - 1] != '+' && Map.map[y][x - 1] != 'O')
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y][x - 1] = 'P';
-                x--;
-            }
-        }
-        if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
-        {
-            if (Map.map[y + 1][x] != '+' && Map.map[y + 1][x] != 'O')
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y + 1][x] = 'P';
-                y++;
-            }
-        }
-        if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
-        {
-            if (Map.map[y][x + 1] != '+' && Map.map[y][x + 1] != 'O')
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y][x + 1] = 'P';
-                x++;
-            }
-        }
+        //if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
+        //{
+        //    if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O')// collision for + and O and #
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y - 1][x] = 'P';
+        //        y--;
+        //    }
+        //}
+        //if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
+        //{
+        //    if (Map.map[y][x - 1] != '+' && Map.map[y][x - 1] != 'O')
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y][x - 1] = 'P';
+        //        x--;
+        //    }
+        //}
+        //if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+        //{
+        //    if (Map.map[y + 1][x] != '+' && Map.map[y + 1][x] != 'O')
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y + 1][x] = 'P';
+        //        y++;
+        //    }
+        //}
+        //if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+        //{
+        //    if (Map.map[y][x + 1] != '+' && Map.map[y][x + 1] != 'O')
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y][x + 1] = 'P';
+        //        x++;
+        //    }
+        //}
         /*
         if (g_skKeyEvent[K_SPACE].keyDown)
         {
             g_sChar.m_bActive = !g_sChar.m_bActive;
         }
         */
+
+        for (int i = 0; i < 4; i++)
+        {
+            
+            if (g_skKeyEvent[i].keyDown)
+            {
+                keyHeld[i] = true;
+            }
+            if (g_skKeyEvent[i].keyReleased)
+            {
+                keyHeld[i] = false;
+            }
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (keyHeld[i])
+            {
+                Map.map[y][x] = ' ';
+                switch (i)
+                {
+                case 0:
+                    if (g_sChar.m_cLocation.Y > 0)
+                    {
+                        player.setDirection(1);
+                    }
+                    break;
+                case 1:
+                    if (g_sChar.m_cLocation.X > 0)
+                    {
+                        player.setDirection(3);
+                    }
+                    break;
+                case 2:
+                    if (g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+                    {
+                        player.setDirection(2);
+                    }
+                    break;
+                case 3:
+
+                    if (g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+                    {
+                        player.setDirection(4);
+                    }
+                    break;
+                }
+
+                if (Map.map[player.getnextPos(1).gety()][player.getnextPos(1).getx()] == '+' || Map.map[player.getnextPos(1).getx()][player.getnextPos(1).gety()] == 'O')
+                {
+                    player.setDirection(0);
+                }
+
+                playerSpeed += g_dDeltaTime;
+                if (playerSpeed >= 0.05)
+                {
+                    player.updatePos();
+                    x = player.getPos().getx();
+                    y = player.getPos().gety();
+                    Map.map[y][x] = 'P';
+                    playerSpeed = 0;
+                }
+            
+                break;
+            }
+        }
     }
 
     else if (g_sCameraState.counter == false)

@@ -16,6 +16,12 @@ position entity::getPos()
 	return pos;
 }
 
+void entity::setPos(int x, int y)
+{
+	pos.setx(x);
+	pos.sety(y);
+}
+
 void entity::setDirection(int where)
 {
 	switch (where)

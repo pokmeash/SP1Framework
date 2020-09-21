@@ -8,7 +8,7 @@ private:
 	int length;
 	int width;
 	std::string text;
-	position pos; //top left corner
+	position pos; // midpoint
 	position corner[4];
 	
 public:

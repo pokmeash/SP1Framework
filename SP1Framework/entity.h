@@ -30,6 +30,7 @@ public:
 	void setDirection(int where);
 	void setDirX(int where);
 	void setDirY(int where);
+	void setPos(int x, int y);
 	void oppDirection();
 	void changeAxis();
 
