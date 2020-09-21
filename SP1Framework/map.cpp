@@ -705,16 +705,99 @@ void map::roomG3()
 
 void map::roomH1()
 {
-    map[12][33] = char(158);
-    map[14][33] = char(158);
-    map[16][33] = char(158);
-
+    //face right
+    toilet(33, 13, 3); //on top
+    toilet(33, 17, 3); //below
 }
 
 void map::roomH2()
 {
+    //face up
+    toilet(35, 17, 0);
+    toilet(55, 17, 0);
+
+    //face down
+    toilet(35, 13, 2);
+    toilet(45, 13, 2);
+    toilet(55, 13, 2);
+
 }
 
 void map::roomH3()
 {
+    //face right
+    toilet(33, 13, 3); //on top
+    toilet(33, 17, 3); //below
+
+    //face left
+    toilet(66, 13, 1); //on top
+    toilet(66, 17, 1); //below
+}
+
+void map::toilet(int xLoc, int yLoc, int dir)
+{
+    switch (dir)
+    {
+    case 0: // face up
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        map[yLoc + 1][xLoc] = '+';
+        //left
+        map[yLoc][xLoc - 1] = '+';
+        //right
+        map[yLoc][xLoc + 1] = '+';
+        break;
+
+    case 1: // face left
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        map[yLoc - 1][xLoc] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        map[yLoc + 1][xLoc] = '+';
+        //right
+        map[yLoc][xLoc + 1] = '+';
+        break;
+
+    case 2: // face down
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        map[yLoc - 1][xLoc] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        //left
+        map[yLoc][xLoc - 1] = '+';
+        //right
+        map[yLoc][xLoc + 1] = '+';
+        break;
+
+    case 3: // face right
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        map[yLoc - 1][xLoc] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        map[yLoc + 1][xLoc] = '+';
+        //left
+        map[yLoc][xLoc - 1] = '+';
+        break;
+    }
 }
