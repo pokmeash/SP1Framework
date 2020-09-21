@@ -1,6 +1,6 @@
 // This is the main file for the game logic and function
 #include "game.h"
-#include "entity.h"
+#include "player.h"
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
@@ -107,7 +107,7 @@ position newRoom[50];
 // Game objects
 entity* ghost = nullptr;
 entity* plasma = nullptr;
-entity player;
+player player;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -1413,7 +1413,7 @@ void moveCharacter()
                 }
 
                 playerSpeed += g_dDeltaTime;
-                if (playerSpeed >= 0.05)
+                if (playerSpeed >= 0.08)
                 {
                     player.updatePos();
                     x = player.getPos().getx();
