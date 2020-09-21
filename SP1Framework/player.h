@@ -5,5 +5,6 @@ class player :
 {
 public:
 	void updatePos();
+	position getnextPos(int howmany);
 };
 
