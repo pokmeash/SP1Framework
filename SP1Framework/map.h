@@ -12,5 +12,6 @@ public:
 	void roomA1();
 	void roomA2();
 	void roomA3();
+	void roomI1();
 };
 
