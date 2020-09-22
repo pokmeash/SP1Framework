@@ -23,12 +23,14 @@ double FishTime;
 double g_dLanternTime;
 double g_dFlickerTime;
 double ghostSpeed;
+double playerSpeed;
 bool fullLantern;
 bool halfLantern;
 bool dimLantern;
 bool offFlicker;
 bool onFlicker;
 int rand1, rand2, rand3, rand4, randfish, randfish1, randfish2;
+int roomA, roomB, roomD, roomE, roomG, roomH, roomI;
 bool left, right;
 double g_dGhostWarnTime;
 double g_dGhostWarn2Time;
@@ -94,11 +96,18 @@ bool paused = false;
 bool isMousePressed = false;
 menuStates MState;
 
+bool keyPressed[K_COUNT] = {false, false, false, false, false, false, false, false, false};
+bool keyHeld[K_COUNT] = { false, false, false, false, false, false, false, false, false };
+
 std::string objective = " ";
+std::string currentRoom = "Kitchen";
+
+position newRoom[50];
 
 // Game objects
 entity* ghost = nullptr;
 entity* plasma = nullptr;
+entity player;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -127,6 +136,8 @@ minigame mini;
 void init( void )
 {
     srand(time(NULL));
+    
+    roomA = roomB = roomD = roomE = roomG = roomH = roomI = 0;
 
     fullLantern = false;
     halfLantern = false;
@@ -149,7 +160,7 @@ void init( void )
     //g_sChar.m_cLocation.X = 40; 
     //g_sChar.m_cLocation.Y = 18;
 
-    // g_sChar.m_bActive = true;
+    g_sChar.m_bActive = true;
     g_sCameraState.counter = true; // camera follow
     // sets the width, height and the font name to use in the console
     g_Console.setConsoleFont(0, 16, L"Consolas");
@@ -161,8 +172,9 @@ void init( void )
     //isMousePressed = false;
     //setButtons();
     Map.maparray(g_Console);
-    x = 40;
-    y = 5;
+    x = 42;
+    y = 20;
+    player.setPos(x, y);
     
 
     //setting of cutscene dialogues
@@ -397,7 +409,7 @@ void update(double dt)
 void initSTAGE1()
 {
     //set spawnpoints; etc
-    objective = "Go to the Control Room to check why the submarine is going offcourse.";
+    objective = "Go to the Control Room to check who is steering the submarine.";
     S1State = S1_GAME;
     currentStage = S_STAGE1;
     
@@ -455,7 +467,8 @@ void updateGame()       // gameplay logic
 {
     processUserInput(); // checks if you should change states or do something else with the game, e.g. pause, exit
     moveCharacter();    // moves the character, collision detection, physics, etc
-                        // sound can be played here too.
+                        
+    //lose game condition
     if (Map.map[y][x] == 'G')
     {
         lose = true;
@@ -463,50 +476,54 @@ void updateGame()       // gameplay logic
 
     }
     
-    if (g_dLanternTime > 0) //full lantern
-    {
-        fullLantern = true;
-        halfLantern = false;
-        dimLantern = false;
-    }
-    if (g_dLanternTime > 10) //half lantern
-    {
-        halfLantern = true;
-        fullLantern = false;
-        dimLantern = false;
-        
-        static bool flickerTime = false;
-        if (flickerTime == false)
-        {
-            g_dFlickerTime = 0.0;
-            flickerTime = true;
-        }
-        
-        if (g_dFlickerTime > 0.5 && g_dFlickerTime < 1.1)
-        {
-            offFlicker = true;
-            onFlicker = false;
-        }
-        if (offFlicker == true && g_dFlickerTime > 1.1 && g_dFlickerTime < 1.6)
-        {
-            onFlicker = true;
-            offFlicker = false;
-        }
-        if (onFlicker == true && g_dFlickerTime > 1.6)
-        {
-            g_dFlickerTime = 0.0;
-            onFlicker = false;
-        }
-    }
-    
-    if (g_dLanternTime > 25) //dim lantern
-    {
-        dimLantern = true;
-        fullLantern = false;
-        halfLantern = false;
-        offFlicker = false;
-        onFlicker = false;
-    }
+    //updating of lantern state
+    //if (g_dLanternTime > 0) //full lantern
+    //{
+    //    fullLantern = true;
+    //    halfLantern = false;
+    //    dimLantern = false;
+    //}
+    //if (g_dLanternTime > 10) //half lantern
+    //{
+    //    halfLantern = true;
+    //    fullLantern = false;
+    //    dimLantern = false;
+    //    
+    //    static bool flickerTime = false;
+    //    if (flickerTime == false)
+    //    {
+    //        g_dFlickerTime = 0.0;
+    //        flickerTime = true;
+    //    }
+    //    
+    //    if (g_dFlickerTime > 0.5 && g_dFlickerTime < 1.1)
+    //    {
+    //        offFlicker = true;
+    //        onFlicker = false;
+    //    }
+    //    if (offFlicker == true && g_dFlickerTime > 1.1 && g_dFlickerTime < 1.6)
+    //    {
+    //        onFlicker = true;
+    //        offFlicker = false;
+    //    }
+    //    if (onFlicker == true && g_dFlickerTime > 1.6)
+    //    {
+    //        g_dFlickerTime = 0.0;
+    //        onFlicker = false;
+    //    }
+    //}
+    //if (g_dLanternTime > 25) //dim lantern
+    //{
+    //    dimLantern = true;
+    //    fullLantern = false;
+    //    halfLantern = false;
+    //    offFlicker = false;
+    //    onFlicker = false;
+    //}
+
+    //updating of room that player is in
+    updateCurrRoom();
+
     
 }
 
@@ -1289,6 +1306,8 @@ void pressureMini()
     }
 }
 
+
+
 void moveCharacter()
 {    
     // Updating the location of the character based on the key release
@@ -1298,48 +1317,114 @@ void moveCharacter()
 
     if (g_sCameraState.counter == true)
     {
-        if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
-        {
-            if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O') // collision for + and O
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y - 1][x] = 'P';
-                y--;
-            }
-        }
-        if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
-        {
-            if (Map.map[y][x - 1] != '+' && Map.map[y][x - 1] != 'O')
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y][x - 1] = 'P';
-                x--;
-            }
-        }
-        if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
-        {
-            if (Map.map[y + 1][x] != '+' && Map.map[y + 1][x] != 'O')
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y + 1][x] = 'P';
-                y++;
-            }
-        }
-        if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
-        {
-            if (Map.map[y][x + 1] != '+' && Map.map[y][x + 1] != 'O')
-            {
-                Map.map[y][x] = ' ';
-                Map.map[y][x + 1] = 'P';
-                x++;
-            }
-        }
+        //if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
+        //{
+        //    if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O')// collision for + and O and #
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y - 1][x] = 'P';
+        //        y--;
+        //    }
+        //}
+        //if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
+        //{
+        //    if (Map.map[y][x - 1] != '+' && Map.map[y][x - 1] != 'O')
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y][x - 1] = 'P';
+        //        x--;
+        //    }
+        //}
+        //if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+        //{
+        //    if (Map.map[y + 1][x] != '+' && Map.map[y + 1][x] != 'O')
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y + 1][x] = 'P';
+        //        y++;
+        //    }
+        //}
+        //if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+        //{
+        //    if (Map.map[y][x + 1] != '+' && Map.map[y][x + 1] != 'O')
+        //    {
+        //        Map.map[y][x] = ' ';
+        //        Map.map[y][x + 1] = 'P';
+        //        x++;
+        //    }
+        //}
         /*
         if (g_skKeyEvent[K_SPACE].keyDown)
         {
             g_sChar.m_bActive = !g_sChar.m_bActive;
         }
         */
+
+        for (int i = 0; i < 4; i++)
+        {
+            
+            if (g_skKeyEvent[i].keyDown)
+            {
+                keyHeld[i] = true;
+            }
+            if (g_skKeyEvent[i].keyReleased)
+            {
+                keyHeld[i] = false;
+            }
+        }
+
+        for (int i = 0; i < 4; i++)
+        {
+            if (keyHeld[i])
+            {
+                Map.map[y][x] = ' ';
+                switch (i)
+                {
+                case 0:
+                    if (g_sChar.m_cLocation.Y > 0)
+                    {
+                        player.setDirection(1);
+                    }
+                    break;
+                case 1:
+                    if (g_sChar.m_cLocation.X > 0)
+                    {
+                        player.setDirection(3);
+                    }
+                    break;
+                case 2:
+                    if (g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
+                    {
+                        player.setDirection(2);
+                    }
+                    break;
+                case 3:
+
+                    if (g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
+                    {
+                        player.setDirection(4);
+                    }
+                    break;
+                }
+
+                if (Map.map[player.getnextPos(1).gety()][player.getnextPos(1).getx()] == '+' || Map.map[player.getnextPos(1).getx()][player.getnextPos(1).gety()] == 'O')
+                {
+                    player.setDirection(0);
+                }
+
+                playerSpeed += g_dDeltaTime;
+                if (playerSpeed >= 0.05)
+                {
+                    player.updatePos();
+                    x = player.getPos().getx();
+                    y = player.getPos().gety();
+                    Map.map[y][x] = 'P';
+                    playerSpeed = 0;
+                }
+            
+                break;
+            }
+        }
     }
 
     else if (g_sCameraState.counter == false)
@@ -1396,8 +1481,6 @@ void moveCharacter()
     }
 
     //ghost chase
-    int dirx;
-    int diry;
     int thedir;
     if (ghost != nullptr)
     {
@@ -1407,64 +1490,60 @@ void moveCharacter()
 
         if (diffinx > 0)
         {
-            dirx = 4;
+            ghost->setDirX(4);
         }
         else
         {
-            dirx = 3;
+            ghost->setDirX(3);
         }
 
         if (diffiny > 0)
         {
-            diry = 2;
+            ghost->setDirY(2);
         }
         else
         {
-            diry = 1;
+            ghost->setDirY(1);
         }
 
         if (2 * abs(diffinx) > abs(diffiny))
         {
-            thedir = dirx;
+            ghost->setDirection(ghost->getDirX());
         }
         else
         {
-            thedir = diry;
-        }
-
-        ghost->setDirection(thedir);
-
-        //if there is a row of walls in chosen direction, move in other axis 
-        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] == '+' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] == '+')
-        {
-            if (thedir == dirx)
-            {
-                thedir = diry;
-            }
-            else
-            {
-                thedir = dirx;
-            }
-
-            ghost->setDirection(thedir);
+            ghost->setDirection(ghost->getDirY());
         }
 
         //if lantern is on 
         if (fullLantern || halfLantern)
         {
+            //if within player's radius right now, move away from player
             if (checkifinRadius(ghost->getPos().getx(), ghost->getPos().gety()))
             {
                 ghost->oppDirection();
 
-            }//if next position will be within player's field of vision, do not move
+            }
+            //if next position will be within player's field of vision, do not move
             else if (checkifinRadius(ghost->getnextPos(1).getx(), ghost->getnextPos(1).gety()))
             {
                 ghost->setDirection(0);
             }
             
         }
-      
 
+        //if there is a row of walls in chosen direction, move in other axis 
+        if (Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] != ' ' && Map.map[ghost->getnextPos(2).gety()][ghost->getnextPos(2).getx()] != ' ')
+        {
+            ghost->changeAxis();
+        }
+        //if youre one sqr away diagonally and chosen dir got wall/oil, go in other direction
+        if (abs(diffinx) == 1 && abs(diffiny) == 1 && Map.map[ghost->getnextPos(1).gety()][ghost->getnextPos(1).getx()] != ' ')
+        {
+            ghost->changeAxis();
+        }
+
+        
         //updates ghosts' position based on chosen direction
         ghostSpeed += g_dDeltaTime;
         if (ghostSpeed >= 0.25)
@@ -1614,6 +1693,11 @@ void renderGame()
 
     renderMap();        // renders the map to the buffer first
     renderCharacter();  // renders the character into the buffer
+
+    if (Map.map[y][x] == '#') // print char as table
+    {
+        g_Console.writeToBuffer(g_sChar.m_cLocation, ' ', 0x55);
+    }
     if (offFlicker == true)
     {
         drawings.LanternDim(g_Console);
@@ -1630,6 +1714,39 @@ void renderGame()
 
 void renderMap()
 {
+    roomH = 2;
+    //keep rendering the rooms
+    renderRoomA(roomA);
+    renderRoomB(roomB);
+    renderRoomD(roomD);
+    renderRoomE(roomE);
+    renderRoomG(roomG);
+    renderRoomH(roomH);
+
+    if (x == 28 && y == 20) 
+    {
+        Map.maparray(g_Console); // reset map
+        roomA = 1; //change room layout number
+        roomB = 0;
+        roomD = 2;
+        roomE = 0;
+        roomG = 0;
+        roomH = 0;
+        roomI = 0;
+    }
+
+    if (x == 25 && y == 20)
+    {
+        Map.maparray(g_Console);
+        roomA = 2;
+        roomB = 0;
+        roomD = 2;
+        roomE = 0;
+        roomG = 0;
+        roomH = 0;
+        roomI = 0;
+    }
+
     COORD c;
     if (fullLantern == true)
     {
@@ -1670,7 +1787,6 @@ void renderMap()
     std::string srrs = std::to_string(y);
     g_Console.writeToBuffer(c, srrs, 0x0F);
 }
-
 void renderRoomA(int rand)
 {
     switch (rand)
@@ -1686,6 +1802,87 @@ void renderRoomA(int rand)
         break;
     }
 }
+
+void renderRoomB(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomB1();
+        break;
+    case 1:
+        Map.roomB2();
+        break;
+    case 2:
+        Map.roomB3();
+        break;
+    }
+}
+
+void renderRoomD(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomD1();
+        break;
+    case 1:
+        Map.roomD2();
+        break;
+    case 2:
+        Map.roomD3();
+        break;
+    }
+}
+
+void renderRoomE(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomE1();
+        break;
+    case 1:
+        Map.roomE2();
+        break;
+    case 2:
+        Map.roomE3();
+        break;
+    }
+}
+
+void renderRoomG(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomG1();
+        break;
+    case 1:
+        Map.roomG2();
+        break;
+    case 2:
+        Map.roomG3();
+        break;
+    }
+}
+
+void renderRoomH(int rand)
+{
+    switch (rand)
+    {
+    case 0:
+        Map.roomH1();
+        break;
+    case 1:
+        Map.roomH2();
+        break;
+    case 2:
+        Map.roomH3();
+        break;
+    }
+}
+
 void renderCharacter()
 {
     // Draw the location of the character
@@ -1724,7 +1921,8 @@ void renderInputEvents()
     COORD startPos = {50, 2};
     std::ostringstream ss;
     std::string key;
-    /*for (int i = 0; i < K_COUNT; ++i)
+    /*
+    for (int i = 0; i < K_COUNT; ++i)
     {
         ss.str("");
         switch (i)
@@ -1867,20 +2065,31 @@ void renderHUD()
         }
         
         //objective
-        pos.X = 50;
-
-        for (int i = 0; i < (objective.length() / 29) + 1; i++)
+        pos.X = 47;
+        pos.Y = 21;
+        g_Console.writeToBuffer(pos, "Objective: ", 0xD0);
+        for (int i = 0; i < (objective.length() / 30) + 1; i++)
         {
             pos.Y = 22 + i;
-            if (i == objective.length() / 29)
+            if (i == objective.length() / 30)
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, objective.length() - (29 * i)), 0x05);
+                g_Console.writeToBuffer(pos, objective.substr(30 * i, objective.length() - (30 * i)), 0x0D);
             }
             else
             {
-                g_Console.writeToBuffer(pos, objective.substr(29 * i, 29), 0x05);
+                g_Console.writeToBuffer(pos, objective.substr(30 * i, 30), 0x0D);
             }
         }
+
+        //current Room
+        pos.X = 47;
+        pos.Y = 27;
+        g_Console.writeToBuffer(pos, "Current Room: ", 0x07);
+        pos.X = 61;
+        g_Console.writeToBuffer(pos, currentRoom, 0x07);
+
+
+
         break;
     }
         
@@ -1939,7 +2148,6 @@ void mainMenuWait()
         {
         case 0:
             g_eGameState = S_INTRO;
-            g_dLanternTime = 0.0; // put this to stage 2
             break;
         case 1:
             MState = MENU_STAGES;
@@ -2234,5 +2442,45 @@ bool checkifinRadius(int posx, int posy)
     }
 
     return false;
+}
+
+void updateCurrRoom()
+{
+    if (x < 30)
+    {
+        currentRoom = "Power Room";
+    }
+    else if ((x == 31 && y >=4 && y <= 6) || (y == 7 && x >= 69 && x <= 73))
+    {
+        currentRoom = "Kitchen";
+    }
+    else if ((y == 5 && x >= 69 && x <= 73)|| (y == 7 && x >= 98 && x <= 102))
+    {
+        currentRoom = "???";
+    }
+    else if ((x == 31 && y >= 24 && y <= 26) || (y == 21 && x >= 40 && x <= 44))
+    {
+        currentRoom = "Swimming Pool";
+    }
+    else if ((y == 19 && x >= 40 && x <= 44) || (y == 15 && x == 74) || (y == 14 && x == 75) || (x == 76 && y == 13) || (x == 77 && y == 12))
+    {
+        currentRoom = "Toilet";
+    }
+    else if ((y == 23 && x >= 82 && x <= 85) || (x == 86 && y == 22) || (x == 106 && y == 25) || (y == 26 && x >= 107 && x <= 108))
+    {
+        currentRoom = "Storage Room";
+    }
+    else if ((x == 119 && y >= 18 && y <= 21) || (x == 109 && y == 25) ||(y == 24 && x >= 107 && x <= 108))
+    {
+        currentRoom = "VIP Room";
+    }
+    else if ((y == 9 && x >= 98 && x <= 102) || (y == 21 && x >= 82 && x <= 85) || (x == 81 && y == 22) || (y == 16 && x == 75) || (y == 15 && x == 76) || (x == 77 && y == 14) || (x == 78 && y == 13))
+    {
+        currentRoom = "Sleeping Quarters";
+    }
+    else if (x > 120)
+    {
+        currentRoom = "Control Room";
+    }
 }
 

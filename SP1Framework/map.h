@@ -12,6 +12,22 @@ public:
 	void roomA1();
 	void roomA2();
 	void roomA3();
+	void roomB1();
+	void roomB2();
+	void roomB3();
+	void roomD1();
+	void roomD2();
+	void roomD3();
+	void roomE1();
+	void roomE2();
+	void roomE3();
+	void roomG1();
+	void roomG2();
+	void roomG3();
+	void roomH1();
+	void roomH2();
+	void roomH3();
+	void toilet(int xLoc, int yLoc, int dir);
 	void roomI1();
 };
 
