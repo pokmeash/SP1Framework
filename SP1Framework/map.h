@@ -27,5 +27,7 @@ public:
 	void roomH1();
 	void roomH2();
 	void roomH3();
+	void toilet(int xLoc, int yLoc, int dir);
+	void roomI1();
 };
 

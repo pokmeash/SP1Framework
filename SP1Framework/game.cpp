@@ -1671,6 +1671,7 @@ void renderGame()
 
 void renderMap()
 {
+    roomH = 2;
     //keep rendering the rooms
     renderRoomA(roomA);
     renderRoomB(roomB);
@@ -1707,20 +1708,25 @@ void renderMap()
     if (fullLantern == true)
     {
         Map.rendermap(g_Console, x, y, 1); //full lantern
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
     else if (halfLantern == true)
     {
         Map.rendermap(g_Console, x, y, 2); //half lantern
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
     else if (dimLantern == true)
     {
         Map.rendermap(g_Console, x, y, 3); //dim lantern
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
     else
     {
         Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
+    renderRoomA(1); //render diff layout of room A
+    Map.roomI1();
     /*for (int i = 0; i < 81; i++)
     {
         for (int j = 20; j < 30; j++)

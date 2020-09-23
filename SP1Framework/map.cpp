@@ -233,7 +233,7 @@ void map::rendermap(Console& g_Console, int x, int y, int light)
                 {
                     if (map[y + a][x + b] == '+')
                     {
-                        g_Console.writeToBuffer(40 + b, 10 + a, '+', 0x8F);
+                        g_Console.writeToBuffer(40 + b, 10 + a, ' ', 0x8F);
                     }
                     else if (map[y + a][x + b] == 'O')
                     {
@@ -705,16 +705,290 @@ void map::roomG3()
 
 void map::roomH1()
 {
-    map[12][33] = char(158);
-    map[14][33] = char(158);
-    map[16][33] = char(158);
-
+    //face right
+    toilet(33, 13, 3); //on top
+    toilet(33, 17, 3); //below
 }
 
 void map::roomH2()
 {
+    //face up
+    toilet(35, 17, 0);
+    toilet(55, 17, 0);
+
+    //face down
+    toilet(35, 13, 2);
+    toilet(45, 13, 2);
+    toilet(55, 13, 2);
+
 }
 
 void map::roomH3()
 {
+    //face right
+    toilet(33, 13, 3); //on top
+    toilet(33, 17, 3); //below
+
+    //face left
+    toilet(66, 13, 1); //on top
+    toilet(66, 17, 1); //below
+}
+
+void map::toilet(int xLoc, int yLoc, int dir)
+{
+    switch (dir)
+    {
+    case 0: // face up
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        map[yLoc + 1][xLoc] = '+';
+        //left
+        map[yLoc][xLoc - 1] = '+';
+        //right
+        map[yLoc][xLoc + 1] = '+';
+        break;
+
+    case 1: // face left
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        map[yLoc - 1][xLoc] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        map[yLoc + 1][xLoc] = '+';
+        //right
+        map[yLoc][xLoc + 1] = '+';
+        break;
+
+    case 2: // face down
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        map[yLoc - 1][xLoc] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        //left
+        map[yLoc][xLoc - 1] = '+';
+        //right
+        map[yLoc][xLoc + 1] = '+';
+        break;
+
+    case 3: // face right
+        //toilet seat
+        map[yLoc][xLoc] = char(158);
+        //top
+        map[yLoc - 1][xLoc + 1] = '+';
+        map[yLoc - 1][xLoc - 1] = '+';
+        map[yLoc - 1][xLoc] = '+';
+        //bottom
+        map[yLoc + 1][xLoc + 1] = '+';
+        map[yLoc + 1][xLoc - 1] = '+';
+        map[yLoc + 1][xLoc] = '+';
+        //left
+        map[yLoc][xLoc - 1] = '+';
+        break;
+    }
+}
+}
+
+void map::roomI1()
+{
+    //y level 9 to 12 to 24
+    //x level 71 119
+    //Ladders
+    map[24][72] = 'L';
+    map[23][77] = 'L';
+    map[16][78] = 'L';
+    map[15][80] = 'L';
+    map[11][92] = 'L';
+    map[9][105] = 'L';
+    map[18][94] = 'L';
+    map[18][97] = 'L';
+    map[17][91] = 'L';
+    map[11][80] = 'L';
+    map[13][97] = 'L';
+    map[13][117] = 'L';
+    map[14][113] = 'L';
+    map[16][104] = 'L';
+    map[17][101] = 'L';
+    //walls fun time
+    //horizontal walls
+    for (int i = 105; i < 116; i++)
+    {
+        map[10][i] = 'B';
+    }
+    for (int i = 113; i < 117; i++)
+    {
+        map[13][i] = 'B';
+    }
+    for (int i = 109; i < 113; i++)
+    {
+        map[14][i] = 'B';
+    }
+    for (int i = 103; i < 110; i++)
+    {
+        map[15][i] = 'B';
+    }
+    for (int i = 102; i < 104; i++)
+    {
+        map[16][i] = 'B';
+    }
+    for (int i = 94; i < 100; i++)
+    {
+        map[17][i] = 'B';
+    }
+    for (int i = 98; i < 101; i++)
+    {
+        map[13][i] = 'B';
+    }
+    for (int i = 100; i < 108; i++)
+    {
+        map[12][i] = 'B';
+    }
+    for (int i = 95; i < 99; i++)
+    {
+        map[15][i] = 'B';
+    }
+    for (int i = 89; i < 94; i++)
+    {
+        map[19][i] = 'B';
+    }
+    for (int i = 81; i < 90; i++)
+    {
+        map[20][i] = 'B';
+    }
+    for (int i = 77; i < 82; i++)
+    {
+        map[21][i] = 'B';
+    }
+    for (int i = 74; i < 76; i++)
+    {
+        map[23][i] = 'B';
+    }
+    for (int i = 71; i < 75; i++)
+    {
+        map[20][i] = 'B';
+    }
+    for (int i = 74; i < 79; i++)
+    {
+        map[17][i] = 'B';
+    }
+    for (int i = 80; i < 82; i++)
+    {
+        map[12][i] = 'B';
+    }
+    for (int i = 82; i < 85; i++)
+    {
+        map[10][i] = 'B';
+    }
+    for (int i = 90; i < 94; i++)
+    {
+        map[10][i] = 'B';
+    }
+    for (int i = 87; i < 95; i++)
+    {
+        map[12][i] = 'B';
+    }
+    for (int i = 84; i < 86; i++)
+    {
+        map[12][i] = 'B';
+    }
+    for (int i = 83; i < 86; i++)
+    {
+        map[18][i] = 'B';
+    }
+    for (int i = 87; i < 91; i++)
+    {
+        map[14][i] = 'B';
+    }
+    //vertical walls
+    for (int j = 10; j < 12; j++)
+    {
+        map[j][118] = 'B';
+    }
+    for (int j = 15; j < 18; j++)
+    {
+        map[j][100] = 'B';
+    }
+    for (int j = 18; j < 20; j++)
+    {
+        map[j][93] = 'B';
+    }
+    for (int j = 9; j < 13; j++)
+    {
+        map[j][97] = 'B';
+    }
+    for (int j = 11; j < 13; j++)
+    {
+        map[j][110] = 'B';
+    }
+    for (int j = 10; j < 12; j++)
+    {
+        map[j][103] = 'B';
+    }
+    for (int j = 13; j < 15; j++)
+    {
+        map[j][104] = 'B';
+    }
+    for (int j = 10; j < 15; j++)
+    {
+        map[j][95] = 'B';
+    }
+    for (int j = 19; j < 24; j++)
+    {
+        map[j][76] = 'B';
+    }
+    for (int j = 22; j < 25; j++)
+    {
+        map[j][73] = 'B';
+    }
+    for (int j = 12; j < 20; j++)
+    {
+        map[j][79] = 'B';
+    }
+    for (int j = 14; j < 19; j++)
+    {
+        map[j][81] = 'B';
+    }
+    for (int j = 9; j < 12; j++)
+    {
+        map[j][86] = 'B';
+    }
+    for (int j = 13; j < 16; j++)
+    {
+        map[j][83] = 'B';
+    }
+    for (int j = 13; j < 17; j++)
+    {
+        map[j][91] = 'B';
+    }
+    for (int j = 16; j < 20; j++)
+    {
+        map[j][87] = 'B';
+    }
+    for (int j = 14; j < 17; j++)
+    {
+        map[j][85] = 'B';
+    }
+    //one block walls??????????????????????
+    map[11][117] = 'B';
+    map[12][116] = 'B';
+    map[14][93] = 'B';
+    map[16][93] = 'B';
+    map[12][109] = 'B';
+    map[14][80] = 'B';
+    map[11][82] = 'B';
+    map[15][88] = 'B';
 }
