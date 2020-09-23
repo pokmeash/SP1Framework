@@ -1,4 +1,8 @@
 #include "player.h"
+player::player() : speed(0)
+{
+
+}
 
 void player::updatePos()
 {
@@ -11,10 +15,10 @@ void player::updatePos()
 		pos.sety(pos.gety() + 1);
 		break;
 	case LEFT:
-		pos.setx(pos.getx() - 2);
+		pos.setx(pos.getx() - 1);
 		break;
 	case RIGHT:
-		pos.setx(pos.getx() + 2);
+		pos.setx(pos.getx() + 1);
 		break;
 	case NOT:
 		break;
@@ -37,10 +41,10 @@ position player::getnextPos(int howmany)
 			nextpos.sety(nextpos.gety() + 1);
 			break;
 		case LEFT:
-			nextpos.setx(nextpos.getx() - 2);
+			nextpos.setx(nextpos.getx() - 1);
 			break;
 		case RIGHT:
-			nextpos.setx(nextpos.getx() + 2);
+			nextpos.setx(nextpos.getx() + 1);
 			break;
 		case NOT:
 			break;
@@ -48,4 +52,29 @@ position player::getnextPos(int howmany)
 	}
 
 	return nextpos;
+}
+
+void player::setSpeed(float spd)
+{
+	speed = spd;
+}
+
+float player::getSpeed()
+{
+	return speed;
+}
+
+void player::setSpeed()
+{
+	switch (dir)
+	{
+	case 1:
+	case 2:
+		speed = 0.08;
+		break;
+	case 3:
+	case 4:
+		speed = 0.04;
+		break;
+	}
 }
