@@ -1,4 +1,5 @@
 #include "map.h"
+minigame mg;
 
 void map::maparray(Console& g_Console)
 {
@@ -690,17 +691,69 @@ void map::roomG1()
     }
     map[28][36] = char(247);
     //fish
-    map[23][47] = '<';
-    map[23][48] = '>';
-    map[23][49] = '<';
+    fish(47, 23, 0);
+    fish(37, 26, 1);
+    fish(55, 28, 0);
+
 }
 
 void map::roomG2()
 {
+    //water
+    for (int i = 31; i < 70; i++)
+    {
+        for (int j = 21; j < 29; j++)
+        {
+            map[j][i] = '-';
+        }
+    }
+    //bubbles
+    map[23][36] = char(248);
+    map[26][36] = char(248);
+    map[22][56] = char(248);
+    map[25][55] = char(248);
+    map[23][47] = char(248);
+    map[26][60] = char(248);
+    map[28][44] = char(248);
+    //waves
+    for (int j = 55; j < 58; j++)
+    {
+        map[26][j] = char(247);
+    }
+    map[28][36] = char(247);
+    //fish
+    fish(47, 26, 0);
+    fish(60, 28, 1);
+    fish(33, 24, 0);
 }
 
 void map::roomG3()
 {
+    //water
+    for (int i = 31; i < 70; i++)
+    {
+        for (int j = 21; j < 29; j++)
+        {
+            map[j][i] = '-';
+        }
+    }
+    //bubbles
+    map[23][36] = char(248);
+    map[26][43] = char(248);
+    map[22][61] = char(248);
+    map[24][64] = char(248);
+    map[23][47] = char(248);
+    map[27][58] = char(248);
+    map[28][44] = char(248);
+    //waves
+    for (int j = 55; j < 58; j++)
+    {
+        map[26][j] = char(247);
+    }
+    //fish
+    fish(47, 23, 1);
+    fish(60  , 27, 0);
+    fish(50, 28, 1);
 }
 
 void map::roomH1()
@@ -734,6 +787,23 @@ void map::roomH3()
     toilet(66, 17, 1); //below
 }
 
+void map::fish(int xLoc, int yLoc, int dir)
+{
+    switch (dir)
+    {
+    case 0: // face left
+        map[yLoc][xLoc] = '<';
+        map[yLoc][xLoc + 1] = '>';
+        map[yLoc][xLoc + 2] = '<';
+        break;
+
+    case 1: // face right
+        map[yLoc][xLoc] = '>';
+        map[yLoc][xLoc + 1] = '<';
+        map[yLoc][xLoc + 2] = '>';
+        break;
+    }
+}
 void map::toilet(int xLoc, int yLoc, int dir)
 {
     switch (dir)
@@ -800,7 +870,6 @@ void map::toilet(int xLoc, int yLoc, int dir)
         map[yLoc][xLoc - 1] = '+';
         break;
     }
-}
 }
 
 void map::roomI1()

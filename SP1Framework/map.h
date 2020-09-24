@@ -1,5 +1,6 @@
 #pragma once
 #include "Framework\console.h"
+#include "minigame.h"
 
 class map
 {
@@ -27,6 +28,7 @@ public:
 	void roomH1();
 	void roomH2();
 	void roomH3();
+	void fish(int xLoc, int yLoc, int dir);
 	void toilet(int xLoc, int yLoc, int dir);
 	void roomI1();
 };
