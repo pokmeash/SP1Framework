@@ -1714,7 +1714,6 @@ void renderGame()
 
 void renderMap()
 {
-    roomH = 2;
     //keep rendering the rooms
     renderRoomA(roomA);
     renderRoomB(roomB);
