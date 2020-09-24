@@ -13,12 +13,12 @@ enum direction
 class entity
 {
 private:
-	position pos;
-	position nextpos;
-	direction dir;
 	direction dirx;
 	direction diry;
-
+protected:
+	direction dir;
+	position pos;
+	position nextpos;
 public:
 	entity();
 	entity(int x, int y);
@@ -26,7 +26,7 @@ public:
 	position getnextPos(int howmany);
 	int getDirX();
 	int getDirY();
-	void updatePos();
+	virtual void updatePos();
 	void setDirection(int where);
 	void setDirX(int where);
 	void setDirY(int where);

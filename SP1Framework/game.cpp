@@ -1,6 +1,6 @@
 // This is the main file for the game logic and function
 #include "game.h"
-#include "entity.h"
+#include "player.h"
 #include "Framework\console.h"
 #include <iostream>
 #include <iomanip>
@@ -107,7 +107,7 @@ position newRoom[50];
 // Game objects
 entity* ghost = nullptr;
 entity* plasma = nullptr;
-entity player;
+player Player;
 
 //Animation objects
 ghostgameover ghostGO;
@@ -174,7 +174,7 @@ void init( void )
     Map.maparray(g_Console);
     x = 42;
     y = 20;
-    player.setPos(x, y);
+    Player.setPos(x, y);
     
 
     //setting of cutscene dialogues
@@ -539,7 +539,6 @@ void update_gameOverGhost()
 }
 void gameOverGhost()
 { 
-    COORD c;
     ghostGO.initGridGhost(g_Console);
     ghostGO.GhostSprite1(g_Console);
     
@@ -663,7 +662,6 @@ void gameOverGhost()
 
 void fishLeft(Console& g_Console, int j, CHAR colour)
 {
-    COORD c;
     if (g_dFishTime > 1)
     {
         mini.fishLeft(g_Console, 22, j, colour);
@@ -1317,49 +1315,6 @@ void moveCharacter()
 
     if (g_sCameraState.counter == true)
     {
-        //if (g_skKeyEvent[K_W].keyDown && g_sChar.m_cLocation.Y > 0)
-        //{
-        //    if (Map.map[y - 1][x] != '+' && Map.map[y - 1][x] != 'O')// collision for + and O and #
-        //    {
-        //        Map.map[y][x] = ' ';
-        //        Map.map[y - 1][x] = 'P';
-        //        y--;
-        //    }
-        //}
-        //if (g_skKeyEvent[K_A].keyDown && g_sChar.m_cLocation.X > 0)
-        //{
-        //    if (Map.map[y][x - 1] != '+' && Map.map[y][x - 1] != 'O')
-        //    {
-        //        Map.map[y][x] = ' ';
-        //        Map.map[y][x - 1] = 'P';
-        //        x--;
-        //    }
-        //}
-        //if (g_skKeyEvent[K_S].keyDown && g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
-        //{
-        //    if (Map.map[y + 1][x] != '+' && Map.map[y + 1][x] != 'O')
-        //    {
-        //        Map.map[y][x] = ' ';
-        //        Map.map[y + 1][x] = 'P';
-        //        y++;
-        //    }
-        //}
-        //if (g_skKeyEvent[K_D].keyDown && g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
-        //{
-        //    if (Map.map[y][x + 1] != '+' && Map.map[y][x + 1] != 'O')
-        //    {
-        //        Map.map[y][x] = ' ';
-        //        Map.map[y][x + 1] = 'P';
-        //        x++;
-        //    }
-        //}
-        /*
-        if (g_skKeyEvent[K_SPACE].keyDown)
-        {
-            g_sChar.m_bActive = !g_sChar.m_bActive;
-        }
-        */
-
         for (int i = 0; i < 4; i++)
         {
             
@@ -1373,57 +1328,59 @@ void moveCharacter()
             }
         }
 
+        //setting of player's direction
         for (int i = 0; i < 4; i++)
         {
             if (keyHeld[i])
             {
-                Map.map[y][x] = ' ';
                 switch (i)
                 {
                 case 0:
-                    if (g_sChar.m_cLocation.Y > 0)
-                    {
-                        player.setDirection(1);
-                    }
+                    Player.setDirection(1);
+                    Player.setSpeed(0.08);
                     break;
                 case 1:
-                    if (g_sChar.m_cLocation.X > 0)
-                    {
-                        player.setDirection(3);
-                    }
+                    Player.setSpeed(0.04);
+                    Player.setDirection(3);
                     break;
                 case 2:
-                    if (g_sChar.m_cLocation.Y < g_Console.getConsoleSize().Y - 1)
-                    {
-                        player.setDirection(2);
-                    }
+                    Player.setSpeed(0.08);
+                    Player.setDirection(2);
                     break;
                 case 3:
-
-                    if (g_sChar.m_cLocation.X < g_Console.getConsoleSize().X - 1)
-                    {
-                        player.setDirection(4);
-                    }
+                    Player.setSpeed(0.04);
+                    Player.setDirection(4);
                     break;
                 }
 
-                if (Map.map[player.getnextPos(1).gety()][player.getnextPos(1).getx()] == '+' || Map.map[player.getnextPos(1).getx()][player.getnextPos(1).gety()] == 'O')
+                //conditions where player is unable to move forward
+                if (Map.map[Player.getnextPos(1).gety()][Player.getnextPos(1).getx()] == '+' || Map.map[Player.getnextPos(1).getx()][Player.getnextPos(1).gety()] == 'O')
                 {
-                    player.setDirection(0);
+                    Player.setDirection(0);
                 }
 
-                playerSpeed += g_dDeltaTime;
-                if (playerSpeed >= 0.05)
+                //setting of player's speed based on conditions (swimming pool)
+                if (x > 30 && x < 70 && y >= 20 && y <= 29)
                 {
-                    player.updatePos();
-                    x = player.getPos().getx();
-                    y = player.getPos().gety();
+                    Player.setSpeed(Player.getSpeed() * 2.5);
+                }
+
+                //updating of player's position
+                playerSpeed += g_dDeltaTime;
+                if (playerSpeed >= Player.getSpeed())
+                {
+                    Map.map[y][x] = ' ';
+                    Player.updatePos();
+                    x = Player.getPos().getx();
+                    y = Player.getPos().gety();
                     Map.map[y][x] = 'P';
                     playerSpeed = 0;
                 }
-            
                 break;
             }
+
+            
+                
         }
     }
 
@@ -1750,20 +1707,25 @@ void renderMap()
     if (fullLantern == true)
     {
         Map.rendermap(g_Console, x, y, 1); //full lantern
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
     else if (halfLantern == true)
     {
         Map.rendermap(g_Console, x, y, 2); //half lantern
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
     else if (dimLantern == true)
     {
         Map.rendermap(g_Console, x, y, 3); //dim lantern
+        Map.rendermap(g_Console, x, y, 0); //full screen
     }
     else
     {
         Map.rendermap(g_Console, x, y, 0); //full screen
     }
 
+    renderRoomA(1); //render diff layout of room A
+    Map.roomI1();
     /*for (int i = 0; i < 81; i++)
     {
         for (int j = 20; j < 30; j++)

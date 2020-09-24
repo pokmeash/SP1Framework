@@ -137,6 +137,10 @@ int entity::getDirX()
 {
 	switch (dirx)
 	{
+	case UP:
+	case DOWN:
+		return 0;
+		break;
 	case LEFT:
 		return 3;
 		break;
@@ -155,6 +159,10 @@ int entity::getDirY()
 		break;
 	case DOWN:
 		return 2;
+		break;
+	case LEFT:
+	case RIGHT:
+		return 0;
 		break;
 	}
 }
